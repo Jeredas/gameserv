@@ -8,3 +8,8 @@ export const regValidation = (params) => {
       return 'error';
   }
 }
+
+(function test(){
+  console.assert(regValidation({login:'gdfg', password:'gA123456789'}) === 'ok');
+  console.assert(regValidation({login:'gdfg', password:'gA12345'}) === 'error', 'Short password test failed');
+})();
