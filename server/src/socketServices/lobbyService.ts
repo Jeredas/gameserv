@@ -6,7 +6,7 @@ function createChannel(type:string, params:any):ChatChannel {
 }
 
 export class LobbyService{
-  readonly serviceName = 'chat';
+  readonly serviceName = 'lobby';
   private channels: Array<ChatChannel>;
 
   constructor(){
@@ -26,6 +26,12 @@ export class LobbyService{
       const newChannel = createChannel(params.channelType, params.channelParams)
       this.channels.push(newChannel);
     }  
+  }
+
+  closeConnection(connection) {
+    this.channels.forEach(channel => {
+      channel.leaveUser(connection, {});
+    });
   }
 
 }

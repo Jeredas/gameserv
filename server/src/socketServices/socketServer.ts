@@ -51,6 +51,7 @@ export class SocketServer {
   }
 
   private messageHandler(userConnection: connection, message) {
+    console.log(message);
     if (message.type === 'utf8') {
       let socketRequest = new SocketRequest(message.utf8Data);
       this.router.route(socketRequest.service, socketRequest.endpoint, userConnection, socketRequest.params);
