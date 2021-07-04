@@ -4,7 +4,7 @@ import stylePopup from '../popupService/popupService.css';
 import headerStyles from '../header/header.css';
 import { popupService } from '../popupService/popupService';
 import RegisterCheck from '../registerCheck/registerCheck';
-import { AuthForm } from '../AuthForm/authForm';
+import { AuthForm } from '../authForm/authForm';
 import { RegForm } from '../regForm/regForm';
 
 class AboutPage extends Control {

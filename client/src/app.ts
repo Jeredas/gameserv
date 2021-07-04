@@ -24,7 +24,7 @@ class Application extends Control {
     super(parentNode, 'div', 'app');
     popupService.init(parentNode);
     popupService.showPopup(CheckSession).then((res)=>{
-      if(res==='no'){
+      if(!res){
         popupService.showPopup(RegForm).then((res)=>{
           if(res==='register'){
             console.log('registered')
