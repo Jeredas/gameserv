@@ -1,4 +1,4 @@
-import { loginValidation, passvalidation, regValidation } from '../utils/regValidation';
+import { loginValidation, passValidation, regValidation } from '../utils/regValidation';
 import { databaseService } from '../databaseService';
 import { Router } from './httpRouter';
 
@@ -41,7 +41,7 @@ async function auth(params) {
 
 async function register(params) {
   const decodedLogin = decodeURI(`${params.login}`);
-  if (regValidation(params) == 'ok') {
+  if (regValidation(params)) {
     const user = await UserModel.buildNewUser(decodedLogin, params.password, params.avatar, params.name);
     return new DefaultResponse(true);
   } else {
@@ -75,7 +75,7 @@ async function authValidation(params) {
 
 async function passwordValidation(params) {
   try {
-    if (passvalidation(params.password)) {
+    if (passValidation(params.password)) {
       return new DefaultResponse(true);
     } else {
       throw new Error('invalid password')
