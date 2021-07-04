@@ -24,3 +24,8 @@ export interface configHeader {
   controls: IHeaderControls;
   user: IHeaderUser;
 }
+
+export interface IPageComponent {
+  show: () => void;
+  hide: () => void;
+}

@@ -1,10 +1,10 @@
 import Control from '../utilities/control';
 import stylePopup from '../popupService/popupService.css'
 
-class GenericPopup extends Control {
+class GenericPopup<type> extends Control {
   popupWrapper: Control;
 
-  // onSelect: (value: type) => void;
+  onSelect: (value: type) => void;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', stylePopup.popup_blackout);

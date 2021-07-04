@@ -1,8 +1,8 @@
 import Control from '../utilities/control';
-import configHeader from '../utilities/config-header';
+// import configHeader from '../utilities/config-header';
 import HeaderAuth from './header-auth';
 import NavItem from './nav-item';
-import './header.css';
+import headerStyles from './header.css';
 
 export class Navigation extends Control {
   private navContainer: Control;
@@ -11,20 +11,20 @@ export class Navigation extends Control {
 
   private userBlock: HeaderAuth;
 
-  public onSignIn: () => void = () => {};
+  // public onSignIn: () => void = () => {};
   public onUserClick: () => void = () => {};
 
   constructor(parentNode: HTMLElement | null = null) {
-    super(parentNode, 'div', configHeader.wrapper);
+    super(parentNode, 'div', headerStyles.header_wrapper);
 
-    const logo = new Control(this.node, 'div', configHeader.logo.logo);
-    logo.node.style.backgroundImage = `url()`;
-    this.navContainer = new Control(this.node, 'div', configHeader.nav.container);
-    this.userBlock = new HeaderAuth(this.node, configHeader.user, configHeader.controls);
+    const logo = new Control(this.node, 'div', headerStyles.header_logo);
+    // logo.node.style.backgroundImage = `url()`;
+    this.navContainer = new Control(this.node, 'div', headerStyles.header_nav);
+    this.userBlock = new HeaderAuth(this.node);
 
-    this.userBlock.onSignIn = () => {
-      this.onSignIn();
-    };
+    // this.userBlock.onSignIn = () => {
+    //   this.onSignIn();
+    // };
 
     this.userBlock.onUserClick = () => {
       this.onUserClick();
@@ -34,6 +34,16 @@ export class Navigation extends Control {
   addLink(text: string, hash: string): void {
     const navItem = new NavItem(this.navContainer.node, text, hash);
     this.navItems.push(navItem);
+  }
+
+  setActive(hash: string): void {
+    this.navItems.forEach((item) => {
+      if (item.getHash() == hash) {
+        item.setActive();
+      } else {
+        item.setInactive();
+      }
+    });
   }
 
 }

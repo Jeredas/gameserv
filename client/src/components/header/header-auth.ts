@@ -1,6 +1,7 @@
 import Control from '../utilities/control';
 import { IHeaderUser } from '../utilities/interfaces';
 import { IHeaderControls } from '../utilities/interfaces';
+import headerStyles from './header.css';
 
 class HeaderAuth extends Control {
   private signIn: Control;
@@ -17,20 +18,20 @@ class HeaderAuth extends Control {
 
   private configControls: IHeaderControls;
 
-  constructor(parentNode: HTMLElement, configUser: IHeaderUser, configControls: IHeaderControls) {
-    super(parentNode, 'div', configUser.wrapper);
-    this.configControls = configControls;
-    this.user = new Control(this.node, 'div', configUser.user);
-    // this.userAvatar = new Control(this.user.node, 'div', configUser.avatar);
+  constructor(parentNode: HTMLElement) {
+    super(parentNode, 'div', headerStyles.header_auth);
+    // this.configControls = configControls;
+    this.user = new Control(this.node, 'div', headerStyles.auth_user);
+    this.userAvatar = new Control(this.user.node, 'div', headerStyles.default_avatar);
     // this.userAvatar.node.style.backgroundImage = `url(${configUser.defaultAvatar})`;
-    this.userName = new Control(this.user.node, 'div', configUser.nickName);
+    this.userName = new Control(this.user.node, 'div', headerStyles.auth_nickname);
     this.userName.node.textContent = 'NickName';
 
-    this.signIn = new Control(this.node, 'div', configControls.wrapper);
-    this.signIn.node.textContent = 'Sign In';
-    this.signIn.node.onclick = () => {
-      this.onSignIn();
-    };
+    // this.signIn = new Control(this.node, 'div', headerStyles.auth_controls);
+    // this.signIn.node.textContent = 'Sign In';
+    // this.signIn.node.onclick = () => {
+    //   this.onSignIn();
+    // };
 
     this.user.node.onclick = () => {
       this.onUserClick();
@@ -45,13 +46,13 @@ class HeaderAuth extends Control {
     this.userName.node.textContent = name;
   }
 
-  hideElement(): void {
-    this.signIn.node.classList.add(this.configControls.hidden);
-  }
+  // hideElement(): void {
+  //   this.signIn.node.classList.add(headerStyles.default_hidden);
+  // }
 
-  showElement(): void {
-    this.signIn.node.classList.remove(this.configControls.hidden);
-  }
+  // showElement(): void {
+  //   this.signIn.node.classList.remove(headerStyles.default_hidden);
+  // }
 }
 
 export default HeaderAuth;

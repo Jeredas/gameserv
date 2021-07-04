@@ -1,16 +1,17 @@
 import Control from '../utilities/control';
+import headerStyles from './header.css';
 
 class NavItem extends Control {
-  private link: HTMLAnchorElement;
-
   private hash: string;
 
+  link: Control;
+
   constructor(parentNode: HTMLElement, text: string, hash: string) {
-    super(parentNode, 'div', 'nav_item');
+    super(parentNode, 'a', headerStyles.nav_item);
     this.hash = hash;
-    const link = new Control(this.node, 'a', 'nav_link');
-    link.node.setAttribute('src',`#${hash}`);
-    link.node.textContent = text;
+    this.link = new Control(this.node, 'a', headerStyles.nav_link);
+    this.link.node.setAttribute('href',`#${hash}`);
+    this.link.node.textContent = text;
   }
 
   getHash() {
@@ -18,11 +19,12 @@ class NavItem extends Control {
   }
 
   setActive() {
-    this.link.classList.add('nav_link__active');
+    this.link.node.classList.add(headerStyles.nav_link__active);
+    console.log('setActiveClass')
   }
 
   setInactive() {
-    this.link.classList.remove('nav_link__active');
+    this.link.node.classList.remove(headerStyles.nav_link__active);
   }
 }
 
