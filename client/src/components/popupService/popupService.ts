@@ -2,13 +2,13 @@
 // import { GameSelect } from "../chat/game-select";
 //import { GenericPopup } from '../chat/genericPopup';
 import Control from '../control';
-//import popupStyle from './popupService.css';
+import popupStyle from './popupService.css';
 
 //console.log(popupStyle);
 
 class PopupService extends Control {
   constructor() {
-    super(null, 'div', 'popup_layer');
+    super(null, 'div', popupStyle.popup_blackout);
   }
 
   init(parentNode:HTMLElement) {

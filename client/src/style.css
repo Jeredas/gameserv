@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+input,
+button,
+a,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+input,
+button {
+  outline: none;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+button,
+a {
+  cursor: pointer;
+}

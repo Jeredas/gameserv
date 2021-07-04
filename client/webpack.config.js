@@ -33,14 +33,28 @@ const config = {
                 loader: 'ts-loader',
                 exclude: ['/node_modules/'],
             },
+            // {
+            //     test: /\.css$/i,
+            //     use: [stylesHandler,'css-loader'],
+            // },
             {
                 test: /\.css$/i,
-                use: [stylesHandler,'css-loader'],
+                use: [
+                    stylesHandler,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1,
+                            modules: true,
+                            sourceMap: true,
+                        },
+                    },
+                ],
             },
-            {
-                test: /\.s[ac]ss$/i,
-                use: [stylesHandler, 'css-loader', 'sass-loader'],
-            },
+            // {
+            //     test: /\.s[ac]ss$/i,
+            //     use: [stylesHandler, 'css-loader', 'sass-loader'],
+            // },
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
                 type: 'asset',
