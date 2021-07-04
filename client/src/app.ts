@@ -2,7 +2,8 @@ import { popupService } from './components/popupService/popupService';
 import Control from './components/utilities/control';
 import CheckSession from './components/temporary/checkSession';
 import { Navigation } from './components/header/navigation';
-import AboutPage from './components/AboutPage/aboutPage';
+import AboutPage from './components/aboutPage/aboutPage';
+import ChatPage from './components/chatPage/chatPage';
 import { IPageComponent } from './components/utilities/interfaces';
 import { Router } from './components/router/router';
 import { Route } from './components/router/route';
@@ -17,6 +18,8 @@ class Application extends Control {
   router: Router;
 
   about: AboutPage;
+
+  chatPage: ChatPage;
 
   pageContainer: Control;
 
@@ -56,7 +59,9 @@ class Application extends Control {
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', '');
     this.about = new AboutPage(this.pageContainer.node);
+    this.chatPage = new ChatPage(this.pageContainer.node);
     this.addPage('about', 'about', this.about);
+    this.addPage('chat', 'chat', this.chatPage);
     this.router.processHash();
   }
 
