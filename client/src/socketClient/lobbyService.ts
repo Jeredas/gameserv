@@ -63,7 +63,7 @@ export class LobbyService implements ISocketService{
   }
 
   openHandler(){
-    console.log('close');
+    console.log('open');
     this.onOpen.emit({});
   }
 
@@ -97,28 +97,39 @@ export class LobbyService implements ISocketService{
 export class LobbyModel{
   service: LobbyService;
   serviceName:string = 'chat';
-  socketClient:SocketClient;
+  //socketClient:SocketClient;
 
   constructor(socketClient:SocketClient){
-    this.socketClient = socketClient;
+    //this.socketClient = socketClient;
     this.service = new LobbyService();
     socketClient.addService(this.service);
-    this.service.onCreated.add(params=>{
+    /*this.service.onCreated.add(params=>{
       console.log(params);
-    })
+    })*/
   }
 
   joinChannel(channelName:string){
-    this.service.send({
-      sessionId: '',
-      service: this.serviceName,
-      endpoint: 'sendToChannel',
-      params: {
-        channelName: channelName,
-        channelRequestParams: {
-          command: 'joinChannel'
+    return new Promise((resolve, reject) => {
+      const requestId = Date.now() + Math.floor(Math.random() * 10000);
+      const listener = (params: any) => {
+        if (params.requestId == requestId) {
+          this.service.onJoined.remove(listener);
+          resolve(params);
         }
       }
+      this.service.onJoined.add(listener);
+      this.service.send({
+        sessionId: '',
+        service: this.serviceName,
+        endpoint: 'sendToChannel',
+        params: {
+          channelName: channelName,
+          channelRequestParams: {
+            command: 'joinChannel',
+            requestId: requestId
+          }
+        }
+      });
     });
   }
 
@@ -162,18 +173,30 @@ export class LobbyView extends Control{
     const joinChannelButton = new Control(this.node, 'div', '', 'join');
     const createChannelButton = new Control(this.node, 'div', '', 'create');
 
+    joinChannelButton.node.onclick = ()=>{
+      this.model.joinChannel('dgh').then(res=>{
+        console.log(res);
+      });
+    }
+
+    createChannelButton.node.onclick = ()=>{
+      this.model.createNewChannel('dgh').then(res=>{
+        console.log(res);
+      });
+    }
+
     model.service.onClose.add(()=>{
       connectionIndicator.node.textContent = 'disconnected';
-      connectionIndicator.node.onclick = ()=>{
-        model.socketClient.reconnent();
-      }
+      //connectionIndicator.node.onclick = ()=>{
+      //  model.socketClient.reconnent();
+      //}
     });
 
     model.service.onOpen.add(()=>{
       connectionIndicator.node.textContent = 'connected';
-      connectionIndicator.node.onclick = ()=>{
-        model.socketClient.reconnent();
-      }
+      //connectionIndicator.node.onclick = ()=>{
+      //  model.socketClient.reconnent();
+      //}
     })
   }
 }

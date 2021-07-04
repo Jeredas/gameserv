@@ -2,8 +2,8 @@ import {ChatChannel} from './socketChannel';
 import {OnlyChatChannel} from './games/onlyChatChannel';
 import { connection } from 'websocket';
 
-function createChannel(type:string, params:any):ChatChannel {
-  return new ({OnlyChatChannel}[type])(params);
+function createChannel(type:string, channelName, params:any):ChatChannel {
+  return new ({OnlyChatChannel}[type])(channelName, params);
 }
 
 export class LobbyService{
@@ -24,7 +24,7 @@ export class LobbyService{
   createNewChannel(userConnection:connection, params:any){
     const foundChannel = this.channels.find(channel => channel.name == params.channelName);
     if (!foundChannel){
-      const newChannel = createChannel(params.channelType, params.channelParams)
+      const newChannel = createChannel(params.channelType, params.channelName, params.channelParams)
       this.channels.push(newChannel);
       userConnection.sendUTF(JSON.stringify({
         service: 'chat', 
@@ -34,7 +34,16 @@ export class LobbyService{
           status: 'ok'
         }
       }));
-    }  
+    }  else {
+      userConnection.sendUTF(JSON.stringify({
+        service: 'chat', 
+        type: 'created', 
+        params:{
+          requestId: params.requestId,
+          status: 'existed'
+        }
+      }));  
+    } 
   }
 
   closeConnection(connection) {
