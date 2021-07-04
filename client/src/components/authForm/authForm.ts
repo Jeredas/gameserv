@@ -15,7 +15,7 @@ export class AuthForm extends GenericPopup<any> {
     this.login = new InputWrapper(this.popupWrapper.node, 'Login', 'Login', 'login');
     this.password = new InputWrapper(this.popupWrapper.node, 'Password', 'Password', 'password');
 
-    this.loginButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'register');
+    this.loginButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'log in');
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');
 
     this.loginButton.onClick = () => {

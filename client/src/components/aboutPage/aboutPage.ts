@@ -2,6 +2,10 @@ import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 import stylePopup from '../popupService/popupService.css';
 import headerStyles from '../header/header.css';
+import { popupService } from '../popupService/popupService';
+import RegisterCheck from '../registerCheck/registerCheck';
+import { AuthForm } from '../AuthForm/authForm';
+import { RegForm } from '../regForm/regForm';
 
 class AboutPage extends Control {
   wrapper:Control;
@@ -18,7 +22,13 @@ class AboutPage extends Control {
     this.buttonLogIn = new ButtonDefault(this.node, stylePopup.popup_default_button, 'log in');
 
     this.buttonLogIn.onClick = () => {
-      
+      popupService.showPopup<boolean>(RegisterCheck).then((result) => {
+        if(result) {
+          popupService.showPopup(AuthForm) ;
+        } else {
+          popupService.showPopup(RegForm);
+        }
+      });
     }
   }
 
