@@ -1,7 +1,9 @@
+import { popupService } from '../popupService/popupService';
 import Control from '../utilities/control';
 import { IHeaderUser } from '../utilities/interfaces';
 import { IHeaderControls } from '../utilities/interfaces';
 import headerStyles from './header.css';
+import SettingsUser from '../settingsUser/settingsUser';
 
 class HeaderAuth extends Control {
   private signIn: Control;
@@ -33,7 +35,16 @@ class HeaderAuth extends Control {
     //   this.onSignIn();
     // };
 
-    this.user.node.onclick = () => {
+    this.userName.node.onclick = () => {
+      popupService.init(parentNode);
+      popupService.showPopup(SettingsUser).then((res)=>{
+        if(res==='save') {
+          //TODO:Изменить аватар и имя после редактирования
+          console.log('Changes saved')
+        } else {
+          console.log('Changes not saved')
+        }
+      })
       this.onUserClick();
     };
   }
