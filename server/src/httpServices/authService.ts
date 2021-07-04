@@ -1,93 +1,89 @@
-import { regValidation } from '../utils/regValidation';
+import { loginValidation, passValidation, regValidation } from '../utils/regValidation';
 import { databaseService } from '../databaseService';
-import { Router } from '../httpRouter';
+import { Router } from './httpRouter';
+
+import DefaultResponse from './defaultResponse';
+import UserModel from '../dataModels/userModel';
+import SessionModel from '../dataModels/sessionModel';
+
+class AuthResponse {
+  session: string;
+
+  constructor(sessionModel: SessionModel) {
+    this.session = sessionModel.session;
+  }
+}
 
 function testAccess(params, userData) {
   return Promise.resolve({ params, userData });
 }
 
-function session(params) {
-  console.log(params);
-  return databaseService.db.collection('sessions').findOne({ session: params.sessionHash }, {}).then((res) => {
-    console.log(res)
-    if (res && params.sessionHash) {
-      return { status: 'ok' };
-    } else {
-      return { status: 'error' }
-    }
-  });
+async function session(params) {
+  try {
+    const session = await SessionModel.buildBySessionHash(params.sessionHash);
+    return new DefaultResponse(true);
+  } catch (err) {
+    return new DefaultResponse(false);
+  }
 };
 
-function auth(params) {
-  console.log(`${params} auth`);
-  const decodedLogin = decodeURI(`${params.login}`)
-  return databaseService.db.collection('users').findOne({ login: decodedLogin, password: params.password }, {}).then((res) => {
-    if (res) {
-      let sessionData = { login: decodedLogin, session: decodedLogin + (Math.random() * 1000).toFixed(0) };
-      console.log(sessionData);
-      return databaseService.db.collection('sessions').insertOne(sessionData).then(() => {
-        return { status: 'ok', session: sessionData.session };
-      });
-    } else {
-      return { status: 'error' }
-    }
-  });
+async function auth(params) {
+  try {
+    const decodedLogin = decodeURI(`${params.login}`);
+    const user = await UserModel.buildByCreds(decodedLogin, params.password);
+    const sessionModel = await SessionModel.buildNewSession(user.login);
+    const responseData = new AuthResponse(sessionModel);
+    return new DefaultResponse(true, responseData);
+  } catch (err) {
+    return new DefaultResponse(false);
+  }
 };
 
-function register(params) {
-  console.log('request register')
+async function register(params) {
   const decodedLogin = decodeURI(`${params.login}`);
-  if (regValidation(params) == 'ok') {
-    console.log('register done')
-    return databaseService.db.collection('users').insertOne({ login: decodedLogin, password: params.password }).then(() => {
-      return { status: 'ok' };
-    });
+  if (regValidation(params)) {
+    const user = await UserModel.buildNewUser(decodedLogin, params.password, params.avatar, params.name);
+    return new DefaultResponse(true);
   } else {
-    console.log('register error')
-    return { status: 'error' }
+    return new DefaultResponse(false);
   }
 }
 
-function registerValidation(params) {
-  console.log(params);
-  const decoded = decodeURI(`${params.login}`);
-  return databaseService.db.collection('users').findOne({ login: params.login }, {}).then((res) => {
-    if (!res) {
-      console.log(decoded)
-      if (decoded.match(/^[a-zA-Z0-9а-яА-Я]+([._]?[a-zA-Z0-9а-яА-Я]+)*$/) && params.login.length >= 3) {
-        console.log('ok')
-        return { status: 'ok' };
-      } else {
-        console.log(`${decoded} -- error after validation`)
-        return { status: 'error' };
-      }
+async function registerValidation(params) {
+  const decodedLogin = decodeURI(`${params.login}`);
+  try {
+    const user = await UserModel.buildByLogin(decodedLogin);
+    return new DefaultResponse(false);
+  } catch (err) {
+    if (loginValidation(params.login)) {
+      return new DefaultResponse(true);
     } else {
-      console.log('error user already exists')
-      return { status: 'error' };
+      return new DefaultResponse(false);
     }
-  });
+  };
 }
 
-function authValidation(params) {
-  console.log(params);
-  const decodedLogin = decodeURI(`${params.login}`)
-  return databaseService.db.collection('users').findOne({ login: decodedLogin }, {}).then((res) => {
-    if (res) {
-      return { status: 'ok' };
-    } else {
-      return { status: 'error' };
-    }
-  });
-}
-
-function passwordValidation(params) {
-  if (params.password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)) {
-    return { status: 'ok' };
-  } else {
-    return { status: 'error' };
+async function authValidation(params) {
+  try {
+    const decodedLogin = decodeURI(`${params.login}`)
+    const user = await UserModel.buildByLogin(decodedLogin);
+    return new DefaultResponse(true);
+  } catch (err) {
+    return new DefaultResponse(false);
   }
 }
 
+async function passwordValidation(params) {
+  try {
+    if (passValidation(params.password)) {
+      return new DefaultResponse(true);
+    } else {
+      throw new Error('invalid password')
+    }
+  } catch (err) {
+    return new DefaultResponse(false)
+  }
+}
 class AuthService {
   private router: Router;
   private serviceName: string = 'authService';
@@ -100,7 +96,7 @@ class AuthService {
     });
   }
 
-  start(router: Router) {
+  async start(router: Router) {
     this.router = router;
     this.addEndpoint('testAccess', testAccess);
     this.addEndpoint('session', session);
@@ -108,7 +104,8 @@ class AuthService {
     this.addEndpoint('register', register);
     this.addEndpoint('regValidation', registerValidation);
     this.addEndpoint('authValidation', authValidation);
-    this.addEndpoint('passwordValidation', passwordValidation)
+    this.addEndpoint('passwordValidation', passwordValidation);
+    return true;
   }
 
   addEndpoint(name, func) {
@@ -117,3 +114,4 @@ class AuthService {
 }
 
 export const authService = new AuthService();
+
