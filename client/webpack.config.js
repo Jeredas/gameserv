@@ -57,7 +57,7 @@ const config = {
             // },
             {
                 test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-                type: 'asset',
+                type: 'asset/resource',
             },
 
             // Add your rules for custom modules here
@@ -66,6 +66,10 @@ const config = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        alias: {
+            utilities: path.resolve(__dirname, 'src/utilities/'),
+            assets: path.resolve(__dirname, 'src/assets/'),
+        },
     },
 };
 

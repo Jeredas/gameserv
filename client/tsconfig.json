@@ -4,7 +4,12 @@
     "noImplicitAny": true,
     "module": "es6",
     "target": "es5",
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": "./",
+    "paths": {
+      "utilities/*":["src/utilities/*"],
+      "assets/*":["src/assets/*"],
+    },
   },
   "files": ["src/index.ts", "./modules.d.ts"]
 }

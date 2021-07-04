@@ -1,4 +1,4 @@
-import Control from './components/control';
+import Control from 'utilities/control';
 import {popupService1} from './components/popupService/popupService';
 import './components/popupService/popupService.css';
 import indexStyles from './index.css';
