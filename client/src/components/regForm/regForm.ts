@@ -25,11 +25,11 @@ export class RegForm extends GenericPopup<any> {
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');
 
     this.registerButton.onClick = () => {
-
+      this.onSelect('register')
     }
 
     this.cancelButton.onClick = () => {
-      
+      this.onSelect('cancel')
     }
   }
 

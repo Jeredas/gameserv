@@ -19,11 +19,13 @@ class CheckSession extends GenericPopup<boolean> {
     this.ButtonNo = new ButtonDefault(this.popupWrapper.node,stylePopup.popup_default_button, 'no');
 
     this.ButtonYes.onClick = () => {
-      // this.onSelect(true);
+      this.onSelect('yes')
     }
-
     this.ButtonNo.onClick = () => {
-      // this.onSelect(false);
+      console.log('show abot page with sign in button');
+      this.onSelect('no')
+
+
     }
   }
 } 

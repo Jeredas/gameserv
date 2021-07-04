@@ -21,6 +21,15 @@ class SettingsUser extends GenericPopup<any> {
 
     this.saveButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Save');
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Cancel');
+
+    this.saveButton.onClick = () =>{
+      //TODO:Обработать данные из инпута , отправить на сервер и записать изменения в бд.Вернуть новые имя и аву наружу.
+      this.onSelect('save');
+    }
+    this.cancelButton.onClick = () =>{
+      //TODO:Очистить поля инпутов
+      this.onSelect('cancel')
+    }
   }
 }
 

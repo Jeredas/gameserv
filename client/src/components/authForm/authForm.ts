@@ -9,6 +9,7 @@ export class AuthForm extends GenericPopup<any> {
   loginButton: ButtonDefault;
   cancelButton: ButtonDefault;
   popupWrapper: Control;
+  onSelect: (value: any) => void;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
@@ -19,11 +20,12 @@ export class AuthForm extends GenericPopup<any> {
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');
 
     this.loginButton.onClick = () => {
-
+      //TODO:Авторизовать юзера, получить имя и автар и передать в хэдер
+      this.onSelect('login')
     }
 
     this.cancelButton.onClick = () => {
-      
+      this.onSelect('cancel')
     }
   }
 }
