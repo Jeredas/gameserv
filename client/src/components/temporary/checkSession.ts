@@ -3,14 +3,14 @@ import GenericPopup from '../genericPopup/genericPopup';
 import stylePopup from '../popupService/popupService.css';
 import Control from '../utilities/control';
 
-class CheckSession extends GenericPopup<string> {
+class CheckSession extends GenericPopup<boolean> {
   ButtonYes: ButtonDefault;
   ButtonNo:ButtonDefault;
   popupWrapper: Control;
-  onShowAbout: () => void;
-  onShowChat: () => void;
+  // onShowAbout: () => void;
+  // onShowChat: () => void;
 
-  onSelect: (value: string) => void;
+  onSelect: (value: boolean) => void;
 
   constructor(parentNode:HTMLElement) {
     super(parentNode);
@@ -21,10 +21,11 @@ class CheckSession extends GenericPopup<string> {
     this.ButtonYes.onClick = () => {
       this.onSelect('yes')
     }
-
     this.ButtonNo.onClick = () => {
       console.log('show abot page with sign in button');
       this.onSelect('no')
+
+
     }
   }
 } 

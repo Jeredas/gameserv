@@ -52,12 +52,12 @@ class Application extends Control {
     // popupService.showPopup(SettingsUser)
     // popupService.showPopup(RegForm);
 
-
     this.navigation = new Navigation(this.node);
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', '');
     this.about = new AboutPage(this.pageContainer.node);
     this.addPage('about', 'about', this.about);
+    this.router.processHash();
   }
 
   addPage(linkName: string, pageName: string, pageComponent: IPageComponent) {

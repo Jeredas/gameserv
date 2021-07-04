@@ -3,8 +3,9 @@ import Control from '../utilities/control';
 import stylePopup from '../popupService/popupService.css';
 import headerStyles from '../header/header.css';
 import { popupService } from '../popupService/popupService';
+import RegisterCheck from '../registerCheck/registerCheck';
+import { AuthForm } from '../AuthForm/authForm';
 import { RegForm } from '../regForm/regForm';
-import { AuthForm } from '../authForm/authForm';
 
 class AboutPage extends Control {
   wrapper:Control;
@@ -40,6 +41,7 @@ class AboutPage extends Control {
           this.show()
         }
       })
+
     }
   }
 
