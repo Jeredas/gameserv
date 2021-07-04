@@ -1,14 +1,15 @@
 const socketURL = 'ws://localhost:4080';
 import {ISocketService} from './ISocketService';
-import {LobbyService} from './lobbyService';
+import {LobbyService, LobbyModel, LobbyView} from './lobbyService';
 
 export class SocketClient{
   socket: WebSocket = null;
 
   services: Array<ISocketService>;
+  url:string;
 
   constructor(){
-
+    this.services = [];
   }
 
   messageHandler(message:MessageEvent){
@@ -24,10 +25,14 @@ export class SocketClient{
   }
 
   openHandler(){
+    this.services.forEach(service => {
+      service.openHandler();
+    });
     console.log('WebSocket opened.')
   }
 
   async init(url:string){
+    this.url = url;
     return new Promise((resolve, reject)=>{
       const socket = new WebSocket(url);
       socket.onopen = () => {
@@ -47,18 +52,24 @@ export class SocketClient{
     });
   }
 
+  async reconnent(){
+    return this.init(this.url);
+  }
+
   addService(serviceInstance: ISocketService){
     this.services.push(serviceInstance);
-    serviceInstance.onSend = (message) => {
-      this.send(message);
-    }
-    serviceInstance.onRemove = () => {
-      this.removeService(serviceInstance);
-    }
+    serviceInstance.attachClient({
+      onSend: (message) => {
+        this.send(message);
+      },
+      onRemove: () => {
+        this.removeService(serviceInstance);
+      }
+    });
   }
 
   removeService(serviceInstance: ISocketService){
-    serviceInstance.onSend = null;
+    serviceInstance.unattachClient();
     this.services = this.services.filter(service => service!==serviceInstance);
   }
 
@@ -69,15 +80,11 @@ export class SocketClient{
 
 (async function test() {
   let socket = new SocketClient();
-  await socket.init(socketURL);
-  let lobbyService = new LobbyService();
-  socket.addService(lobbyService);
-
-  lobbyService.send({
-    service:'chat',
-    endpoint:'sendToChannel',
-    params: {
-
-    }
-  });
+  
+  let lobbyModel = new LobbyModel(socket);
+  new LobbyView(document.body, lobbyModel);
+  socket.init(socketURL);
+  /*lobbyModel.createNewChannel('fgdfs').then((params)=>{
+    console.log('created ', params);
+  });*/
 })();
