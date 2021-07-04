@@ -1,50 +1,55 @@
 import { regValidation } from '../utils/regValidation';
 import { databaseService } from '../databaseService';
-import { Router } from '../httpRouter';
+import { Router } from './httpRouter';
+
+import DefaultResponse from './defaultResponse';
+import UserModel from '../dataModels/userModel';
+import SessionModel from '../dataModels/sessionModel';
+
+class AuthResponse extends DefaultResponse{
+  session: string;
+
+  constructor(isSuccess:boolean, sessionModel:SessionModel){
+    super(isSuccess);
+    this.session = sessionModel.session;
+  }
+}
 
 function testAccess(params, userData) {
   return Promise.resolve({ params, userData });
 }
 
-function session(params) {
-  console.log(params);
-  return databaseService.db.collection('sessions').findOne({ session: params.sessionHash }, {}).then((res) => {
-    console.log(res)
-    if (res && params.sessionHash) {
-      return { status: 'ok' };
-    } else {
-      return { status: 'error' }
-    }
-  });
+async function session(params) {
+  try {
+    const session = await SessionModel.buildBySessionHash(params.sessionHash);
+    return new DefaultResponse(true);
+  } catch (err) {
+    return new DefaultResponse(false);
+  }
 };
 
-function auth(params) {
-  console.log(`${params} auth`);
-  const decodedLogin = decodeURI(`${params.login}`)
-  return databaseService.db.collection('users').findOne({ login: decodedLogin, password: params.password }, {}).then((res) => {
-    if (res) {
-      let sessionData = { login: decodedLogin, session: decodedLogin + (Math.random() * 1000).toFixed(0) };
-      console.log(sessionData);
-      return databaseService.db.collection('sessions').insertOne(sessionData).then(() => {
-        return { status: 'ok', session: sessionData.session };
-      });
-    } else {
-      return { status: 'error' }
-    }
-  });
+async function auth(params) {
+  try {
+    const decodedLogin = decodeURI(`${params.login}`);
+    const user = await UserModel.buildByCreds(decodedLogin, params.password);
+    const sessionModel = await SessionModel.buildNewSession(user.login);
+    const responseData = new AuthResponse(true, sessionModel)
+    return new DefaultResponse(true, responseData);
+  } catch (err) {
+    return new DefaultResponse(false);
+  }
 };
 
-function register(params) {
+async function register(params) {
   console.log('request register')
   const decodedLogin = decodeURI(`${params.login}`);
   if (regValidation(params) == 'ok') {
     console.log('register done')
-    return databaseService.db.collection('users').insertOne({ login: decodedLogin, password: params.password }).then(() => {
-      return { status: 'ok' };
-    });
+    const user = await UserModel.buildNewUser(decodedLogin, params.password);
+    return { status: 'ok' };
   } else {
     console.log('register error')
-    return { status: 'error' }
+    return new DefaultResponse(false);
   }
 }
 
@@ -63,28 +68,27 @@ function registerValidation(params) {
       }
     } else {
       console.log('error user already exists')
-      return { status: 'error' };
+      return new DefaultResponse(false);
     }
   });
 }
 
 function authValidation(params) {
-  console.log(params);
   const decodedLogin = decodeURI(`${params.login}`)
   return databaseService.db.collection('users').findOne({ login: decodedLogin }, {}).then((res) => {
     if (res) {
-      return { status: 'ok' };
+      return new DefaultResponse(true);
     } else {
-      return { status: 'error' };
+      return new DefaultResponse(false);
     }
   });
 }
 
-function passwordValidation(params) {
+async function passwordValidation(params) {
   if (params.password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)) {
-    return { status: 'ok' };
+    return new DefaultResponse(true);
   } else {
-    return { status: 'error' };
+    return new DefaultResponse(false);
   }
 }
 
@@ -100,7 +104,7 @@ class AuthService {
     });
   }
 
-  start(router: Router) {
+  async start(router: Router) {
     this.router = router;
     this.addEndpoint('testAccess', testAccess);
     this.addEndpoint('session', session);
@@ -108,7 +112,8 @@ class AuthService {
     this.addEndpoint('register', register);
     this.addEndpoint('regValidation', registerValidation);
     this.addEndpoint('authValidation', authValidation);
-    this.addEndpoint('passwordValidation', passwordValidation)
+    this.addEndpoint('passwordValidation', passwordValidation);
+    return true;
   }
 
   addEndpoint(name, func) {
