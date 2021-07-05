@@ -2,7 +2,7 @@ import Control from '../utilities/control';
 // import configHeader from '../utilities/config-header';
 import HeaderAuth from './header-auth';
 import NavItem from './nav-item';
-import headerStyles from './header.css';
+import headerStyles from './header.module.css';
 
 export class Navigation extends Control {
   private navContainer: Control;

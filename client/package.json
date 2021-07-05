@@ -10,7 +10,7 @@
     "build:prod": "npx webpack --mode=production --node-env=production",
     "watch": "npx webpack --watch",
     "serve": "npx webpack serve",
-    "start": "npx webpack serve"
+    "start": "npx webpack serve --open chrome"
   },
   "author": "",
   "license": "ISC",

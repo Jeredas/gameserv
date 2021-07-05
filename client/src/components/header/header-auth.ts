@@ -1,8 +1,6 @@
 import { popupService } from '../popupService/popupService';
 import Control from '../utilities/control';
-import { IHeaderUser } from '../utilities/interfaces';
-import { IHeaderControls } from '../utilities/interfaces';
-import headerStyles from './header.css';
+import headerStyles from './header.module.css';
 import SettingsUser from '../settingsUser/settingsUser';
 
 class HeaderAuth extends Control {
@@ -18,7 +16,6 @@ class HeaderAuth extends Control {
 
   public onUserClick: () => void = () => {};
 
-  private configControls: IHeaderControls;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', headerStyles.header_auth);
@@ -57,13 +54,13 @@ class HeaderAuth extends Control {
     this.userName.node.textContent = name;
   }
 
-  // hideElement(): void {
-  //   this.signIn.node.classList.add(headerStyles.default_hidden);
-  // }
+  hideElement(): void {
+    this.signIn.node.classList.add(headerStyles.default_hidden);
+  }
 
-  // showElement(): void {
-  //   this.signIn.node.classList.remove(headerStyles.default_hidden);
-  // }
+  showElement(): void {
+    this.signIn.node.classList.remove(headerStyles.default_hidden);
+  }
 }
 
 export default HeaderAuth;

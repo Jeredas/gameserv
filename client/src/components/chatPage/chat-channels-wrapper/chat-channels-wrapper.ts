@@ -1,10 +1,9 @@
 import Control from '../../utilities/control';
 import ButtonDefault from '../../buttonDefault/buttonDefault';
-// import StylesChat from '../chatPage';
-import '../chatPage.css';
-import { IChannelBtn, IChannelWrapper } from '../../utilities/interfaces';
+import chatStyles from '../chatPage.module.css';
 import { popupService } from '../../popupService/popupService';
-import SettingsChannel from '../../settings-channel/settings-channel';
+import SettingsChannel from '../../create-channel-popup/create-channel-popup';
+import JoinChannelPopup from '../../join-channel-popup/join-channel-popup';
 
 class ChatChannelsWrapper extends Control {
 
@@ -14,17 +13,24 @@ class ChatChannelsWrapper extends Control {
 
   public onAddBtnClick: () => void;
 
-  // private configView: IChannelWrapper;
+  private channelCreateBtn: ButtonDefault;
 
-  private channelAddBtn: ButtonDefault;
+  private channelJoinBtn: ButtonDefault;
 
-  constructor(parentNode: HTMLElement, configView: IChannelWrapper, configLang: IChannelBtn) {
-    super(parentNode, 'div', configView.wrapper);
-    // this.configView = configView;
+  constructor(parentNode: HTMLElement) {
+    super(parentNode, 'div', chatStyles.chat_channels);
     const chatChannelControl = new Control(this.node, 'div');
-    this.channelAddBtn = new ButtonDefault(chatChannelControl.node, 'default_button' , 'add channel');
-    this.channelAddBtn.onClick = () => {
+    this.channelCreateBtn = new ButtonDefault(chatChannelControl.node, chatStyles.default_button, 'create channel');
+    this.channelJoinBtn = new ButtonDefault(chatChannelControl.node, chatStyles.default_button, 'join channel');
+    this.channelCreateBtn.onClick = () => {
       popupService.showPopup(SettingsChannel);
+      // this.onAddBtnClick();
+    };
+
+    this.channelJoinBtn.onClick = () => {
+      console.log('join');
+      popupService.showPopup(JoinChannelPopup);
+      // popupService.showPopup(JoinChannelPopup);
       // this.onAddBtnClick();
     };
     this.chatChannels = new Control(this.node, 'div');

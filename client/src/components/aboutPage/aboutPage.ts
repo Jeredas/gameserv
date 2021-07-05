@@ -1,7 +1,7 @@
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 import stylePopup from '../popupService/popupService.css';
-import headerStyles from '../header/header.css';
+import headerStyles from '../header/header.module.css';
 import { popupService } from '../popupService/popupService';
 import RegisterCheck from '../registerCheck/registerCheck';
 import { AuthForm } from '../authForm/authForm';

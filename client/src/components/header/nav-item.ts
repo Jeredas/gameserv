@@ -1,5 +1,5 @@
 import Control from '../utilities/control';
-import headerStyles from './header.css';
+import headerStyles from './header.module.css';
 
 class NavItem extends Control {
   private hash: string;
