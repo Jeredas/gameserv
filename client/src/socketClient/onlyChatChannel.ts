@@ -4,29 +4,28 @@ import { SocketClient } from './socketClient';
 import Signal from './signal';
 
 
-export class LobbyService implements ISocketService{
+export class OnlyChatChannelService implements ISocketService{
   private onSend:(message:Object)=>void = null;
   private onRemove:()=>void = null;
 
-  public onJoined: Signal<any> = new Signal<any>();
-  public onCreated: Signal<any> = new Signal<any>();
+  public onMessage: Signal<any> = new Signal<any>();
   public onClose: Signal<any> = new Signal<any>();
   public onOpen: Signal<any> = new Signal<any>();
+  public onAny: Signal<any> = new Signal<any>();
 
   constructor(){
 
   }
 
   messageHandler(rawMessage:string){
+    console.log(rawMessage);
     const message = JSON.parse(rawMessage);
     if (message.service === 'chat'){
+      this.onAny.emit(message);
       const processFunction = new Map<string, ((params:any)=>void)>(
         [
-          ['joined', (params)=>{
-            this.onJoined.emit(params);
-          }],
-          ['created', (params)=>{
-            this.onCreated.emit(params);
+          ['message', (params)=>{
+            this.onMessage.emit(params);
           }]
         ]
       ).get(message.type)
@@ -74,67 +73,63 @@ export class LobbyService implements ISocketService{
   }
 }
 
-export class LobbyModel{
-  service: LobbyService;
+
+export class OnlyChatChannelModel{
+  service: OnlyChatChannelService;
   serviceName:string = 'chat';
+  channelName:string;
   //socketClient:SocketClient;
 
-  constructor(socketClient:SocketClient){
+  constructor(socketClient:SocketClient, channelName:string){
     //this.socketClient = socketClient;
-    this.service = new LobbyService();
+    this.channelName = channelName;
+    this.service = new OnlyChatChannelService();
     socketClient.addService(this.service);
     /*this.service.onCreated.add(params=>{
       console.log(params);
     })*/
   }
 
-  /*joinChannel(channelName:string){
-    return new Promise((resolve, reject) => {
-      const requestId = Date.now() + Math.floor(Math.random() * 10000);
-      const listener = (params: any) => {
-        if (params.requestId == requestId) {
-          this.service.onJoined.remove(listener);
-          resolve(params);
-        }
+  private send(method:string, params:Object){
+    this.service.send({
+      sessionId: '',
+      service: this.serviceName,
+      endpoint: 'sendToChannel',
+      params: {
+        channelName: this.channelName,
+        channelMethod: method,
+        channelRequestParams: params
       }
-      this.service.onJoined.add(listener);
-      this.service.send({
-        sessionId: '',
-        service: this.serviceName,
-        endpoint: 'sendToChannel',
-        params: {
-          channelName: channelName,
-          channelMethod: 'joinUser',
-          channelRequestParams: {
-            requestId: requestId
-          }
-        }
-      });
     });
-  }*/
+  }
 
-  createNewChannel(channelName:string){
+  private sendAwaiting(method:string, request:object):Promise<any>{
     return new Promise((resolve, reject)=>{
       const requestId = Date.now()+Math.floor(Math.random()*10000);
       const listener = (params:any) => {
         if (params.requestId == requestId){
-          this.service.onCreated.remove(listener);
+          this.service.onAny.remove(listener);
           resolve(params);
         }
       }
-      this.service.onCreated.add(listener);
-      this.service.send({
-        
-        sessionId: '',
-        service: this.serviceName,
-        endpoint: 'createNewChannel',
-        params: {
-          requestId: requestId,
-          channelName: channelName,
-          channelType: 'OnlyChatChannel'
-        }
-      });
+      this.service.onAny.add(listener);
+      this.send(method, {...request, requestId: requestId})
     });
+  }
+
+  sendMessage(message:string){
+    this.send('sendMessage', {
+      messageText: message
+    }); 
+  }
+
+  leaveChannel(){
+    this.send('leaveUser', {});
+  }
+
+  async joinChannel(){
+    const joinResponse = await this.sendAwaiting('joinUser', {});
+    return joinResponse.params.status == 'ok';
   }
 
   destroy(){
@@ -142,29 +137,30 @@ export class LobbyModel{
   }
 }
 
-export class LobbyView extends Control{
-  model: LobbyModel;
-  onJoinClick: ()=>void;
+export class OnlyChatChannelView extends Control{
+  model: OnlyChatChannelModel;
+  onLeaveClick: ()=>void;
 
-  constructor(parentNode:HTMLElement, model:LobbyModel){
+  constructor(parentNode:HTMLElement, model:OnlyChatChannelModel){
     super(parentNode);
     this.model = model;
 
     const connectionIndicator = new Control(this.node);
-    const joinChannelButton = new Control(this.node, 'div', '', 'join');
-    const createChannelButton = new Control(this.node, 'div', '', 'create');
+    const sendMessageButton = new Control(this.node, 'div', '', 'send');
+    const leaveMessageButton = new Control(this.node, 'div', '', 'leave');
 
-    joinChannelButton.node.onclick = ()=>{
-     /* this.model.joinChannel('dgh').then(res=>{
-        console.log(res);
-      });*/
-      this.onJoinClick?.();
+    const messagesContainer = new Control(this.node);
+
+    this.model.service.onMessage.add((params)=>{
+      const message = new Control(this.node, 'div', '', JSON.stringify(params));
+    })
+    sendMessageButton.node.onclick = ()=>{
+      this.model.sendMessage('fsgds');
     }
 
-    createChannelButton.node.onclick = ()=>{
-      this.model.createNewChannel('dgh').then(res=>{
-        console.log(res);
-      });
+    leaveMessageButton.node.onclick = ()=>{
+      this.model.leaveChannel();
+      this.onLeaveClick?.();
     }
 
     model.service.onClose.add(()=>{
@@ -181,6 +177,9 @@ export class LobbyView extends Control{
       //}
     })
   }
+
+  destroy(){
+    this.node.remove();
+  }
 }
 
-//new LobbyView(document.body, new LobbyModel(new SocketClient()));

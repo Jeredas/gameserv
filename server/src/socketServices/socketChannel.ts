@@ -37,7 +37,7 @@ class ChatClient {
   }
 }
 
-class ChannelJoinUserResponse implements IChatResponse{
+class ChannelUserListResponse implements IChatResponse{
   public type:string;
   public userList: Array<string>;
 
@@ -49,13 +49,32 @@ class ChannelJoinUserResponse implements IChatResponse{
 
 class ChannelSendMessageResponse implements IChatResponse{
   public type:string;
-  public senderNick:string;
-  public messageText:string;
+  public service:string;
+  public params: {
+    senderNick:string;
+    messageText:string;
+  }
 
   constructor(senderNick:string, messageText:string){
+    this.service = 'chat',
     this.type = 'message';
-    this.senderNick = senderNick,
-    this.messageText = messageText;
+    this.params = {senderNick, messageText};
+  }
+}
+
+class ChannelJoinUserResponse implements IChatResponse{
+  public type:string;
+  public service:string;
+  public requestId:number;
+  public params: {
+    status:string;
+  }
+
+  constructor(status:string, requestId:number){
+    this.service = 'chat';
+    this.type = 'joined';
+    this.requestId = requestId;
+    this.params = {status};
   }
 }
 
@@ -74,15 +93,25 @@ export class ChatChannel {
     });
   }
 
+  hasUser(connection){
+    return this.clients.findIndex(client => client.connection == connection) == -1 ? false : true; 
+  }
+
   async joinUser(connection: any, params: any) {
     try {
-      const sessionModel = await SessionModel.buildBySessionHash(params.sessionId);
+      const sessionModel = await SessionModel.buildBySessionHash(/*params.sessionId*/'inikon359');
       const userModel = await UserModel.buildByLogin(sessionModel.login);
-      if (userModel) {
-        this.clients.push(new ChatClient(connection, new ChatUserData(params.sessionId, userModel)));
-        this._sendForAllClients(new ChannelJoinUserResponse(this.clients.map(it => it.userData.login)));
+      if (userModel && !this.hasUser(connection)) {
+        const newClient = new ChatClient(connection, new ChatUserData(params.sessionId, userModel));
+        this.clients.push(newClient);
+        newClient.send(new ChannelJoinUserResponse('ok', params.requestId));
+        this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
+      } else {
+        throw new Error("err");
+        
       }
     } catch (err){
+      connection.sendUTF(JSON.stringify(new ChannelJoinUserResponse('error', params.requestId)));
       //send respons for user
     }
   }
@@ -90,14 +119,25 @@ export class ChatChannel {
   leaveUser(connection, params) {
     this.clients = this.clients.filter(it => it.connection != connection);
     this.clients.forEach(it => {
-      this._sendForAllClients(new ChannelJoinUserResponse(this.clients.map(it => it.userData.login)));
+      this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
     });
   };
 
   sendMessage(connection, params) {
+    console.log(params);
     const currentClient = this.clients.find(it => it.connection == connection);
     if (currentClient && currentClient.userData) {
       this._sendForAllClients(new ChannelSendMessageResponse(currentClient.userData.login, params.messageText));
+    } else {
+      connection.sendUTF(JSON.stringify({
+        service: 'chat', 
+        type: 'sendStatus', 
+        params:{
+          requestId: params.requestId,
+          status: 'error',
+          description: 'not joined'
+        }
+      }));
     }
   }
 }
