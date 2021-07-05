@@ -10,6 +10,7 @@ import { Route } from './components/router/route';
 import { RegForm } from './components/regForm/regForm';
 import SettingsUser from './components/settingsUser/settingsUser';
 import { AuthForm } from './components/authForm/authForm';
+import RegisterCheck from './components/registerCheck/registerCheck';
 
 
 class Application extends Control {
@@ -28,9 +29,25 @@ class Application extends Control {
     popupService.init(parentNode);
     popupService.showPopup(CheckSession).then((res)=>{
       if(!res){
-        popupService.showPopup(RegForm).then((res)=>{
-          if(res==='register'){
-            console.log('registered')
+        popupService.showPopup(RegisterCheck).then((res)=>{
+          if(!res){
+            popupService.showPopup(RegForm).then((res)=>{
+              if(res==='register'){
+                console.log('registered')
+                popupService.showPopup(AuthForm).then((res)=>{
+                  if(res==='login'){
+                    //TODO:Переход на chatPage
+                    console.log("Logged in")
+                  } else {
+                    this.about.show();
+                  }
+                })
+              } else {
+                this.about.show()
+                console.log('registration failed')
+              }
+            })
+          } else {
             popupService.showPopup(AuthForm).then((res)=>{
               if(res==='login'){
                 //TODO:Переход на chatPage
@@ -39,12 +56,9 @@ class Application extends Control {
                 this.about.show();
               }
             })
-          } else {
-            //TODO:Вовзращает на страницу About , добавить большую кнопку регистрации
-            this.about.show()
-            console.log('registration failed')
           }
         })
+        
       } else{
         //TODO:Сделать переход на chatPage
         console.log('Go to chat Page')

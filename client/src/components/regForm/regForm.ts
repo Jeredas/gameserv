@@ -17,9 +17,9 @@ export class RegForm extends GenericPopup<any> {
     super(parentNode);
     this.labelAvatar = new Control(this.popupWrapper.node, 'label', '', 'set your avatar');
     this.labelAvatar.node.setAttribute('for', 'avatarloader');
-    this.avatarLoader = new InputWrapper(this.labelAvatar.node, '', 'AvatarLoader', 'avatarLoader', 'file');
-    this.login = new InputWrapper(this.popupWrapper.node, 'Login', 'Login', 'login');
-    this.password = new InputWrapper(this.popupWrapper.node, 'Password', 'Password', 'password');
+    this.avatarLoader = new InputWrapper(this.labelAvatar.node, '',async()=>{return null}, 'AvatarLoader', 'avatarLoader', 'file');
+    this.login = new InputWrapper(this.popupWrapper.node, 'Login',async()=>{return null}, 'Login', 'login');
+    this.password = new InputWrapper(this.popupWrapper.node, 'Password',async()=>{return null}, 'Password', 'password');
 
     this.registerButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'register');
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');

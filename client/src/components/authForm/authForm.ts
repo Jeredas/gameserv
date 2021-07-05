@@ -13,8 +13,9 @@ export class AuthForm extends GenericPopup<any> {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
-    this.login = new InputWrapper(this.popupWrapper.node, 'Login', 'Login', 'login');
-    this.password = new InputWrapper(this.popupWrapper.node, 'Password', 'Password', 'password');
+    //TODO: Добавить валидацию в инпуты(после)
+    this.login = new InputWrapper(this.popupWrapper.node, 'Login', async()=>{return null}, 'Login', 'login');
+    this.password = new InputWrapper(this.popupWrapper.node, 'Password',async()=>{return null}, 'Password', 'password');
 
     this.loginButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'log in');
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');

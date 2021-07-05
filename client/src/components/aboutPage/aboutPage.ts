@@ -26,8 +26,24 @@ class AboutPage extends Control {
     this.buttonLogIn.onClick = () => {
       this.hide()
       popupService.init(parentNode);
-      popupService.showPopup(RegForm).then((res)=>{
-        if(res==='register'){
+      popupService.showPopup(RegisterCheck).then((res)=>{
+        if(!res){
+          popupService.showPopup(RegForm).then((res)=>{
+            if(res==='register'){
+              popupService.showPopup(AuthForm).then((res)=>{
+                if(res==='login'){
+                  //TODO:Переход на chatPage
+                  console.log('go to ChatPage');
+                } else {
+                  console.log('auth failed')
+                  this.show()
+                }
+              })
+            } else {
+              this.show()
+            }
+          })
+        } else {
           popupService.showPopup(AuthForm).then((res)=>{
             if(res==='login'){
               //TODO:Переход на chatPage
@@ -37,10 +53,10 @@ class AboutPage extends Control {
               this.show()
             }
           })
-        }else {
-          this.show()
         }
+        
       })
+      
 
     }
   }
