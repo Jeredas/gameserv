@@ -18,6 +18,16 @@ export class LobbyService{
     const foundChannel = this.channels.find(channel => channel.name == params.channelName);
     if (foundChannel){
       foundChannel[params.channelMethod](userConnection, params.channelRequestParams);
+    } else {
+      userConnection.sendUTF(JSON.stringify({
+        service: 'chat', 
+        type: 'sendStatus', 
+        params:{
+          requestId: params.requestId,
+          status: 'error',
+          description: 'channel not found'
+        }
+      }));
     }
   }
 

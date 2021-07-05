@@ -1,6 +1,8 @@
 const socketURL = 'ws://localhost:4080';
 import {ISocketService} from './ISocketService';
 import {LobbyService, LobbyModel, LobbyView} from './lobbyService';
+import {OnlyChatChannelService, OnlyChatChannelModel, OnlyChatChannelView} from './onlyChatChannel';
+
 
 export class SocketClient{
   socket: WebSocket = null;
@@ -83,6 +85,10 @@ export class SocketClient{
   
   let lobbyModel = new LobbyModel(socket);
   new LobbyView(document.body, lobbyModel);
+
+  let onlyChatChannelModel = new OnlyChatChannelModel(socket, 'dgh');
+
+  new OnlyChatChannelView(document.body, onlyChatChannelModel);
   socket.init(socketURL);
   /*lobbyModel.createNewChannel('fgdfs').then((params)=>{
     console.log('created ', params);

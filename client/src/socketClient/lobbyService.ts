@@ -1,27 +1,7 @@
 import Control from '../components/control';
 import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
-
-class Signal<ListenerType> {
-  private listeners : Array<(params : ListenerType)=>void>;
-
-  constructor() {
-    this.listeners = [];
-  }
-
-  add(listener : (params : ListenerType)=>void) {
-    this.listeners.push(listener);
-  }
-
-  remove(listener : (params : ListenerType)=>void) {
-    this.listeners = this.listeners.filter((elem) => elem !== listener);
-  }
-
-  emit(params:ListenerType) {
-    this.listeners.forEach((listener) => listener(params));
-  }
-}
-export default Signal;
+import Signal from './signal';
 
 
 export class LobbyService implements ISocketService{
@@ -124,8 +104,8 @@ export class LobbyModel{
         endpoint: 'sendToChannel',
         params: {
           channelName: channelName,
+          channelMethod: 'joinUser',
           channelRequestParams: {
-            command: 'joinChannel',
             requestId: requestId
           }
         }
