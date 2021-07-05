@@ -16,8 +16,8 @@ class SettingsUser extends GenericPopup<any> {
     super(parentNode);
     this.changeAvatar = new Control(this.popupWrapper.node, 'label', '', 'set your avatar');
     this.changeAvatar.node.setAttribute('for', 'avatarloader');
-    this.avatarLoaderSettings = new InputWrapper(this.changeAvatar.node, '', 'AvatarLoader', 'avatarLoader', 'file');
-    this.name = new InputWrapper(this.popupWrapper.node, 'name', 'name', 'name');
+    this.avatarLoaderSettings = new InputWrapper(this.changeAvatar.node, '',async()=>{return null}, 'AvatarLoader', 'avatarLoader', 'file');
+    this.name = new InputWrapper(this.popupWrapper.node, 'name',async()=>{return null}, 'name', 'name');
 
     this.saveButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Save');
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Cancel');
