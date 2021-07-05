@@ -11,6 +11,7 @@ export class OnlyChatChannelService implements ISocketService{
   public onMessage: Signal<any> = new Signal<any>();
   public onClose: Signal<any> = new Signal<any>();
   public onOpen: Signal<any> = new Signal<any>();
+  public onAny: Signal<any> = new Signal<any>();
 
   constructor(){
 
@@ -20,6 +21,7 @@ export class OnlyChatChannelService implements ISocketService{
     console.log(rawMessage);
     const message = JSON.parse(rawMessage);
     if (message.service === 'chat'){
+      this.onAny.emit(message);
       const processFunction = new Map<string, ((params:any)=>void)>(
         [
           ['message', (params)=>{
@@ -88,19 +90,46 @@ export class OnlyChatChannelModel{
     })*/
   }
 
-  sendMessage(message:string){
+  private send(method:string, params:Object){
     this.service.send({
       sessionId: '',
       service: this.serviceName,
       endpoint: 'sendToChannel',
       params: {
-        channelName: this.channelName, 
-        channelMethod: 'sendMessage',
-        channelRequestParams: {
-          messageText: message
-        }
+        channelName: this.channelName,
+        channelMethod: method,
+        channelRequestParams: params
       }
     });
+  }
+
+  private sendAwaiting(method:string, request:object):Promise<any>{
+    return new Promise((resolve, reject)=>{
+      const requestId = Date.now()+Math.floor(Math.random()*10000);
+      const listener = (params:any) => {
+        if (params.requestId == requestId){
+          this.service.onAny.remove(listener);
+          resolve(params);
+        }
+      }
+      this.service.onAny.add(listener);
+      this.send(method, {...request, requestId: requestId})
+    });
+  }
+
+  sendMessage(message:string){
+    this.send('sendMessage', {
+      messageText: message
+    }); 
+  }
+
+  leaveChannel(){
+    this.send('leaveUser', {});
+  }
+
+  async joinChannel(){
+    const joinResponse = await this.sendAwaiting('joinUser', {});
+    return joinResponse.params.status == 'ok';
   }
 
   destroy(){
@@ -110,6 +139,7 @@ export class OnlyChatChannelModel{
 
 export class OnlyChatChannelView extends Control{
   model: OnlyChatChannelModel;
+  onLeaveClick: ()=>void;
 
   constructor(parentNode:HTMLElement, model:OnlyChatChannelModel){
     super(parentNode);
@@ -117,6 +147,7 @@ export class OnlyChatChannelView extends Control{
 
     const connectionIndicator = new Control(this.node);
     const sendMessageButton = new Control(this.node, 'div', '', 'send');
+    const leaveMessageButton = new Control(this.node, 'div', '', 'leave');
 
     const messagesContainer = new Control(this.node);
 
@@ -125,6 +156,11 @@ export class OnlyChatChannelView extends Control{
     })
     sendMessageButton.node.onclick = ()=>{
       this.model.sendMessage('fsgds');
+    }
+
+    leaveMessageButton.node.onclick = ()=>{
+      this.model.leaveChannel();
+      this.onLeaveClick?.();
     }
 
     model.service.onClose.add(()=>{
@@ -140,6 +176,10 @@ export class OnlyChatChannelView extends Control{
       //  model.socketClient.reconnent();
       //}
     })
+  }
+
+  destroy(){
+    this.node.remove();
   }
 }
 

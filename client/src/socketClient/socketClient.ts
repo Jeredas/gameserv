@@ -84,11 +84,21 @@ export class SocketClient{
   let socket = new SocketClient();
   
   let lobbyModel = new LobbyModel(socket);
-  new LobbyView(document.body, lobbyModel);
+  let lobby = new LobbyView(document.body, lobbyModel);
 
-  let onlyChatChannelModel = new OnlyChatChannelModel(socket, 'dgh');
+  lobby.onJoinClick = ()=>{
+    let onlyChatChannelModel = new OnlyChatChannelModel(socket, 'dgh');
+    onlyChatChannelModel.joinChannel().then(res=>{
+      if (res){
+        let channel = new OnlyChatChannelView(document.body, onlyChatChannelModel);
+        channel.onLeaveClick = ()=>{
+          channel.destroy();
+        }
+      }
+    });
+    
+  }
 
-  new OnlyChatChannelView(document.body, onlyChatChannelModel);
   socket.init(socketURL);
   /*lobbyModel.createNewChannel('fgdfs').then((params)=>{
     console.log('created ', params);

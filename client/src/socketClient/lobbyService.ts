@@ -88,7 +88,7 @@ export class LobbyModel{
     })*/
   }
 
-  joinChannel(channelName:string){
+  /*joinChannel(channelName:string){
     return new Promise((resolve, reject) => {
       const requestId = Date.now() + Math.floor(Math.random() * 10000);
       const listener = (params: any) => {
@@ -111,7 +111,7 @@ export class LobbyModel{
         }
       });
     });
-  }
+  }*/
 
   createNewChannel(channelName:string){
     return new Promise((resolve, reject)=>{
@@ -144,6 +144,7 @@ export class LobbyModel{
 
 export class LobbyView extends Control{
   model: LobbyModel;
+  onJoinClick: ()=>void;
 
   constructor(parentNode:HTMLElement, model:LobbyModel){
     super(parentNode);
@@ -154,9 +155,10 @@ export class LobbyView extends Control{
     const createChannelButton = new Control(this.node, 'div', '', 'create');
 
     joinChannelButton.node.onclick = ()=>{
-      this.model.joinChannel('dgh').then(res=>{
+     /* this.model.joinChannel('dgh').then(res=>{
         console.log(res);
-      });
+      });*/
+      this.onJoinClick?.();
     }
 
     createChannelButton.node.onclick = ()=>{
