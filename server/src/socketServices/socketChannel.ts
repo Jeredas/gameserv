@@ -65,13 +65,15 @@ class ChannelSendMessageResponse implements IChatResponse{
 class ChannelJoinUserResponse implements IChatResponse{
   public type:string;
   public service:string;
+  public requestId:number;
   public params: {
     status:string;
   }
 
-  constructor(status:string){
-    this.service = 'chat',
+  constructor(status:string, requestId:number){
+    this.service = 'chat';
     this.type = 'joined';
+    this.requestId = requestId;
     this.params = {status};
   }
 }
@@ -99,14 +101,17 @@ export class ChatChannel {
     try {
       const sessionModel = await SessionModel.buildBySessionHash(/*params.sessionId*/'inikon359');
       const userModel = await UserModel.buildByLogin(sessionModel.login);
-      if (userModel) {
+      if (userModel && !this.hasUser(connection)) {
         const newClient = new ChatClient(connection, new ChatUserData(params.sessionId, userModel));
         this.clients.push(newClient);
-        newClient.send(new ChannelJoinUserResponse('ok'));
+        newClient.send(new ChannelJoinUserResponse('ok', params.requestId));
         this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
+      } else {
+        throw new Error("err");
+        
       }
     } catch (err){
-      connection.sendUTF(JSON.stringify(new ChannelJoinUserResponse('error')));
+      connection.sendUTF(JSON.stringify(new ChannelJoinUserResponse('error', params.requestId)));
       //send respons for user
     }
   }
