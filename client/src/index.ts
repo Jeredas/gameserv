@@ -1,7 +1,7 @@
 import Control from './components/utilities/control';
 import Application from './app'
 import { popupService } from './components/popupService/popupService';
-import './components/popupService/popupService.css';
+//import './components/popupService/popupService.css';
 // import indexStyles from './index.css';
 import './style.css';
 
