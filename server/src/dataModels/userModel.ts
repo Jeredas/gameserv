@@ -24,6 +24,7 @@ export default class UserModel{
       avatar: avatar,
       name: name
     };
+    
     await databaseService.db.collection(collectionName).insertOne(userDto);
     return UserModel.buildByLogin(login);
   }
