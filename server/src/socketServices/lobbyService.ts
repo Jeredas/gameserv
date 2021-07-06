@@ -53,7 +53,9 @@ export class LobbyService{
           status: 'existed'
         }
       }));  
-    } 
+    }
+    console.log(this.channels);
+    
   }
 
   closeConnection(connection) {

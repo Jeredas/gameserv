@@ -24,7 +24,7 @@ class JoinChannelPopup extends GenericPopup<any> {
 
     this.joinBtn.onClick = () => {
       console.log('join to the channel');
-      this.onSelect('joinChannel');
+      this.onSelect(this.searchField.getValue());
     }
 
     this.cancelBtn.onClick = () => {

@@ -129,6 +129,8 @@ export class OnlyChatChannelModel{
 
   async joinChannel(){
     const joinResponse = await this.sendAwaiting('joinUser', {});
+    console.log('status', joinResponse);
+    
     return joinResponse.params.status == 'ok';
   }
 

@@ -10,6 +10,11 @@ class Control {
     }
     this.node = el;
   }
+
+  destroy(): void {
+    this.node.remove();
+  }
+  
 }
 
 export default Control;

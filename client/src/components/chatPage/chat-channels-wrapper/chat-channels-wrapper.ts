@@ -1,40 +1,59 @@
 import Control from '../../utilities/control';
 import ButtonDefault from '../../buttonDefault/buttonDefault';
 import chatStyles from '../chatPage.module.css';
-import { popupService } from '../../popupService/popupService';
-import SettingsChannel from '../../create-channel-popup/create-channel-popup';
-import JoinChannelPopup from '../../join-channel-popup/join-channel-popup';
+import ChatChannel from '../chat-channel/chat-channel';
 
-class ChatChannelsWrapper extends Control {
-
-  private chatChannels: Control;
-
+class ChatChannels extends Control {
   public onChannelClick: (name: string) => void;
 
   public onAddBtnClick: () => void;
 
-  private channelCreateBtn: ButtonDefault;
-
-  private channelJoinBtn: ButtonDefault;
+  public onJoinChannel: () => void = () => {};
+  public onCreateChannel: () => void = () => {};
+  private channelContainer: Control;
+  private channels: Array<ChatChannel> = [];
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', chatStyles.chat_channels);
     const chatChannelControl = new Control(this.node, 'div');
-    this.channelCreateBtn = new ButtonDefault(chatChannelControl.node, chatStyles.default_button, 'create channel');
-    this.channelJoinBtn = new ButtonDefault(chatChannelControl.node, chatStyles.default_button, 'join channel');
-    this.channelCreateBtn.onClick = () => {
-      popupService.showPopup(SettingsChannel);
-      // this.onAddBtnClick();
+    const createChannel = new ButtonDefault(
+      chatChannelControl.node,
+      chatStyles.default_button,
+      'create channel'
+    );
+    const joinChannel = new ButtonDefault(
+      chatChannelControl.node,
+      chatStyles.default_button,
+      'join channel'
+    );
+    this.channelContainer = new Control(this.node, 'div', chatStyles.chat_channels_list);
+
+    joinChannel.onClick = () => {
+      console.log('join');
+      this.onJoinChannel();
     };
 
-    this.channelJoinBtn.onClick = () => {
-      console.log('join');
-      popupService.showPopup(JoinChannelPopup);
-      // popupService.showPopup(JoinChannelPopup);
-      // this.onAddBtnClick();
+    createChannel.onClick = () => {
+      console.log('create');
+      this.onCreateChannel();
     };
-    this.chatChannels = new Control(this.node, 'div');
+  }
+
+  addChannel(channelName: string): void {
+    const channel = new ChatChannel(this.channelContainer.node, channelName);
+    channel.onClick = (channelName) => {
+      console.log(channelName);
+    };
+    this.channels.push(channel);
+  }
+
+  removeChannel(channelName: string): void {
+    this.channels = this.channels.filter((channel) => {
+      if (channel.getChannelName() === channelName) {
+        channel.destroy();
+      } else return channel;
+    });
   }
 }
 
-export default ChatChannelsWrapper;
+export default ChatChannels;
