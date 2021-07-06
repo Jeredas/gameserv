@@ -40,9 +40,10 @@ async function auth(params) {
 };
 
 async function register(params) {
+  console.log(params,'params')
   const decodedLogin = decodeURI(`${params.login}`);
   if (regValidation(params)) {
-    const user = await UserModel.buildNewUser(decodedLogin, params.password, params.avatar, params.name);
+    const user = await UserModel.buildNewUser(decodedLogin, params.password, params.avatar);
     return new DefaultResponse(true);
   } else {
     return new DefaultResponse(false);
