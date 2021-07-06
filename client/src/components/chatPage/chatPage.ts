@@ -83,8 +83,8 @@ class ChatPage extends Control {
 
   createChannel() {
     popupService.showPopup(SettingsChannel).then((channelName: string) => {
-      this.model.createNewChannel(channelName).then((res) => {
-        if (res) {
+      this.model.createNewChannel(channelName).then((res: any) => {
+        if (res.status === 'ok') {
           this.channelBlock.addChannel(channelName);
         }
       });
