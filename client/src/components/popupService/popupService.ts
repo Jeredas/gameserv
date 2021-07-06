@@ -1,14 +1,15 @@
 //import { Component } from 'utilities/Component';
 // import { GameSelect } from "../chat/game-select";
 //import { GenericPopup } from '../chat/genericPopup';
-import Control from '../control';
+import Control from '../utilities/control';
 import popupStyle from './popupService.css';
+
 
 //console.log(popupStyle);
 
 class PopupService extends Control {
   constructor() {
-    super(null, 'div', popupStyle.popup_blackout);
+    super(null, 'div', popupStyle.popup_layer);
   }
 
   init(parentNode:HTMLElement) {
@@ -26,4 +27,4 @@ class PopupService extends Control {
   }
 }
 
-export const popupService1 = new PopupService();
+export const popupService = new PopupService();

@@ -1,7 +1,7 @@
 {
-  "name": "my-webpack-project",
+  "name": "codejam-chess",
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "multyplayer chess game",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,22 +10,27 @@
     "build:prod": "npx webpack --mode=production --node-env=production",
     "watch": "npx webpack --watch",
     "serve": "npx webpack serve",
-    "start": "npx webpack serve"
+    "start": "npx webpack serve --open chrome"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@webpack-cli/generators": "^2.2.0",
-    "css-loader": "^5.2.6",
-    "html-webpack-plugin": "^5.3.2",
-    "mini-css-extract-plugin": "^2.0.0",
-    "sass": "^1.35.1",
-    "sass-loader": "^12.1.0",
-    "style-loader": "^3.0.0",
-    "ts-loader": "^9.2.3",
-    "typescript": "^4.3.5",
-    "webpack": "^5.42.0",
-    "webpack-cli": "^4.7.2",
+    "@types/node": "^15.0.1",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-dev-server": "^3.11.3",
+    "clean-webpack-plugin": "*",
+    "copy-webpack-plugin": "^8.1.1",
+    "css-loader": "^5.2.4",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.3.1",
+    "mini-css-extract-plugin": "^2.1.0",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^9.1.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4",
+    "typescript-plugin-css-modules": "^3.4.0",
+    "webpack": "^5.36.1",
+    "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2"
   }
 }

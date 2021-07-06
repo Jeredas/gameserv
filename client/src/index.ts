@@ -1,10 +1,13 @@
-import Control from './components/control';
-import {popupService1} from './components/popupService/popupService';
-import './components/popupService/popupService.css';
-import indexStyles from './index.css';
+import Control from './components/utilities/control';
+import Application from './app'
+import { popupService } from './components/popupService/popupService';
+//import './components/popupService/popupService.css';
+// import indexStyles from './index.css';
 import './style.css';
 
-const root = new Control(document.body, 'div', indexStyles.root);
+// const root = new Control(document.body, 'div', indexStyles.root);
 
-(window as any).popupService1 = popupService1;
+const app = new Application(document.body);
+
+(window as any).popupService = popupService;
 // popupService1.init(root.node)

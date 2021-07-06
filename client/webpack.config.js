@@ -1,83 +1,87 @@
-// Generated using webpack-cli https://github.com/webpack/webpack-cli
-
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isProduction = process.env.NODE_ENV == 'production';
-
-
 const stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader';
 
 const config = {
-    entry: './src/index.ts',
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-    },
-    devServer: {
-        open: true,
-        host: 'localhost',
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'index.html',
-        }),
-
-        // Add your plugins here
-        // Learn more about plugins from https://webpack.js.org/configuration/plugins/
-    ],
-    module: {
-        rules: [
-            {
-                test: /\.(ts|tsx)$/i,
-                loader: 'ts-loader',
-                exclude: ['/node_modules/'],
+  entry: './src/index.ts',
+  devServer: {
+    hot: true,
+    port: 8080,
+    contentBase: path.join(__dirname, './dist'),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.[tj]s$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+      {
+        test: /\.css$/i,
+        use: [
+          stylesHandler,
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              modules: true,
+              sourceMap: true,
             },
-            // {
-            //     test: /\.css$/i,
-            //     use: [stylesHandler,'css-loader'],
-            // },
-            {
-                test: /\.css$/i,
-                use: [
-                    stylesHandler,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            importLoaders: 1,
-                            modules: true,
-                            sourceMap: true,
-                        },
-                    },
-                ],
-            },
-            // {
-            //     test: /\.s[ac]ss$/i,
-            //     use: [stylesHandler, 'css-loader', 'sass-loader'],
-            // },
-            {
-                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-                type: 'asset',
-            },
-
-            // Add your rules for custom modules here
-            // Learn more about loaders from https://webpack.js.org/loaders/
+          },
         ],
+      },
+      {
+        test: /\.(?:ico|png|jpg|jpeg|gif|svg)$/i,
+        type: 'asset/resource',
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+    alias: {
+      utilities: path.resolve(__dirname, 'src/utilities/'),
+      assets: path.resolve(__dirname, 'src/assets/'),
     },
-    resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
-    },
-};
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, './src/index.html'),
+      filename: 'index.html',
+    }),
+    new CleanWebpackPlugin({ cleanStaleWebpackAssets: false }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, './public'),
+          to: 'public',
+        },
+      ],
+    }),
+  ],
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, './dist'),
+    assetModuleFilename: 'assets/[hash][ext]',
+  },
+}
 
 module.exports = () => {
-    if (isProduction) {
-        config.mode = 'production';
+  if (isProduction) {
+    config.mode = 'production';
 
-        config.plugins.push(new MiniCssExtractPlugin());
+    config.plugins.push(new MiniCssExtractPlugin());
 
-
-    } else {
-        config.mode = 'development';
-    }
-    return config;
+  } else {
+    config.mode = 'development';
+  }
+  return config;
 };
