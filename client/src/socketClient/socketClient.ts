@@ -80,27 +80,28 @@ export class SocketClient{
   }
 }
 
-(async function test() {
-  let socket = new SocketClient();
+// (async function test() {
+//   let socket = new SocketClient();
   
-  let lobbyModel = new LobbyModel(socket);
-  let lobby = new LobbyView(document.body, lobbyModel);
+//   let lobbyModel = new LobbyModel(socket);
+//   let lobby = new LobbyView(document.body, lobbyModel);
 
-  lobby.onJoinClick = ()=>{
-    let onlyChatChannelModel = new OnlyChatChannelModel(socket, 'dgh');
-    onlyChatChannelModel.joinChannel().then(res=>{
-      if (res){
-        let channel = new OnlyChatChannelView(document.body, onlyChatChannelModel);
-        channel.onLeaveClick = ()=>{
-          channel.destroy();
-        }
-      }
-    });
+//   lobby.onJoinClick = ()=>{
+//     let onlyChatChannelModel = new OnlyChatChannelModel(socket, 'dgh');
+//     onlyChatChannelModel.joinChannel().then(res=>{
+//       console.log('join channel', res);
+//       if (res){
+//         let channel = new OnlyChatChannelView(document.body, onlyChatChannelModel);
+//         channel.onLeaveClick = ()=>{
+//           channel.destroy();
+//         }
+//       }
+//     });
     
-  }
+//   }
 
-  socket.init(socketURL);
-  /*lobbyModel.createNewChannel('fgdfs').then((params)=>{
-    console.log('created ', params);
-  });*/
-})();
+//   socket.init(socketURL);
+//   /*lobbyModel.createNewChannel('fgdfs').then((params)=>{
+//     console.log('created ', params);
+//   });*/
+// })();

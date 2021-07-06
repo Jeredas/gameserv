@@ -44,7 +44,7 @@ class CreateChannelPopup extends GenericPopup<any> {
 
     this.createButton.onClick = () => {
       console.log('create Channel');
-      this.onSelect('createChannel');
+      this.onSelect(this.nameChannel.getValue());
     }
   }
 }

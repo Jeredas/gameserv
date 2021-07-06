@@ -8,11 +8,11 @@ import { IPageComponent } from './components/utilities/interfaces';
 import { Router } from './components/router/router';
 import { Route } from './components/router/route';
 import { RegForm } from './components/regForm/regForm';
-import SettingsUser from './components/settingsUser/settingsUser';
 import { AuthForm } from './components/authForm/authForm';
 import RegisterCheck from './components/registerCheck/registerCheck';
-
-
+import { SocketClient } from './socketClient/socketClient';
+import { LobbyModel } from './socketClient/lobbyService';
+const socketURL = 'ws://localhost:4080';
 class Application extends Control {
   navigation: Navigation;
 
@@ -24,48 +24,46 @@ class Application extends Control {
 
   pageContainer: Control;
 
-  constructor(parentNode:HTMLElement) {
+  constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', 'app');
     popupService.init(parentNode);
-    popupService.showPopup(CheckSession).then((res)=>{
-      if(!res){
-        popupService.showPopup(RegisterCheck).then((res)=>{
-          if(!res){
-            popupService.showPopup(RegForm).then((res)=>{
-              if(res==='register'){
-                console.log('registered')
-                popupService.showPopup(AuthForm).then((res)=>{
-                  if(res==='login'){
+    popupService.showPopup(CheckSession).then((res) => {
+      if (!res) {
+        popupService.showPopup(RegisterCheck).then((res) => {
+          if (!res) {
+            popupService.showPopup(RegForm).then((res) => {
+              if (res === 'register') {
+                console.log('registered');
+                popupService.showPopup(AuthForm).then((res) => {
+                  if (res === 'login') {
                     //TODO:Переход на chatPage
-                    console.log("Logged in")
+                    console.log('Logged in');
                   } else {
                     this.about.show();
                   }
-                })
+                });
               } else {
-                this.about.show()
-                console.log('registration failed')
+                this.about.show();
+                console.log('registration failed');
               }
-            })
+            });
           } else {
-            popupService.showPopup(AuthForm).then((res)=>{
-              if(res==='login'){
+            popupService.showPopup(AuthForm).then((res) => {
+              if (res === 'login') {
                 //TODO:Переход на chatPage
-                console.log("Logged in")
+                console.log('Logged in');
               } else {
                 this.about.show();
               }
-            })
+            });
           }
-        })
-        
-      } else{
+        });
+      } else {
         //TODO:Сделать переход на chatPage
-        console.log('Go to chat Page')
-
-      } 
+        console.log('Go to chat Page');
+      }
     });
-  
+
     // popupService.showPopup(SettingsUser)
     // popupService.showPopup(RegForm);
 
@@ -73,10 +71,16 @@ class Application extends Control {
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', '');
     this.about = new AboutPage(this.pageContainer.node);
-    this.chatPage = new ChatPage(this.pageContainer.node);
+
+    const socket = new SocketClient();
+    let lobbyModel = new LobbyModel(socket);
+    socket.init(socketURL);
+
+    this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
     this.addPage('about', 'about', this.about);
     this.addPage('chat', 'chat', this.chatPage);
     this.router.processHash();
+    
   }
 
   addPage(linkName: string, pageName: string, pageComponent: IPageComponent) {
