@@ -28,19 +28,22 @@ class CreateChannelPopup extends GenericPopup<any> {
   constructor(parentNode: HTMLElement) {
     super(parentNode);
 
-    this.nameChannel = new InputWrapper(this.popupWrapper.node, 'Name channel', () => null, 'Enter the channel name', 'nameChannel', 'text');
+    this.nameChannel = new InputWrapper(this.popupWrapper.node, 'Enter the channel name:', () => null, 'Name channel', 'nameChannel', 'text');
     const wrapperSettingsChannel = new Control(this.popupWrapper.node, 'div', popupStyles.settings_channel_wrapper);
     const titleSettings = new Control(wrapperSettingsChannel.node, 'div', popupStyles.settings_title, 'Сhoose a game type:');
+    this.popupWrapper.node.classList.add(popupStyles.create_popup)
     gameModePopup.forEach((radioBtn, index) => {
-      const radio = new InputWrapper(wrapperSettingsChannel.node, '', () => null, '', radioBtn, 'radio',);
+      const radio = new InputWrapper(wrapperSettingsChannel.node, '', () => null, '', radioBtn, 'radio');
+      radio.error.destroy();
       const label =  new Control(radio.node, 'label', '', gameName[index]);
       (radio.field.node as HTMLInputElement).name = 'inputRadio';
       (radio.field.node as HTMLInputElement).value = radioBtn;
       label.node.setAttribute('for', `${radioBtn}`)
       radio.onValidate = null;
     });
-    this.createButton = new ButtonDefault(this.popupWrapper.node, popupStyles.settings_button, 'Create');
-    this.cancelButton = new ButtonDefault(this.popupWrapper.node, popupStyles.settings_button, 'Cancel')
+    const buttonsWrapper = new Control(this.popupWrapper.node, 'div', popupStyles.buttons_wrapper);
+    this.createButton = new ButtonDefault(buttonsWrapper.node, popupStyles.settings_button, 'Create');
+    this.cancelButton = new ButtonDefault(buttonsWrapper.node, popupStyles.settings_button, 'Cancel');
     this.cancelButton.onClick = () => {
       this.destroy();
     }
