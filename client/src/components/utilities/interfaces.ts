@@ -26,3 +26,8 @@ export interface IInputState  {
   name : boolean,
   pass:boolean
 }
+
+export interface IChannelData {
+  channelName: string;
+  channelType: string;
+}

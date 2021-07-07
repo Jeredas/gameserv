@@ -40,7 +40,7 @@ class ChatChannels extends Control {
   }
 
   addChannel(channelName: string): void {
-    const channel = new ChatChannel(this.channelContainer.node, channelName);
+    const channel = new ChatChannel(this.channelContainer.node, channelName, '');
     channel.onClick = (channelName) => {
       console.log(channelName);
     };
@@ -49,7 +49,7 @@ class ChatChannels extends Control {
 
   removeChannel(channelName: string): void {
     this.channels = this.channels.filter((channel) => {
-      if (channel.getChannelName() === channelName) {
+      if (channel.getChannelData().channelName === channelName) {
         channel.destroy();
       } else return channel;
     });

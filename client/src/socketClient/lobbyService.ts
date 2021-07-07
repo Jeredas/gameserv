@@ -2,6 +2,7 @@ import Control from '../components/utilities//control';
 import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
+import { IChannelData } from 'src/components/utilities/interfaces';
 
 
 export class LobbyService implements ISocketService{
@@ -12,6 +13,7 @@ export class LobbyService implements ISocketService{
   public onCreated: Signal<any> = new Signal<any>();
   public onClose: Signal<any> = new Signal<any>();
   public onOpen: Signal<any> = new Signal<any>();
+  public onChannelType: Signal<any> = new Signal<any>();
 
   constructor(){
 
@@ -27,6 +29,9 @@ export class LobbyService implements ISocketService{
           }],
           ['created', (params)=>{
             this.onCreated.emit(params);
+          }],
+          ['channelType', (params) => {
+            this.onChannelType.emit(params);
           }]
         ]
       ).get(message.type)
@@ -88,6 +93,28 @@ export class LobbyModel{
     })*/
   }
 
+  getChannelInfo(channelName:string){
+    return new Promise((resolve, reject) => {
+      const requestId = Date.now() + Math.floor(Math.random() * 10000);
+      const listener = (params: any) => {
+        if (params.requestId == requestId) {
+          this.service.onChannelType.remove(listener);
+          resolve(params);
+        }
+      }
+      this.service.onChannelType.add(listener);
+      this.service.send({
+        sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
+        service: this.serviceName,
+        endpoint: 'getChannelInfo',
+        params: {
+          requestId: requestId,
+          channelName: channelName,
+        }
+      });
+    })
+  }
+
   /*joinChannel(channelName:string){
     return new Promise((resolve, reject) => {
       const requestId = Date.now() + Math.floor(Math.random() * 10000);
@@ -113,7 +140,7 @@ export class LobbyModel{
     });
   }*/
 
-  createNewChannel(channelName:string){
+  createNewChannel(newChannel: IChannelData){
     return new Promise((resolve, reject)=>{
       const requestId = Date.now()+Math.floor(Math.random()*10000);
       const listener = (params:any) => {
@@ -125,13 +152,13 @@ export class LobbyModel{
       this.service.onCreated.add(listener);
       this.service.send({
         
-        sessionId: '',
+        sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
         service: this.serviceName,
         endpoint: 'createNewChannel',
         params: {
           requestId: requestId,
-          channelName: channelName,
-          channelType: 'OnlyChatChannel'
+          channelName: newChannel.channelName,
+          channelType: newChannel.channelType
         }
       });
     });
@@ -162,7 +189,7 @@ export class LobbyView extends Control{
     }
 
     createChannelButton.node.onclick = ()=>{
-      this.model.createNewChannel('dgh').then(res=>{
+      this.model.createNewChannel({channelName:'dgh', channelType:'OnlyChatChannel'}).then(res=>{
         console.log(res);
       });
     }

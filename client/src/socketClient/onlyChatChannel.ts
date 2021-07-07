@@ -2,6 +2,9 @@ import Control from '../components/utilities/control';
 import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
+import { ChatChannelModel } from './chatChannelModel';
+import { CrossGameChannelModel } from './crossGameChannel';
+import { channelModel } from 'src/components/utilities/config';
 
 
 export class OnlyChatChannelService implements ISocketService{
@@ -74,17 +77,17 @@ export class OnlyChatChannelService implements ISocketService{
 }
 
 
-export class OnlyChatChannelModel{
+export class OnlyChatChannelModel extends ChatChannelModel{
   service: OnlyChatChannelService;
   serviceName:string = 'chat';
-  channelName:string;
+  // channelName:string;
   //socketClient:SocketClient;
 
   constructor(socketClient:SocketClient, channelName:string){
+    super(socketClient, channelName);
     //this.socketClient = socketClient;
-    this.channelName = channelName;
     this.service = new OnlyChatChannelService();
-    socketClient.addService(this.service);
+    this.socketClient.addService(this.service);
     /*this.service.onCreated.add(params=>{
       console.log(params);
     })*/
@@ -92,13 +95,13 @@ export class OnlyChatChannelModel{
 
   private send(method:string, params:Object){
     this.service.send({
-      sessionId: '',
+      // sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
       service: this.serviceName,
       endpoint: 'sendToChannel',
       params: {
         channelName: this.channelName,
         channelMethod: method,
-        channelRequestParams: params
+        channelRequestParams: {...params, sessionId: window.localStorage.getItem('todoListApplicationSessionId'),}
       }
     });
   }
@@ -127,6 +130,8 @@ export class OnlyChatChannelModel{
     this.send('leaveUser', {});
   }
 
+
+  // CROSS MOVE
   async joinChannel(){
     const joinResponse = await this.sendAwaiting('joinUser', {});
     console.log('status', joinResponse);
@@ -140,10 +145,10 @@ export class OnlyChatChannelModel{
 }
 
 export class OnlyChatChannelView extends Control{
-  model: OnlyChatChannelModel;
+  model: channelModel;
   onLeaveClick: ()=>void;
 
-  constructor(parentNode:HTMLElement, model:OnlyChatChannelModel){
+  constructor(parentNode:HTMLElement, model: channelModel){
     super(parentNode);
     this.model = model;
 
@@ -184,4 +189,5 @@ export class OnlyChatChannelView extends Control{
     this.node.remove();
   }
 }
+
 
