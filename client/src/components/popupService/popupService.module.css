@@ -18,13 +18,14 @@
 }
 
 .popup_wrapper {
+  position: relative;
   width: 100%;
   max-width: 500px;
   min-height: 300px;
   background-color: #ccc;
   color: #000;
   border-radius: 10px;
-  padding: 10px;
+  padding: 30px;
 }
 
 .popup_default_button {
@@ -113,6 +114,19 @@
   margin: 0 auto 20px;
 }
 
+.close_button {
+  position: absolute;
+  background-image: url("../../assets//select-game-popup/close.png");
+  width: 40px;
+  height: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  right: 0;
+  top: 0;
+  border: none;
+  background-color: transparent;
+}
+
 .choice_icon {
   background-size: cover;
   background-repeat: no-repeat;
@@ -130,6 +144,49 @@
   width: 100%;
 }
 
+/*auth form styles*/
+
+.input_wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.settings_channel_wrapper {
+
+}
+
+.settings_title {
+  font-size: 20px;
+}
+
+.caption {
+  width: 100%;
+  font-size: 20px;
+}
+
+.input_error {
+
+}
+
+input {
+
+}
+
+
+label[for] { 
+  font-size: 25px;
+}
+
+input[type="text"] {
+  display: inline-block;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+input[type="radio"] {
+  margin-top: 8px;
+  margin-right: 5px;
+}
 
 @media screen and (max-width: 550px) {
   .game_settings_popup {
