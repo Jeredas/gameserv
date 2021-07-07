@@ -3,6 +3,7 @@ import Control from '../utilities/control';
 import HeaderAuth from './header-auth';
 import NavItem from './nav-item';
 import headerStyles from './header.module.css';
+import { IUserAuth } from '../utilities/interfaces';
 
 export class Navigation extends Control {
   private navContainer: Control;
@@ -44,6 +45,11 @@ export class Navigation extends Control {
         item.setInactive();
       }
     });
+  }
+  setUserData(data: IUserAuth): void {
+    console.log(data,'setData');
+    this.userBlock.setUserName(data.login);
+    this.userBlock.setAvatar(data.avatar);
   }
 
 }

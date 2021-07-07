@@ -3,6 +3,7 @@ import Control from '../utilities/control';
 import headerStyles from './header.module.css';
 import SettingsUser from '../settingsUser/settingsUser';
 
+
 class HeaderAuth extends Control {
   private signIn: Control;
 
@@ -15,7 +16,8 @@ class HeaderAuth extends Control {
   public onSignIn: () => void = () => {};
 
   public onUserClick: () => void = () => {};
-
+  
+  
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', headerStyles.header_auth);

@@ -43,7 +43,12 @@ class Server {
     http.createServer(async (req, res) => {
         let entry = req.url.split('?');
         let route = entry[0].slice(1);
-        let params = paramsParser(entry[1] || '');
+        let params
+        if(req.method === 'POST') {
+          params = paramsParser(await parseBody(req));
+        } else {
+          params = paramsParser(entry[1] || '');
+        } 
         try {
           let userData = null;
           if (params.sessionId) {
@@ -60,3 +65,16 @@ class Server {
 }
 
 export const httpServer = new Server();
+
+function parseBody (req) : Promise<string>{
+  return new Promise((res,rej)=>{
+    let body = '';
+  req.on('data', chunk => {
+    body += chunk.toString(); // convert Buffer to string
+  });
+  req.on('end', () => {
+    console.log(req.url);
+    res(body)
+  }); 
+  })
+}

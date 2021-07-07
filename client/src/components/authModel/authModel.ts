@@ -1,7 +1,7 @@
 
 import Signal from '../../socketClient/signal';
 import { IAuthData, IPublicUserInfo, IUserAuth, IUserData } from '../utilities/interfaces';
-import { apiRequest } from '../utilities/utils';
+import { apiPostRequest, apiRequest } from '../utilities/utils';
 
 
 const apiUrl = 'http://localhost:4040/authService/';
@@ -14,41 +14,33 @@ export class AuthModel {
 
   }
 
-  sendAuthData(userData: IAuthData) {
-    /* fetch(`${apiUrl}auth?login=${login}&password=${password}`).then(res => res.text()).then((data) => {
-      console.log(data);
-    }); */
-    apiRequest(apiUrl, 'auth', userData).then((res) => {
+  async sendAuthData(userData: IAuthData) {
+    const response = await apiRequest(apiUrl, 'auth', userData).then((res) => {
       console.log(res.data,'auth response');
-      const loginData = {
-        login: res.login,
-        avatar: res.avatar
-      }
-      localStorage.setItem('todoListApplicationSessionId', res.data.session);
-      this.onLogIn.emit(loginData)
+        const loginData = {
+          login: res.data.userData.login,
+          avatar: res.data.userData.avatar,
+          name: res.data.userData.name
+        }
+        localStorage.setItem('todoListApplicationSessionId', res.data.session);
+        this.onLogIn.emit(loginData);
+        return true
+    }).catch((err)=>{
+      return false
     });
+    return response
   }
 
   testAccess() {
-    /* fetch(`${apiUrl}auth?login=${login}&password=${password}`).then(res => res.text()).then((data) => {
-      console.log(data);
-    }); */
     apiRequest(apiUrl, 'testAccess', {}).then((res) => {
       console.log(res);
     });
   }
 
   async registerUser(userData: IUserData) {
-      console.log(userData)
-      const request =  fetch(`${apiUrl}register`, { 
-       method: "POST",
-       body: `login=${userData.login}&password=${userData.password}&avatar=${userData.avatar}` 
-       }).then(res => {res.text()}).then((data) => {
-      console.log(data);
+    const request = apiPostRequest(apiUrl, 'register', userData).then(res => {
+      console.log(res);
     });
-    // const request = apiRequest(apiUrl, 'register', userData).then(res => {
-    //   console.log(res);
-    // });
     return request
 
   }
@@ -78,6 +70,16 @@ export class AuthModel {
       return {
         login: res.login,
         avatar: res.avatar
+      };
+    })
+    return userInfo
+  }
+  authBySession(params:{sessionId:string}){
+    const userInfo = apiRequest(apiUrl, 'authBySession', params).then((res) => {
+      console.log(res)
+      return {
+        login: res.data.userData.login,
+        avatar: res.data.userData.avatar
       };
     })
     return userInfo

@@ -1,3 +1,4 @@
+
 import { loginValidation, passValidation, regValidation } from '../utils/regValidation';
 import { databaseService } from '../databaseService';
 import { Router } from './httpRouter';
@@ -8,9 +9,14 @@ import SessionModel from '../dataModels/sessionModel';
 
 class AuthResponse {
   session: string;
+  userData: {login:string,avatar:string};
 
-  constructor(sessionModel: SessionModel) {
+  constructor(sessionModel: SessionModel, user: UserModel) {
     this.session = sessionModel.session;
+    this.userData = {
+      login: user.login,
+      avatar: user.avatar
+    }
   }
 }
 
@@ -32,18 +38,19 @@ async function auth(params) {
     const decodedLogin = decodeURI(`${params.login}`);
     const user = await UserModel.buildByCreds(decodedLogin, params.password);
     const sessionModel = await SessionModel.buildNewSession(user.login);
-    const responseData = new AuthResponse(sessionModel);
+    const responseData = new AuthResponse(sessionModel, user);
     return new DefaultResponse(true, responseData);
   } catch (err) {
     return new DefaultResponse(false);
   }
 };
 
+
+
 async function register(params) {
-  console.log(params,'params')
   const decodedLogin = decodeURI(`${params.login}`);
   if (regValidation(params)) {
-    const user = await UserModel.buildNewUser(decodedLogin, params.password, params.avatar);
+    const user = await UserModel.buildNewUser(decodedLogin, params.password, params.avatar, params.name);
     return new DefaultResponse(true);
   } else {
     return new DefaultResponse(false);
@@ -63,6 +70,17 @@ async function registerValidation(params) {
     }
   };
 }
+async function authBySession(params) {
+  try {
+    const session = await SessionModel.buildBySessionHash(params.sessionId)
+    const user = await UserModel.buildByLogin(session.login);
+    const sessionModel = await SessionModel.buildNewSession(user.login);
+    const responseData = new AuthResponse(sessionModel, user);
+    return new DefaultResponse(true, responseData);
+  } catch (err) {
+    return new DefaultResponse(false);
+  }
+};
 
 async function authValidation(params) {
   try {
@@ -73,6 +91,7 @@ async function authValidation(params) {
     return new DefaultResponse(false);
   }
 }
+console.log('adasdadsad')
 
 async function passwordValidation(params) {
   try {
@@ -85,6 +104,7 @@ async function passwordValidation(params) {
     return new DefaultResponse(false)
   }
 }
+
 class AuthService {
   private router: Router;
   private serviceName: string = 'authService';
@@ -106,6 +126,7 @@ class AuthService {
     this.addEndpoint('regValidation', registerValidation);
     this.addEndpoint('authValidation', authValidation);
     this.addEndpoint('passwordValidation', passwordValidation);
+    this.addEndpoint('authBySession', authBySession);
     return true;
   }
 
@@ -115,4 +136,5 @@ class AuthService {
 }
 
 export const authService = new AuthService();
+
 
