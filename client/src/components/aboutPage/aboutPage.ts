@@ -35,7 +35,6 @@ class AboutPage extends Control {
             if (res === 'register') {
               console.log('registered');
               this.showAuthPopUp().then((res)=>{
-                console.log(res.data)
                 this.onAuth.emit(res.data)
               })
             } else {

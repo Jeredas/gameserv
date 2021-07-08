@@ -46,8 +46,8 @@ export class AuthModel {
   }
 
   async registerUser(userData: IUserData) {
-    const request = apiPostRequest(apiUrl, 'register', userData).then(res => {
-      console.log(res);
+    const request = await apiPostRequest(apiUrl, 'register', userData).then(res => {
+      return res
     });
     return request
 

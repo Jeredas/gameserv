@@ -11,6 +11,7 @@ class SettingsUser extends GenericPopup<any> {
   cancelButton: ButtonDefault;
 
   onSelect: (value: any) => void;
+  logOutButton: ButtonDefault;
 
   constructor(parentNode:HTMLElement) {
     super(parentNode);
@@ -21,7 +22,7 @@ class SettingsUser extends GenericPopup<any> {
 
     this.saveButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Save');
     this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Cancel');
-
+    this.logOutButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'Log out');
     this.saveButton.onClick = () =>{
       //TODO:Обработать данные из инпута , отправить на сервер и записать изменения в бд.Вернуть новые имя и аву наружу.
       this.onSelect('save');
@@ -29,6 +30,10 @@ class SettingsUser extends GenericPopup<any> {
     this.cancelButton.onClick = () =>{
       //TODO:Очистить поля инпутов
       this.onSelect('cancel')
+    }
+    this.logOutButton.onClick = () =>{
+      localStorage.removeItem('todoListApplicationSessionId');
+      this.onSelect('logOut')
     }
   }
 }
