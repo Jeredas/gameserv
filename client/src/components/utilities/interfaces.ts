@@ -31,3 +31,10 @@ export interface IChannelData {
   channelName: string;
   channelType: string;
 }
+
+export interface IUserChatMessage {
+  userName: string;
+  avatar: string;
+  message: string;
+  time: string
+}

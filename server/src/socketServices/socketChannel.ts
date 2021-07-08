@@ -53,12 +53,13 @@ class ChannelSendMessageResponse implements IChatResponse{
   public params: {
     senderNick:string;
     messageText:string;
+    avatar: string
   }
 
-  constructor(senderNick:string, messageText:string){
+  constructor(senderNick:string, messageText:string, avatar = ''){
     this.service = 'chat',
     this.type = 'message';
-    this.params = {senderNick, messageText};
+    this.params = {senderNick, messageText, avatar, };
   }
 }
 
@@ -129,7 +130,7 @@ export class ChatChannel {
     console.log(params);
     const currentClient = this.clients.find(it => it.connection == connection);
     if (currentClient && currentClient.userData) {
-      this._sendForAllClients(new ChannelSendMessageResponse(currentClient.userData.login, params.messageText));
+      this._sendForAllClients(new ChannelSendMessageResponse(currentClient.userData.login, params.messageText, currentClient.userData.avatar));
     } else {
       connection.sendUTF(JSON.stringify({
         service: 'chat', 

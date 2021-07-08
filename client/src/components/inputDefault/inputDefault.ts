@@ -22,6 +22,11 @@ class Input extends Control {
   setChecked(status: boolean): void {
     this.node.checked = status;
   }
+
+  setValue(value: string): void {
+    this.node.value = value;
+  }
+
 }
 
 export default Input;

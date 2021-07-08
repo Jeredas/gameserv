@@ -3,7 +3,7 @@ import GenericPopup from '../genericPopup/genericPopup';
 import InputWrapper from '../inputWrapper/inputWrapper';
 import Control from '../utilities/control';
 import chatStyles from '../chatPage/chatPage.module.css';
-import Input from '../input.ts/input';
+import Input from '../inputDefault/inputDefault';
 
 export const gameModePopup = [ 'oneScreen', 'network', 'bot' ];
 export const channelTypePopup = [ 'OnlyChatChannel', 'ChessGameChannel', 'CrossGameChannel' ];

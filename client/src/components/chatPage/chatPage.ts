@@ -39,8 +39,8 @@ class ChatPage extends Control {
     this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
     this.chatAction = new Control(this.chatMain.node, 'div', chatStyles.chat_action);
     // this.chatAction.node.style.backgroundImage = `url(${bgImage})`;
-    const chatMessages = new ChatMessagesBlock(this.chatMain.node);
-    const chatInputBlock = new ChatInputWrapper(this.chatMain.node);
+    // const chatMessages = new ChatMessagesBlock(this.chatMain.node);
+    // const chatInputBlock = new ChatInputWrapper(this.chatMain.node);
     this.chatUsers = new ChatUsersWrapper(this.node);
 
     this.messageContainer = new Control(this.node);
