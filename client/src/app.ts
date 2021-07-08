@@ -55,7 +55,6 @@ class Application extends Control {
         });
       } else {
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
-          console.log(res);
           this.currentUser.setData(res)
         })
         console.log('Go to chat Page');

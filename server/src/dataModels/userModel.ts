@@ -38,7 +38,6 @@ export default class UserModel{
   static async buildByCreds(login:string, password:string){
     console.log(login ,password)
     return databaseService.db.collection(collectionName).findOne({login: login, password:password}).then(userDto=>{
-      console.log(userDto);
       return new UserModel(userDto);
     })
   }

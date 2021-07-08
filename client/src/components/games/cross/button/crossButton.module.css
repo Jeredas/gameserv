@@ -1,0 +1,16 @@
+.cross_button {
+  background-color: #555;
+  color: #fff;
+  font-size: 18px;
+  padding: 5px 5px;
+  margin: 0 10px 5px;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  transition: .2s all ease;
+}
+
+.disabled {
+  background-color: #3a3a3a;
+  color: #a5a5a5;
+}

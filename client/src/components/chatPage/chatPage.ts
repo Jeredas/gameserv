@@ -1,15 +1,14 @@
 import Control from '../utilities/control';
 import ChatChannels from '../chatPage/chat-channels-wrapper/chat-channels-wrapper';
 import chatStyles from './chatPage.module.css';
-import ChatMessagesBlock from '../chatPage/chat-messages/chat-messages';
-import ChatInputWrapper from '../chatPage/chat-input-wrapper/chat-input-wrapper';
-import ChatUsersWrapper from '../chatPage/chat-users-wrapper/chat-users-wrapper';
+import ChatUsers from '../chatPage/chat-users-wrapper/chat-users-wrapper';
 import { popupService } from '../popupService/popupService';
 import JoinChannelPopup from '../join-channel-popup/join-channel-popup';
 import SettingsChannel from '../create-channel-popup/create-channel-popup';
 import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
-import { OnlyChatChannelModel, OnlyChatChannelView } from '../../socketClient/onlyChatChannel';
+import { IChannelData } from '../utilities/interfaces';
+import { channelConfig } from '../utilities/config';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -18,7 +17,7 @@ class ChatPage extends Control {
 
   chatAction: Control;
 
-  chatUsers: ChatUsersWrapper;
+  chatUsers: ChatUsers;
 
   messageContainer: Control;
   public onJoinChannel: () => void = () => {};
@@ -31,11 +30,7 @@ class ChatPage extends Control {
     this.socket = socket;
     this.channelBlock = new ChatChannels(this.node); //langConfig.chat.channels
     this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
-    this.chatAction = new Control(this.chatMain.node, 'div', chatStyles.chat_action);
-    // this.chatAction.node.style.backgroundImage = `url(${bgImage})`;
-    const chatMessages = new ChatMessagesBlock(this.chatMain.node);
-    const chatInputBlock = new ChatInputWrapper(this.chatMain.node);
-    this.chatUsers = new ChatUsersWrapper(this.node);
+    this.chatUsers = new ChatUsers(this.node);
 
     this.messageContainer = new Control(this.node);
 
@@ -67,25 +62,35 @@ class ChatPage extends Control {
   joinChannel() {
     popupService.showPopup(JoinChannelPopup).then((channelName: string) => {
       console.log(channelName);
-      let onlyChatChannelModel = new OnlyChatChannelModel(this.socket, channelName);
+      const q = this.model
+        .getChannelInfo(channelName)
+        .then((params) => this.joinUserToChannel(params));
+    });
+  }
 
-      onlyChatChannelModel.joinChannel().then((res) => {
-        console.log('join channel', res);
+  joinUserToChannel(params: any) {
+    console.log('get channelInfo endpoint', params);
+    if (params.status === 'ok') {
+      const channelOfChoice = channelConfig.get(params.channelType);
+
+      const channelModel = new channelOfChoice.model(this.socket, params.channelName);
+      channelModel.joinChannel().then((res) => {
         if (res) {
-          let channel = new OnlyChatChannelView(document.body, onlyChatChannelModel);
+          let channel = new channelOfChoice.view(this.chatMain.node, channelModel);
           channel.onLeaveClick = () => {
             channel.destroy();
           };
         }
       });
-    });
+    }
   }
 
   createChannel() {
-    popupService.showPopup(SettingsChannel).then((channelName: string) => {
-      this.model.createNewChannel(channelName).then((res: any) => {
+    popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
+      this.model.createNewChannel(newChannel).then((res: any) => {
         if (res.status === 'ok') {
-          this.channelBlock.addChannel(channelName);
+          this.channelBlock.addChannel(newChannel.channelName);
+          console.log('channel created with type', res.channelType);
         }
       });
     });
