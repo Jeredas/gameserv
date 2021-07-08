@@ -1,5 +1,5 @@
-import Vector from '../../utilities/vector';
-import Control from '../../utilities/control';
+import Vector from '../../../utilities/vector';
+import Control from '../../../utilities/control';
 import historyStyles from './crossHistory.module.css'
 
 class HistoryBlock extends Control {

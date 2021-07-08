@@ -94,3 +94,22 @@
   cursor: pointer;
   transition: .2s all ease;
 }
+
+.player_active {
+  position: relative;
+  color: #fff;
+}
+
+.player_active::after {
+  content: '';
+  position: absolute;
+  right: -25px;
+  top: -10%;
+  width: 30px;
+  height: 30px;
+  background-color: #ff0000;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  /* background-image: url('../../assets/whiteBishop.svg'); */
+}

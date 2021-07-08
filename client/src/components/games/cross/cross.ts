@@ -1,9 +1,9 @@
 import Vector from '../../utilities/vector';
 import Control from '../../utilities/control';
 import Cell from './cell';
-import CrossButton from './cross-button';
+import CrossButton from './button/cross-button';
 import crossStyles from './cross.module.css';
-import HistoryBlock from '../history/history';
+import HistoryBlock from './history/history';
 
 const size = 3;
 class Timer extends Control {
@@ -91,7 +91,7 @@ class Cross extends Control {
 
   private playerTwo: Control;
 
-  private players = 0;
+  private players: Array<string> = [];
 
   private isRotated = false;
 
@@ -108,6 +108,10 @@ class Cross extends Control {
   private btnLoss: CrossButton;
 
   public onLossClick: () => void = () => {};
+
+  private host = '';
+
+  private crossMode = 'network';
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', crossStyles.cross_wrapper);
@@ -133,54 +137,70 @@ class Cross extends Control {
       }
     }
 
-    this.btnStart = new CrossButton(crossControls.node, crossStyles.cross_button, 'Start');
+    this.btnStart = new CrossButton(crossControls.node, 'Start');
+    this.btnStart.buttonDisable();
+
     this.btnStart.onClick = () => {
       this.onStartClick();
     };
-    this.btnDraw = new CrossButton(crossControls.node, crossStyles.cross_button, 'Draw');
+    this.btnDraw = new CrossButton(crossControls.node, 'Draw');
+    this.btnDraw.buttonDisable();
+
     this.btnDraw.onClick = () => {
       this.onDrawClick();
     };
-    this.btnLoss = new CrossButton(crossControls.node, crossStyles.cross_button, 'Loss');
+    this.btnLoss = new CrossButton(crossControls.node, 'Loss');
+    this.btnLoss.buttonDisable();
+
     this.btnLoss.onClick = () => {
       this.onLossClick();
     };
   }
 
-  updateGameField(field: Array<string>): void {
+  updateGameField(field: Array<Array<string>>): void {
     this.cells.forEach((cell) => {
       const { x, y } = cell.getCellCoord();
       if (field[y][x]) {
         cell.clickedCell(field[y][x]);
       }
     });
-    if (!this.isRotated) {
-      this.crossCells.node.classList.add('rotate');
-    } else {
-      this.crossCells.node.classList.remove('rotate');
-    }
-    this.isRotated = !this.isRotated;
+    // if (!this.isRotated) {
+    //   this.crossCells.node.classList.add('rotate');
+    // } else {
+    //   this.crossCells.node.classList.remove('rotate');
+    // }
+    // this.isRotated = !this.isRotated;
   }
 
   clearData() {
     this.cells.forEach((cell) => cell.clearCell());
-    this.players = 0;
+    this.players = [];
     this.playerOne.node.textContent = 'Player1';
     this.playerTwo.node.textContent = 'Player2';
     this.timer.clear();
   }
 
-  setPlayer(player: string, time: number): void {
-    console.log(time);
+  setPlayer(player: string, players: Array<string>): void {
+    console.log(players);
+    this.playerOne.node.textContent = players[0];
+    this.players.push(players[0]);
 
-    if (!this.players) {
-      this.playerOne.node.textContent = player;
-      this.players++;
-    } else if (this.players === 1) {
-      this.playerTwo.node.textContent = player;
-      this.players++;
-      this.timer.setTimer(time);
+    if (this.crossMode !== 'network') {
+      this.host = players[0];
+      this.btnStart.buttonEnable();
+    } else if (players[1]) {
+      this.playerTwo.node.textContent = players[1];
+      this.players.push(players[1]);
+      this.host = player !== players[0] ? players[0] : players[1];
+      this.btnStart.buttonEnable();
     }
+  }
+
+  startGame(startTime: number): void {
+    this.btnStart.buttonDisable();
+    this.btnDraw.buttonEnable();
+    this.btnLoss.buttonEnable();
+    this.timer.setTimer(startTime);
   }
 
   setHistoryMove(sign: string, coords: Vector, time: string): void {

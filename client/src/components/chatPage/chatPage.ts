@@ -86,14 +86,14 @@ class ChatPage extends Control {
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          if (params.channelType === 'CrossGameChannel') {
-            let channel = new Cross(this.chatAction.node);
-          } else {
+          // if (params.channelType === 'CrossGameChannel') {
+          //   let channel = new Cross(this.chatAction.node);
+          // } else {
             let channel = new channelOfChoice.view(this.chatAction.node, channelModel);
             channel.onLeaveClick = () => {
               channel.destroy();
             };
-          }
+          // }
 
           // this.chatAction.node.textContent = params.channelType;
           // this.chatAction.node.style.fontSize = '50px';

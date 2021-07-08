@@ -5,7 +5,7 @@ import MainViewMessages from "./mainViewMessages";
 import { IUserChatMessage } from "../utilities/interfaces";
 
 class MainView extends Control {
-  private chatAction: Control;
+  public mainViewAction: Control;
   public mainViewMessages: MainViewMessages;
 
   public onMessageSend: (message: string) => void = () => {};
@@ -13,7 +13,7 @@ class MainView extends Control {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewStyles.chat_main);
-    this.chatAction = new Control(this.node, 'div', mainViewStyles.chat_action);
+    this.mainViewAction = new Control(this.node, 'div', mainViewStyles.chat_action);
     // // this.chatAction.node.style.backgroundImage = `url(${bgImage})`;
     this.mainViewMessages = new MainViewMessages(this.node);
     this.mainViewInput = new MainViewInput(this.node);

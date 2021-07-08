@@ -20,7 +20,7 @@ export class LobbyService{
     const foundChannel = this.channels.find(channel => channel.name == params.channelName);
     if (foundChannel){
       foundChannel[params.channelMethod](userConnection, params.channelRequestParams);
-      console.log('foundChannel', foundChannel);
+      // console.log('foundChannel', foundChannel);
     } else {
       userConnection.sendUTF(JSON.stringify({
         service: 'chat', 
@@ -58,7 +58,7 @@ export class LobbyService{
         }
       }));  
     }
-    console.log(this.channels);
+    // console.log(this.channels);
     
   }
 
@@ -83,7 +83,7 @@ export class LobbyService{
         }
       }));
       
-      console.log('foundChannel', foundChannel);
+      // console.log('foundChannel', foundChannel);
       
     } else {
       userConnection.sendUTF(JSON.stringify({

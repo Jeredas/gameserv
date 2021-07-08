@@ -7,7 +7,6 @@ class MainViewMessage extends Control {
     super(parentNode, 'div', mainViewMessageStyles.chat_message);
     const messageWrapper = new Control(this.node, 'div', mainViewMessageStyles.message_wrapper);
     const messageAvatar = new Control(messageWrapper.node, 'div', mainViewMessageStyles.message_avatar);
-    console.log(message.avatar);
     messageAvatar.node.style.backgroundImage = `url(${message.avatar})`;
     const messageMain = new Control(messageWrapper.node, 'div', mainViewMessageStyles.message_main);
 
