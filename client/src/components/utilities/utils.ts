@@ -22,10 +22,10 @@ export function digestMessage(message: string, key: string) {
   }
   
   export function apiPostRequest (apiUrl:string, service:string, params:any) {
-    return fetch(`${apiUrl}register`, { 
+    return fetch(`${apiUrl}${service}`, { 
       method: "POST",
-      body: `login=${params.login}&password=${params.password}&avatar=${params.avatar}` 
-      }).then(res => {res.text()})
+      body: `login=${params.login}&password=${params.password}&avatar=${params.avatar}&name=${params.login}` 
+      })
 
 
   }

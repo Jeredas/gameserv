@@ -12,7 +12,7 @@ export class Navigation extends Control {
 
   private userBlock: HeaderAuth;
 
-  // public onSignIn: () => void = () => {};
+  // public onLogout: () => void = () => {};
   public onUserClick: () => void = () => {};
 
   constructor(parentNode: HTMLElement | null = null) {
@@ -23,10 +23,7 @@ export class Navigation extends Control {
     this.navContainer = new Control(this.node, 'div', headerStyles.header_nav);
     this.userBlock = new HeaderAuth(this.node);
 
-    // this.userBlock.onSignIn = () => {
-    //   this.onSignIn();
-    // };
-
+    
     this.userBlock.onUserClick = () => {
       this.onUserClick();
     };

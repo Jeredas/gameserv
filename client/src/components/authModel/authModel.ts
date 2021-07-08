@@ -20,7 +20,7 @@ export class AuthModel {
         const loginData = {
           login: res.data.userData.login,
           avatar: res.data.userData.avatar,
-          name: res.data.userData.name
+          //name: res.data.userData.name
         }
         localStorage.setItem('todoListApplicationSessionId', res.data.session);
         this.onLogIn.emit(loginData);
@@ -31,15 +31,23 @@ export class AuthModel {
     return response
   }
 
-  testAccess() {
-    apiRequest(apiUrl, 'testAccess', {}).then((res) => {
-      console.log(res);
+  async testAccess() {
+    const response = await apiRequest(apiUrl, 'testAccess', {}).then((res) => {
+      console.log(res.userData);
+      if(res.userData){
+        console.log('session exists');
+        return true;
+      } else {
+        console.log('session don`t exists');
+        return false;
+      }
     });
+    return response
   }
 
   async registerUser(userData: IUserData) {
-    const request = apiPostRequest(apiUrl, 'register', userData).then(res => {
-      console.log(res);
+    const request = await apiPostRequest(apiUrl, 'register', userData).then(res => {
+      return res
     });
     return request
 
