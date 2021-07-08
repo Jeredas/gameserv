@@ -1,6 +1,6 @@
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import stylePopup from '../popupService/popupService.css';
+import stylePopup from '../popupService/popupService.module.css';
 import Control from '../utilities/control';
 
 class CheckSession extends GenericPopup<boolean> {

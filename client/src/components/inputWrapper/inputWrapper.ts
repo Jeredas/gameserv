@@ -1,4 +1,5 @@
 import Control from '../utilities/control';
+import popupStyle from '../popupService/popupService.module.css';
 
 class InputWrapper extends Control {
   public node: HTMLInputElement;
@@ -16,14 +17,15 @@ class InputWrapper extends Control {
   private timer: NodeJS.Timeout;
 
   constructor(parentNode: HTMLElement, caption: string, onValidate: (param: string) => Promise<string | null>, placeHolder = '', id = 'input', type = '') {
-    super(parentNode, 'div', 'authform_input');
+    super(parentNode, 'div', popupStyle.input_wrapper);
     this.name = caption;
-    this.caption = new Control(this.node, 'div', 'caption');
+    this.caption = new Control(this.node, 'div', popupStyle.caption);
     this.caption.node.innerHTML = caption;
-    this.field = new Control(this.node, 'input', 'field_input', `${id}`);
+    this.field = new Control(this.node, 'input', popupStyle.field_input, `${id}`);
+    this.field.node.id = id;
     (this.field.node as HTMLInputElement).placeholder = `${placeHolder}`;
     (this.field.node as HTMLInputElement).type = type;
-    this.error = new Control(this.node, 'div', 'input_error');
+    this.error = new Control(this.node, 'div', popupStyle.input_error);
     this.onValidate = onValidate;
     this.field.node.oninput = async () => {
       this.timer && clearTimeout(this.timer);

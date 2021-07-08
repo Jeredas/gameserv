@@ -2,7 +2,7 @@
 // import { GameSelect } from "../chat/game-select";
 //import { GenericPopup } from '../chat/genericPopup';
 import Control from '../utilities/control';
-import popupStyle from './popupService.css';
+import popupStyle from './popupService.module.css';
 
 
 //console.log(popupStyle);
