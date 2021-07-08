@@ -21,7 +21,7 @@ class AboutPage extends Control {
     <div>What you need is only to press the big button below to sign in and enter the game page to chat with friends, participate in a game of your choice or just enjoy with other players' matches.</div>
     `;
     
-    this.buttonLogIn = new ButtonDefault(this.node, stylePopup.popup_default_button, 'log in');
+    this.buttonLogIn = new ButtonDefault(this.node, stylePopup.settings_button, 'log in');
 
     this.buttonLogIn.onClick = () => {
       this.hide()

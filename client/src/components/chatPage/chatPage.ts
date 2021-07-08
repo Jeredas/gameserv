@@ -16,6 +16,7 @@ import { ChatChannelModel } from '../../socketClient/chatChannelModel';
 import { channelConfig } from '../utilities/config';
 import { channel } from 'diagnostic_channel';
 import Cross from '../games/cross/cross';
+import { GameSelectPopup } from '../game-select-popup/game-select-popup';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
