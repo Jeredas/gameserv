@@ -53,12 +53,13 @@ class ChannelSendMessageResponse implements IChatResponse{
   public params: {
     senderNick:string;
     messageText:string;
+    avatar: string
   }
 
-  constructor(senderNick:string, messageText:string){
+  constructor(senderNick:string, messageText:string, avatar = ''){
     this.service = 'chat',
     this.type = 'message';
-    this.params = {senderNick, messageText};
+    this.params = {senderNick, messageText, avatar, };
   }
 }
 
@@ -81,10 +82,12 @@ class ChannelJoinUserResponse implements IChatResponse{
 export class ChatChannel {
   public name: string;
   public clients: Array<ChatClient>
+  public type: string;
 
-  constructor(name: string) {
+  constructor(name: string, type: string) {
     this.name = name;
     this.clients = [];
+    this.type = type;
   }
 
   private _sendForAllClients(response: IChatResponse){
@@ -99,7 +102,7 @@ export class ChatChannel {
 
   async joinUser(connection: any, params: any) {
     try {
-      const sessionModel = await SessionModel.buildBySessionHash(/*params.sessionId*/'inikon359');
+      const sessionModel = await SessionModel.buildBySessionHash(params.sessionId/*'inikon359'*/);
       const userModel = await UserModel.buildByLogin(sessionModel.login);
       if (userModel && !this.hasUser(connection)) {
         const newClient = new ChatClient(connection, new ChatUserData(params.sessionId, userModel));
@@ -127,7 +130,7 @@ export class ChatChannel {
     console.log(params);
     const currentClient = this.clients.find(it => it.connection == connection);
     if (currentClient && currentClient.userData) {
-      this._sendForAllClients(new ChannelSendMessageResponse(currentClient.userData.login, params.messageText));
+      this._sendForAllClients(new ChannelSendMessageResponse(currentClient.userData.login, params.messageText, currentClient.userData.avatar));
     } else {
       connection.sendUTF(JSON.stringify({
         service: 'chat', 

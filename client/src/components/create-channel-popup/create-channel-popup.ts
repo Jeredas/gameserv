@@ -3,17 +3,17 @@ import GenericPopup from '../genericPopup/genericPopup';
 import InputWrapper from '../inputWrapper/inputWrapper';
 import Control from '../utilities/control';
 import chatStyles from '../chatPage/chatPage.module.css';
-import popupStyles from '../popupService/popupService.module.css';
+import Input from '../inputDefault/inputDefault';
 
-export const gameModePopup = [ 'oneScreen' , 'network', 'bot'];
-export const gameName = [ 'One screen' , 'Network', 'Bot'];
+export const gameModePopup = [ 'oneScreen', 'network', 'bot' ];
+export const channelTypePopup = [ 'OnlyChatChannel', 'ChessGameChannel', 'CrossGameChannel' ];
 
 class CreateChannelPopup extends GenericPopup<any> {
-  nameChannel:InputWrapper;
+  channelName: InputWrapper;
 
-  oneScreen:InputWrapper;
+  oneScreen: InputWrapper;
 
-  network:InputWrapper;
+  network: InputWrapper;
 
   bot: InputWrapper;
 
@@ -24,35 +24,62 @@ class CreateChannelPopup extends GenericPopup<any> {
   cancelButton: ButtonDefault;
 
   onSelect: (value: any) => void;
+  private channelTypes: Array<Input> = [];
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
 
-    this.nameChannel = new InputWrapper(this.popupWrapper.node, 'Enter the channel name:', () => null, 'Name channel', 'nameChannel', 'text');
-    const wrapperSettingsChannel = new Control(this.popupWrapper.node, 'div', popupStyles.settings_channel_wrapper);
-    const titleSettings = new Control(wrapperSettingsChannel.node, 'div', popupStyles.settings_title, 'Сhoose a game type:');
-    this.popupWrapper.node.classList.add(popupStyles.create_popup)
-    gameModePopup.forEach((radioBtn, index) => {
-      const radio = new InputWrapper(wrapperSettingsChannel.node, '', () => null, '', radioBtn, 'radio');
-      radio.error.destroy();
-      const label =  new Control(radio.node, 'label', '', gameName[index]);
-      (radio.field.node as HTMLInputElement).name = 'inputRadio';
-      (radio.field.node as HTMLInputElement).value = radioBtn;
-      label.node.setAttribute('for', `${radioBtn}`)
+    this.channelName = new InputWrapper(
+      this.popupWrapper.node,
+      'Name channel',
+      () => null,
+      'Channel Name',
+      'nameChannel'
+    );
+    channelTypePopup.forEach((type, i) => {
+      const radioWrapper = new Control(this.popupWrapper.node, 'div');
+      const radio = new Input(radioWrapper.node, 'radio', 'channelType', type);
+      if (i === 0) {
+        radio.setChecked(true);
+      }
+      const label = new Control(radioWrapper.node, 'label', '', type);
+      label.node.setAttribute('for', 'channelType');
+      this.channelTypes.push(radio);
+    });
+    gameModePopup.forEach((radioBtn) => {
+      const radio = new InputWrapper(this.popupWrapper.node, '', () => null, '', radioBtn, 'radio');
+      const label = new Control(radio.node, 'label', '', radioBtn);
+      (radio.node as HTMLInputElement).name = 'inputRadio';
+      (radio.node as HTMLInputElement).value = radioBtn;
+      label.node.setAttribute('for', `${radioBtn}`);
       radio.onValidate = null;
     });
-    const buttonsWrapper = new Control(this.popupWrapper.node, 'div', popupStyles.buttons_wrapper);
-    this.createButton = new ButtonDefault(buttonsWrapper.node, popupStyles.settings_button, 'Create');
-    this.cancelButton = new ButtonDefault(buttonsWrapper.node, popupStyles.settings_button, 'Cancel');
+    this.createButton = new ButtonDefault(
+      this.popupWrapper.node,
+      chatStyles.default_button,
+      'create'
+    );
+    this.cancelButton = new ButtonDefault(
+      this.popupWrapper.node,
+      chatStyles.default_button,
+      'cancel'
+    );
+
     this.cancelButton.onClick = () => {
       this.destroy();
-    }
+    };
 
     this.createButton.onClick = () => {
-      console.log('create Channel');
-      this.onSelect(this.nameChannel.getValue());
-    }
-  } 
+      const channelType = this.channelTypes
+        .find((type) => type.getCheckedStatus() === true)
+        .getValue();
+      const newChannel = {
+        channelName: this.channelName.getValue(),
+        channelType: channelType
+      };
+      this.onSelect(newChannel);
+    };
+  }
 }
 
 export default CreateChannelPopup;
