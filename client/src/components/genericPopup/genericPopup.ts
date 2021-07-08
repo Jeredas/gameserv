@@ -1,5 +1,5 @@
 import Control from '../utilities/control';
-import stylePopup from '../popupService/popupService.css'
+import stylePopup from '../popupService/popupService.module.css'
 
 class GenericPopup<type> extends Control {
   popupWrapper: Control;
