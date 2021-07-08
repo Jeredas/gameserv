@@ -3,7 +3,6 @@ import { ISocketService } from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
 import { ChatChannelModel } from './chatChannelModel';
-import { OnlyChatChannelModel } from './onlyChatChannel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
 import { ICrossMove, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
@@ -242,7 +241,8 @@ export class CrossGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      this.crossGame.setPlayer(params.player, params.players);
+      this.crossGame.setPlayer(params);
+      this.mainViewPlayers.setPlayers(params.players);
     });
 
     this.model.service.onCrossStart.add((params) => {

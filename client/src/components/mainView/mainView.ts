@@ -2,7 +2,7 @@ import Control from "../utilities/control";
 import MainViewInput from "./mainViewInput/mainViewInput";
 import mainViewStyles from './mainView.module.css';
 import MainViewMessages from "./mainViewMessages";
-import { IUserChatMessage } from "../utilities/interfaces";
+import MainViewPlayers from "./mainViewPlayers/mainViewPlayers";
 
 class MainView extends Control {
   public mainViewAction: Control;
@@ -10,6 +10,7 @@ class MainView extends Control {
 
   public onMessageSend: (message: string) => void = () => {};
   public mainViewInput: MainViewInput;
+  public mainViewPlayers: MainViewPlayers;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewStyles.chat_main);
@@ -17,7 +18,9 @@ class MainView extends Control {
     // // this.chatAction.node.style.backgroundImage = `url(${bgImage})`;
     this.mainViewMessages = new MainViewMessages(this.node);
     this.mainViewInput = new MainViewInput(this.node);
+    this.mainViewPlayers = new MainViewPlayers(this.node);
   }
+
 
 }
 

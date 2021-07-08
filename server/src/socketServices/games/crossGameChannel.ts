@@ -26,10 +26,10 @@ class ChannelSendPlayersResponse implements IChatResponse {
   public service: string;
   public params: {
     player: string;
-    players: Array<string>;
+    players: Array<{login:string, avatar: string}>;
   };
 
-  constructor(player: string, players: Array<string>) {
+  constructor(player: string, players: Array<{login:string, avatar: string}>) {
     (this.service = 'chat'), (this.type = 'getPlayers');
     this.params = { player, players };
   }
@@ -81,7 +81,7 @@ class CrossMoveResponse {
 
 export class CrossGameChannel extends ChatChannel {
   logic: CrossGameLogic;
-  players: Array<string>;
+  players: Array<{login:string, avatar: string}>;
   constructor(name: string, type: string, params: any) {
     super(name, type);
     console.log('created OnlyChatChannel');
@@ -99,6 +99,7 @@ export class CrossGameChannel extends ChatChannel {
     try {
       const currentClient = this.clients.find((it) => it.connection == connection);
       this.logic.setPlayers(currentClient.userData.login);
+      this.players.push({login: currentClient.userData.login, avatar: currentClient.userData.avatar})
       const response = new ChannelJoinPlayerResponse('ok', params.requestId);
       currentClient.send(response);
     } catch (err) {
@@ -111,7 +112,7 @@ export class CrossGameChannel extends ChatChannel {
     if (currentClient && currentClient.userData) {
       const response = new ChannelSendPlayersResponse(
         currentClient.userData.login,
-        this.logic.getPlayers()
+        this.players
       );
       this.sendForAllClients(response);
     } else {
