@@ -4,6 +4,7 @@ import Cell from './cell';
 import CrossButton from './button/cross-button';
 import crossStyles from './cross.module.css';
 import HistoryBlock from './history/history';
+import { IJoinedPlayer } from 'src/components/utilities/interfaces';
 
 const size = 3;
 class Timer extends Control {
@@ -180,18 +181,22 @@ class Cross extends Control {
     this.timer.clear();
   }
 
-  setPlayer(player: string, players: Array<string>): void {
-    console.log(players);
-    this.playerOne.node.textContent = players[0];
-    this.players.push(players[0]);
+  setPlayer(params: IJoinedPlayer): void {
+    console.log(params);
+    const player1 = params.players[0].login;
+    
+
+    this.playerOne.node.textContent = player1;
+    this.players.push(player1);
 
     if (this.crossMode !== 'network') {
-      this.host = players[0];
+      this.host = player1;
       this.btnStart.buttonEnable();
-    } else if (players[1]) {
-      this.playerTwo.node.textContent = players[1];
-      this.players.push(players[1]);
-      this.host = player !== players[0] ? players[0] : players[1];
+    } else if (params.players[1]) {
+      const player2 = params.players[1].login;
+      this.playerTwo.node.textContent = player2;
+      this.players.push(player2);
+      this.host = params.player !== player1 ? player1 : player2;
       this.btnStart.buttonEnable();
     }
   }

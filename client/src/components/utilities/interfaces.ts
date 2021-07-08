@@ -42,7 +42,7 @@ export interface IUserChatMessage {
 }
 export interface IJoinedPlayer {
   player: string;
-  players: Array<string>;
+  players: Array<{login: string, avatar: string}>;
 }
 
 export interface ICrossMove {
