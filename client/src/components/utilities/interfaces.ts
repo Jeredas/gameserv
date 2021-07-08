@@ -11,6 +11,7 @@ export interface IUserData {
   login: string,
   password: string,
   avatar: string
+  name : string
 };
 
 export interface IPublicUserInfo{

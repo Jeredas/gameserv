@@ -5,6 +5,7 @@ import GenericPopup from '../genericPopup/genericPopup';
 import InputWrapper from '../inputWrapper/inputWrapper';
 import Control from '../utilities/control';
 import { IAuthData } from '../utilities/interfaces';
+import getFormattedImgDataLink from '../utilities/imgToDatalink';
 export class RegForm extends GenericPopup<any> {
   login: InputWrapper;
   password: InputWrapper;
@@ -16,6 +17,7 @@ export class RegForm extends GenericPopup<any> {
   model: AuthModel
   state: IInputState
   onSelect: (value: any) => void;
+  imgSrc: string;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
@@ -74,8 +76,21 @@ export class RegForm extends GenericPopup<any> {
     }
 
     this.cancelButton.onClick = () => {
-      this.onSelect('cancel')
-    }
+      this.onSelect('cancel');
+    };
+    
+    this.avatarLoader.field.node.onchange = () =>{
+      if ((this.avatarLoader.field.node as HTMLInputElement).files != null) {
+        const fileBlob = (this.avatarLoader.field.node as HTMLInputElement).files[0];
+        getFormattedImgDataLink(200, fileBlob).then((data : string) => {
+          const img = new Image();
+          img.src = data;
+          this.imgSrc = data;
+          img.classList.add('avatar_img');
+          this.avatarLoader.node.style.backgroundImage = `url(${data})`;
+        });
+      }
+    };
   }
   getData(): IAuthData {
     const obj: IAuthData = {
@@ -88,7 +103,8 @@ export class RegForm extends GenericPopup<any> {
     const obj: IUserData = {
       login: this.login.getValue(),
       password: this.password.getValue(),
-      avatar:this.avatarLoader.getValue()
+      avatar: this.imgSrc,
+      name: this.login.getValue()
     };
     return obj;
   }
