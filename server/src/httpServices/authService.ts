@@ -91,7 +91,6 @@ async function authValidation(params) {
     return new DefaultResponse(false);
   }
 }
-console.log('adasdadsad')
 
 async function passwordValidation(params) {
   try {
@@ -110,9 +109,7 @@ class AuthService {
   private serviceName: string = 'authService';
 
   getUserBySessionId(sessionId) {
-    console.log(sessionId);
     return databaseService.db.collection('sessions').findOne({ session: sessionId }, {}).then((res) => {
-      console.log(res);
       return res;
     });
   }

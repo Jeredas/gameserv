@@ -47,7 +47,6 @@ export class Navigation extends Control {
     });
   }
   setUserData(data: IUserAuth): void {
-    console.log(data,'setData');
     this.userBlock.setUserName(data.login);
     this.userBlock.setAvatar(data.avatar);
   }
