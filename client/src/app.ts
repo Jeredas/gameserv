@@ -28,7 +28,8 @@ class Application extends Control {
   pageContainer: Control;
 
   currentUser: UserDataState;
-  model : AuthModel
+  model : AuthModel;
+  onAuth: (param: IUserAuth) => void = () => { };
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', 'app');
@@ -54,7 +55,7 @@ class Application extends Control {
         });
       } else {
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
-          console.log(res)
+          console.log(res);
           this.currentUser.setData(res)
         })
         console.log('Go to chat Page');
@@ -71,7 +72,10 @@ class Application extends Control {
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', '');
     this.about = new AboutPage(this.pageContainer.node);
-
+    this.about.onAuth.add((data)=>{
+      console.log(data,'app page')
+      this.currentUser.setData(data)
+    })
     const socket = new SocketClient();
     let lobbyModel = new LobbyModel(socket);
     socket.init(socketURL);

@@ -6,14 +6,17 @@ import { popupService } from '../popupService/popupService';
 import RegisterCheck from '../registerCheck/registerCheck';
 import { AuthForm } from '../authForm/authForm';
 import { RegForm } from '../regForm/regForm';
+import Signal from '../../socketClient/signal';
+import { IUserAuth } from '../utilities/interfaces';
 
 class AboutPage extends Control {
   wrapper:Control;
   buttonLogIn: ButtonDefault;
   onSelect: (value: any) => void;
+  onAuth: Signal<IUserAuth>
   constructor(parentNode:HTMLElement) {
     super(parentNode, 'div', 'about_page');
-
+    this.onAuth = new Signal()
     this.wrapper = new Control(this.node);
     this.wrapper.node.innerHTML = `
     <div>Welcome dear Guest!</div>
@@ -28,36 +31,25 @@ class AboutPage extends Control {
       popupService.init(parentNode);
       popupService.showPopup(RegisterCheck).then((res)=>{
         if(!res){
-          popupService.showPopup(RegForm).then((res)=>{
-            if(res==='register'){
-              popupService.showPopup(AuthForm).then((res)=>{
-                if(res==='login'){
-                  //TODO:Переход на chatPage
-                  console.log('go to ChatPage');
-                } else {
-                  console.log('auth failed')
-                  this.show()
-                }
+          popupService.showPopup(RegForm).then((res) => {
+            if (res === 'register') {
+              console.log('registered');
+              this.showAuthPopUp().then((res)=>{
+                console.log(res.data)
+                this.onAuth.emit(res.data)
               })
             } else {
-              this.show()
+              this.show();
+              console.log('registration failed');
             }
-          })
+          });
         } else {
-          popupService.showPopup(AuthForm).then((res)=>{
-            if(res==='login'){
-              //TODO:Переход на chatPage
-              console.log('go to ChatPage');
-            } else {
-              console.log('auth failed')
-              this.show()
-            }
-          })
+        this.showAuthPopUp().then((res)=>{
+          console.log('yes')
+          this.onAuth.emit(res.data)
+        })
         }
-        
       })
-      
-
     }
   }
 
@@ -67,6 +59,17 @@ class AboutPage extends Control {
 
   show():void {
     this.node.classList.remove(headerStyles.default_hidden);
+  }
+  private showAuthPopUp() {
+    return popupService.showPopup<{ status: string, data: IUserAuth }>(AuthForm).then((res) => {
+      if (res.status === 'login') {
+        console.log(res.data,'res data')
+        return {status:true, data:res.data};
+      } else {
+        this.show();
+        return {status:false};
+      }
+    })
   }
 }
 
