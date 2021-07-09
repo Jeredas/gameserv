@@ -25,7 +25,7 @@
   background-color: #ccc;
   color: #000;
   border-radius: 10px;
-  padding: 30px;
+  /* padding: 30px; */
 }
 
 .popup_default_button {
@@ -172,7 +172,7 @@
 
 .caption {
   width: 100%;
-  font-size: 25px;
+  font-size: 20px;
   text-align: center;
   margin-bottom: 10px;
 }
@@ -186,15 +186,11 @@ input[type="text"] {
   align-self: center;
 }
 
-input[type="radio"] {
-  margin-top: 8px;
-  margin-right: 5px;
-}
-
 .input_wrapper {
   display: flex;
   flex-direction: column;
 	margin-right: 10px;
+  font-size: 15px;
 }
 
 .input_wrapper input[type=radio] {
@@ -215,7 +211,7 @@ input[type="radio"] {
 }
 
 /* Checked */
-.input_wrapper input[type=radio]:checked + label {
+.input_wrapper input[type="radio"]:checked + label {
   background: -webkit-linear-gradient(left, #b22429,#963eac,#9e338a);
   background: linear-gradient(to right, #b22429,#963eac,#9e338a);
 }
@@ -227,6 +223,102 @@ input[type="radio"] {
 .create_popup {
   display: flex;
   flex-direction: column;
+}
+
+/*register check popup*/
+.wrapper_auth,
+.wrapper_reg {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding: 20px;
+  justify-content: space-evenly;
+  align-items: center;
+  text-align: center;
+}
+
+.wrapper_auth {
+  background: rgb(83,156,109);
+  background: linear-gradient(90deg, rgba(83,156,109,1) 0%, rgba(11,164,173,1) 58%, rgba(0,212,255,1) 100%); 
+  border-radius: 10px 0 0 10px;
+}
+
+.title_checked_auth,
+.title_checked_reg {
+  font-size: 32px;
+}
+
+.register_check {
+  display: flex;
+  justify-content: center;
+}
+
+.description_auth,
+.description_reg {
+  font-size: 20px;
+}
+
+/*join channel*/
+
+.wrapper_join {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 30px;
+}
+
+.wrapper_btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+/*settings user*/
+
+.label_avatar {
+  cursor: pointer;
+  width: 120px;
+  height: 120px;
+  display: inline-block;
+  /* background-image: url("../../assets/select-game-popup/avat-def.png"); */
+  background-size: contain;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  align-self: center;
+}
+
+input[type="file"] {
+  position: absolute;
+  overflow: hidden;
+  z-index: -1;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+}
+
+.settings_user {
+  display: flex;
+  flex-direction: column;
+}
+
+.title_avatar {
+  text-align: center;
+}
+
+.settings_user {
+  padding: 30px;
+}
+
+input[id="name"] {
+  height: 30px;
+  padding-left: 10px;
+  max-width: 400px;
+  align-self: center;
+  margin-bottom: 10px;
+}
+
+.caption {
+  font-size: 16px;
 }
 
 @media screen and (max-width: 550px) {

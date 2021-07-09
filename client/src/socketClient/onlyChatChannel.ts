@@ -22,7 +22,7 @@ export class OnlyChatChannelService implements ISocketService{
   }
 
   messageHandler(rawMessage:string){
-    console.log(rawMessage);
+    // console.log(rawMessage);
     const message = JSON.parse(rawMessage);
     if (message.service === 'chat'){
       this.onAny.emit(message);

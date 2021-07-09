@@ -49,8 +49,9 @@ class CreateChannelPopup extends GenericPopup<any> {
     gameModePopup.forEach((radioBtn) => {
       const radio = new InputWrapper(this.popupWrapper.node, '', () => null, '', radioBtn, 'radio');
       const label = new Control(radio.node, 'label', '', radioBtn);
-      (radio.node as HTMLInputElement).name = 'inputRadio';
+      (radio.field.node as HTMLInputElement).name = 'inputRadio';
       (radio.node as HTMLInputElement).value = radioBtn;
+      radio.error.destroy();
       label.node.setAttribute('for', `${radioBtn}`);
       radio.onValidate = null;
     });

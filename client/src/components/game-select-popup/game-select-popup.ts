@@ -7,12 +7,12 @@ import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 
 
-export const gameSetPopup = [ 'chess', 'cross', 'chat'];
+export const gameSetPopup = [ 'OnlyChatChannel', 'ChessGameChannel', 'CrossGameChannel' ];
 
 export const gameIcons = new Map<string, string>([
-  ['chess', chessIcon],
-  ['cross', crossIcon],
-  ['chat', chatIcon]
+  ['ChessGameChannel', chessIcon],
+  ['CrossGameChannel', crossIcon],
+  ['OnlyChatChannel', chatIcon]
 ]);
 
 export class GameSelectPopup extends GenericPopup<string> {
@@ -30,18 +30,19 @@ export class GameSelectPopup extends GenericPopup<string> {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
-    const titleSelectGame = new Control(this.popupWrapper.node, 'div', popupStyles.title_game_select, 'Choose a game');
+    const titleSelectGame = new Control(this.popupWrapper.node, 'div', popupStyles.title_game_select, 'Choose a type channel');
     this.wrapperButtons = new Control(this.popupWrapper.node, 'div', popupStyles.games);
     this.closeBtn = new ButtonDefault(this.popupWrapper.node, popupStyles.close_button, '');
     this.closeBtn.onClick = () => {
       this.destroy();
     }
-    gameSetPopup.forEach((game) => {
+    gameSetPopup.forEach((channelType) => {
       const button = new ButtonDefault(this.wrapperButtons.node, popupStyles.game_icon, '');
-      button.node.style.backgroundImage = `url(${gameIcons.get(game)})`;
+      button.node.style.backgroundImage = `url(${gameIcons.get(channelType)})`;
       
       button.onClick = () => {
-        this.onSelect(game);
+        console.log(channelType)
+        this.onSelect(channelType);
       };
     });
   }

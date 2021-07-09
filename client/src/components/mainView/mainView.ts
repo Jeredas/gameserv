@@ -18,7 +18,7 @@ class MainView extends Control {
     // // this.chatAction.node.style.backgroundImage = `url(${bgImage})`;
     this.mainViewMessages = new MainViewMessages(this.node);
     this.mainViewInput = new MainViewInput(this.node);
-    this.mainViewPlayers = new MainViewPlayers(this.node);
+    
   }
 
 

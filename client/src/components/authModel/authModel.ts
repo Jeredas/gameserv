@@ -16,7 +16,7 @@ export class AuthModel {
 
   async sendAuthData(userData: IAuthData) {
     const response = await apiRequest(apiUrl, 'auth', userData).then((res) => {
-      console.log(res.data,'auth response');
+      // console.log(res.data,'auth response');
         const loginData = {
           login: res.data.userData.login,
           avatar: res.data.userData.avatar,
@@ -33,7 +33,7 @@ export class AuthModel {
 
   async testAccess() {
     const response = await apiRequest(apiUrl, 'testAccess', {}).then((res) => {
-      console.log(res.userData);
+      // console.log(res.userData);
       if(res.userData){
         console.log('session exists');
         return true;
