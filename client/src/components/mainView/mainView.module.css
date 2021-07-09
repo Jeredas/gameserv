@@ -5,18 +5,20 @@
 }
 
 .chat_messages {
-  height: 30%;
+  height: 200px;
   width: 100%;
   padding: 10px;
   background-color: #555;
   overflow-y: scroll;
+  grid-column: span 4;
 }
 
 .chat_main {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 0;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  /*flex-direction: column; */
+  /* flex-grow: 0; */
 }
 
 .chat_action {
@@ -25,9 +27,11 @@
   align-items: center;
   justify-content: center;
   padding: 10px;
-  /* height: 100%; */
-  height: 70%;
+  height: 100%;
+  /* height: 70%; */
   width: 100%;
+  flex-wrap: wrap;
+  grid-column: span 4;
 }
 
 
@@ -39,7 +43,7 @@
   display: flex;
   padding: 10px;
   background-color: #555;
-
+  grid-column: span 4;
 }
 
 .chat_input_field {
@@ -50,6 +54,7 @@
   color: #fff;
   border-bottom-left-radius: 5px;
   border-top-left-radius: 5px;
+  grid-column: span 4;
 }
 
 .chat_send_button {
