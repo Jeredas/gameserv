@@ -22,6 +22,7 @@ export class AuthModel {
           avatar: res.data.userData.avatar,
           //name: res.data.userData.name
         }
+        localStorage.removeItem('todoListApplicationSessionId');
         localStorage.setItem('todoListApplicationSessionId', res.data.session);
         this.onLogIn.emit(loginData);
         return true
