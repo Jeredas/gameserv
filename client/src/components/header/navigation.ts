@@ -4,6 +4,7 @@ import HeaderAuth from './header-auth';
 import NavItem from './nav-item';
 import headerStyles from './header.module.css';
 import { IUserAuth } from '../utilities/interfaces';
+import Signal from '../../socketClient/signal';
 
 export class Navigation extends Control {
   private navContainer: Control;
@@ -14,7 +15,7 @@ export class Navigation extends Control {
 
   // public onLogout: () => void = () => {};
   public onUserClick: () => void = () => {};
-
+  onLogout : Signal<null> = new Signal();
   constructor(parentNode: HTMLElement | null = null) {
     super(parentNode, 'div', headerStyles.header_wrapper);
 
@@ -27,6 +28,9 @@ export class Navigation extends Control {
     this.userBlock.onUserClick = () => {
       this.onUserClick();
     };
+    this.userBlock.onLogout.add(()=>{
+      this.onLogout.emit(null)
+    })
   }
 
   addLink(text: string, hash: string): void {
@@ -46,6 +50,9 @@ export class Navigation extends Control {
   setUserData(data: IUserAuth): void {
     this.userBlock.setUserName(data.login);
     this.userBlock.setAvatar(data.avatar);
+  }
+  clearNavs(){
+    this.navContainer.node.innerHTML ='';
   }
 
 }

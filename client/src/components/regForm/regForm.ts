@@ -24,7 +24,7 @@ export class RegForm extends GenericPopup<any> {
     this.model = new AuthModel();
     this.imgSrc = '';
     this.labelAvatar = new Control(this.popupWrapper.node, 'label', '', 'set your avatar');
-    this.labelAvatar.node.setAttribute('for', 'avatarloader');
+    this.labelAvatar.node.setAttribute('for', 'avatarLoader');
     this.avatarLoader = new InputWrapper(this.labelAvatar.node, '', async () => { return null }, 'AvatarLoader', 'avatarLoader', 'file');
     this.login = new InputWrapper(this.popupWrapper.node, 'Login', async () => {
       const res = await this.model.regValidation(this.getData());
