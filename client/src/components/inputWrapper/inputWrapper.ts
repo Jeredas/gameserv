@@ -21,11 +21,11 @@ class InputWrapper extends Control {
     this.name = caption;
     this.caption = new Control(this.node, 'div', popupStyle.caption);
     this.caption.node.innerHTML = caption;
-    this.field = new Control(this.node, 'input', popupStyle.field_input, `${id}`);
+    this.field = new Control(this.node, 'input', popupStyle.input_wrapper, `${id}`);
     this.field.node.id = id;
     (this.field.node as HTMLInputElement).placeholder = `${placeHolder}`;
     (this.field.node as HTMLInputElement).type = type;
-    this.error = new Control(this.node, 'div', popupStyle.input_error);
+    this.error = new Control(this.node, 'div', popupStyle.input_wrapper);
     this.onValidate = onValidate;
     this.field.node.oninput = async () => {
       this.timer && clearTimeout(this.timer);

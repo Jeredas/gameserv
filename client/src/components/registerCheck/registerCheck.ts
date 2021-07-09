@@ -3,11 +3,12 @@ import GenericPopup from '../genericPopup/genericPopup';
 import Control from '../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
 
-class RegisterCheck extends GenericPopup<boolean> {
+class RegisterCheck extends GenericPopup<string> {
   popupWrapper: Control;
   buttonSignIn: ButtonDefault;
   buttonSignUp: ButtonDefault
-  onSelect: (value: boolean) => void;
+  onSelect: (value: string) => void;
+  buttonClose: ButtonDefault;
   constructor(parentNode:HTMLElement) {
     super(parentNode);
     this.popupWrapper.node.classList.add(popupStyles.register_check)
@@ -20,13 +21,17 @@ class RegisterCheck extends GenericPopup<boolean> {
     const regTitle =  new Control(wrapperReg.node, 'div', popupStyles.title_checked_reg, 'Create Account');
     const regSubtitle =  new Control(wrapperReg.node, 'div', popupStyles.description_reg, 'Do not you have an account yet?');
     this.buttonSignUp = new ButtonDefault(wrapperReg.node, popupStyles.settings_button, 'SIGN UP');
-
+    this.buttonClose = new ButtonDefault(wrapperReg.node, popupStyles.settings_button, 'Close PopUp');
     this.buttonSignIn.onClick = () => {
-      this.onSelect(true);
+      this.onSelect('SignIn');
     }
 
     this.buttonSignUp.onClick = () => {
-      this.onSelect(false);
+      this.onSelect('SignUp');
+    }
+    this.buttonClose.onClick = () => {
+      this.onSelect('Close');
+      this.destroy();
     }
   }
 }
