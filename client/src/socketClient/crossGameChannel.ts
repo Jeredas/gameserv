@@ -5,7 +5,7 @@ import Signal from './signal';
 import { ChatChannelModel } from './chatChannelModel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
-import { ICrossMove, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
+import { ICrossMove, ICrossStop, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
 import Cross from '../components/games/cross/cross';
 import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
@@ -22,6 +22,8 @@ export class CrossGameChannelService implements ISocketService {
   public onJoinedPlayer: Signal<IJoinedPlayer> = new Signal();
   public onCrossStart: Signal<number> = new Signal();
   public onCrossMove: Signal<ICrossMove> = new Signal();
+  public onCrossStop: Signal<ICrossStop> = new Signal();
+  public onCrossRemove: Signal<{method: string, player: string}> = new Signal();
 
   constructor() {}
 
@@ -61,11 +63,29 @@ export class CrossGameChannelService implements ISocketService {
           'crossMove',
           (params) => {
             this.onCrossMove.emit({
-              coords: params.coords,
               player: params.player,
               field: params.field,
               winner: params.winner,
-              sign: params.sign
+              history: params.history
+            });
+          }
+        ],
+        [
+          'crossStop',
+          (params) => {
+            this.onCrossStop.emit({
+              stop: params.stop, 
+              player: params.player, 
+              method: params.method 
+            });
+          }
+        ],
+        [
+          'crossRemove',
+          (params) => {
+            this.onCrossRemove.emit({
+              method: params.method,
+              player: params.player
             });
           }
         ]
@@ -198,6 +218,21 @@ export class CrossGameChannelModel extends ChatChannelModel {
     });
   }
 
+  crossStop(message: string) {
+    this.send('crossStop', {
+      messageText: message
+    });
+  }
+
+  crossRemove(message: string) {
+    console.log('crossRemove click: ', message);
+    
+    this.send('crossRemove', {
+      messageText: message
+    });
+  }
+
+
   destroy() {
     this.service.remove();
   }
@@ -214,25 +249,20 @@ export class CrossGameChannelView extends MainView {
     this.mainViewPlayers = new MainViewPlayers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
-    const connectionIndicator = new Control(this.node);
+    // const connectionIndicator = new Control(this.node);
     // const sendMessageButton = new Control(this.node, 'div', '', 'send');
-    const leaveMessageButton = new Control(this.node, 'div', '', 'leave');
+    // const leaveMessageButton = new Control(this.node, 'div', '', 'leave');
 
-    const messagesContainer = new Control(this.node);
+    // const messagesContainer = new Control(this.node);
 
-    const btnEnter = new Control(this.node, 'div', '', 'ENTER THE GAME');
-    btnEnter.node.style.backgroundColor = '#bbb';
-    btnEnter.node.style.color = '#000';
-    btnEnter.node.style.cursor = 'pointer';
-
-    btnEnter.node.onclick = () => {
+    this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Join', res);
         if (res) {
           this.model.getPlayers('');
         }
       });
-    };
+    }
 
     this.crossGame.onStartClick = () => {
       this.model.crossStartGame('');
@@ -252,10 +282,11 @@ export class CrossGameChannelView extends MainView {
     });
     this.model.service.onCrossMove.add((params) => {
       this.crossGame.updateGameField(params.field);
-      this.crossGame.setHistoryMove(params.sign, params.coords, '0:02');
+      this.crossGame.setHistoryMove(params.history);
       if (params.winner) {
         console.log(`Winner: ${params.winner}`);
-        this.crossGame.clearData();
+        this.model.crossRemove('won');
+        this.crossGame.timer.stop();
       }
     });
 
@@ -263,24 +294,24 @@ export class CrossGameChannelView extends MainView {
       this.mainViewMessages.addMessage(params);
     });
 
-    leaveMessageButton.node.onclick = () => {
+    this.mainViewPlayers.onChannelLeave = () => {
       this.model.leaveChannel();
       this.onLeaveClick?.();
     };
 
-    model.service.onClose.add(() => {
-      connectionIndicator.node.textContent = 'disconnected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
-    });
+    // model.service.onClose.add(() => {
+    //   connectionIndicator.node.textContent = 'disconnected';
+    //   //connectionIndicator.node.onclick = ()=>{
+    //   //  model.socketClient.reconnent();
+    //   //}
+    // });
 
-    model.service.onOpen.add(() => {
-      connectionIndicator.node.textContent = 'connected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
-    });
+    // model.service.onOpen.add(() => {
+    //   connectionIndicator.node.textContent = 'connected';
+    //   //connectionIndicator.node.onclick = ()=>{
+    //   //  model.socketClient.reconnent();
+    //   //}
+    // });
 
     this.mainViewInput.onClick = (message) => {
       this.model.sendMessage(message);
@@ -289,6 +320,28 @@ export class CrossGameChannelView extends MainView {
     this.mainViewInput.onEnter = (message) => {
       this.model.sendMessage(message);
     };
+    this.crossGame.onDrawClick = () => {
+      this.model.crossStop('draw');
+    }
+
+    this.crossGame.onLossClick = () => {
+      this.model.crossStop('loss');
+    }
+
+    this.crossGame.onModalDrawClick = (response: string) => {
+      this.model.crossRemove(response);
+    }
+
+    this.model.service.onCrossStop.add((params) => {
+      this.crossGame.createModalDraw(params)
+    })
+    this.model.service.onCrossRemove.add((params) => {
+      this.crossGame.createModalGameOver(params);
+    })
+    this.crossGame.onGameOverClick = () => {
+      this.crossGame.clearData();
+    }
+
   }
 
   destroy() {

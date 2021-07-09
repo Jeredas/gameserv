@@ -4,80 +4,12 @@ import Cell from './cell';
 import CrossButton from './button/cross-button';
 import crossStyles from './cross.module.css';
 import HistoryBlock from './history/history';
-import { IJoinedPlayer } from 'src/components/utilities/interfaces';
+import { ICrossStop, IJoinedPlayer, ICrossHistory } from '../../utilities/interfaces';
+import Timer from '../../timer/timer';
+import ModalDraw from './modal/modal-draw';
+import ModalGameOver from './modal/modalGameOver';
 
 const size = 3;
-class Timer extends Control {
-  private counter = 0;
-
-  private count = 10;
-
-  private time: number;
-
-  private startTime = 0;
-
-  private isPlaying = false;
-
-  constructor(parentNode: HTMLElement) {
-    super(parentNode, 'div', crossStyles.cross_timer);
-    this.node.textContent = '00:10';
-  }
-
-  start() {
-    this.counter = window.setInterval(() => {
-      this.time = Math.floor((Date.now() - this.startTime) / 1000);
-      this.node.textContent = this.getTimeString();
-    }, 1000);
-  }
-
-  clear() {
-    if (this.counter) {
-      window.clearInterval(this.counter);
-      this.counter = 0;
-      this.node.textContent = '00:00';
-      this.startTime += 11000;
-    }
-  }
-
-  countDown() {
-    this.counter = window.setInterval(() => {
-      if (this.count - this.time === 0) {
-        this.clear();
-        this.start();
-        this.isPlaying = true;
-      } else {
-        this.time = Math.floor((Date.now() - this.startTime) / 1000);
-        this.node.textContent = this.getCountDownString();
-      }
-    }, 1000);
-  }
-
-  setTimer(startTime: number) {
-    this.startTime = startTime;
-    this.time = startTime;
-    this.countDown();
-  }
-
-  getCountDownString(): string {
-    const seconds = Math.floor((this.count - this.time) % 60);
-
-    const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
-    return `00:${secOutput}`;
-  }
-
-  getTimeString(): string {
-    const minutes = Math.floor(this.time / 60);
-    const seconds = Math.floor(this.time % 60);
-
-    const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
-    const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
-    return `${minOutput}:${secOutput}`;
-  }
-
-  getIsPlaying(): boolean {
-    return this.isPlaying;
-  }
-}
 
 class Cross extends Control {
   private cells: Array<Cell> = [];
@@ -114,6 +46,11 @@ class Cross extends Control {
 
   private crossMode = 'network';
 
+  private modalPopup: ModalDraw;
+  public onModalDrawClick: (response: string) => void = () => {};
+  private modalGameOver: ModalGameOver;
+  public onGameOverClick: () => void = () => {};
+
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', crossStyles.cross_wrapper);
     const crossControls = new Control(this.node, 'div', crossStyles.cross_controls);
@@ -145,6 +82,7 @@ class Cross extends Control {
       this.onStartClick();
     };
     this.btnDraw = new CrossButton(crossControls.node, 'Draw');
+    // this.model.chessStopGame('draw');
     this.btnDraw.buttonDisable();
 
     this.btnDraw.onClick = () => {
@@ -154,8 +92,11 @@ class Cross extends Control {
     this.btnLoss.buttonDisable();
 
     this.btnLoss.onClick = () => {
+      // this.model.chessStopGame('loss');
       this.onLossClick();
     };
+
+    // this.model.onStopGame.add((data) => this.createModalDraw(data));
   }
 
   updateGameField(field: Array<Array<string>>): void {
@@ -175,16 +116,19 @@ class Cross extends Control {
 
   clearData() {
     this.cells.forEach((cell) => cell.clearCell());
-    this.players = [];
-    this.playerOne.node.textContent = 'Player1';
-    this.playerTwo.node.textContent = 'Player2';
+    // this.players = [];
+    // this.playerOne.node.textContent = 'Player1';
+    // this.playerTwo.node.textContent = 'Player2';
     this.timer.clear();
+    this.history.clearHistory();
+    this.btnStart.buttonDisable();
+    this.btnDraw.buttonDisable();
+    this.btnLoss.buttonDisable();
   }
 
   setPlayer(params: IJoinedPlayer): void {
     console.log(params);
     const player1 = params.players[0].login;
-    
 
     this.playerOne.node.textContent = player1;
     this.players.push(player1);
@@ -208,8 +152,34 @@ class Cross extends Control {
     this.timer.setTimer(startTime);
   }
 
-  setHistoryMove(sign: string, coords: Vector, time: string): void {
-    this.history.setHistoryMove(sign, coords, this.timer.getTimeString());
+  setHistoryMove(params: ICrossHistory): void {
+    this.history.setHistoryMove(params);
+  }
+
+  createModalDraw(data: ICrossStop): void {
+    console.log(data.player, this.host);
+
+    this.modalPopup = new ModalDraw(this.node, data.stop, data.player, this.players, data.method);
+    this.modalPopup.onModalDrawClick = (response: string) => {
+      this.onModalDrawClick(response);
+    };
+  }
+
+  createModalGameOver(params: {method: string, player: string}): void {
+    this.modalPopup && this.modalPopup.destroy();
+    this.modalGameOver = new ModalGameOver(this.node, params, this.players);
+    this.modalGameOver.onGameOverClick = () => {
+      this.onGameOverClick();
+      this.destroyModalGameOver();
+    }
+  }
+
+  destroyModalDraw(): void {
+    this.modalPopup.destroy();
+  }
+
+  destroyModalGameOver(): void {
+    this.modalGameOver.destroy();
   }
 }
 
