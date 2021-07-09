@@ -72,7 +72,7 @@ class Application extends Control {
     this.pageContainer = new Control(this.node, 'div', '');
     this.about = new AboutPage(this.pageContainer.node);
     this.about.onAuth.add((data)=>{
-      console.log(data,'app page')
+      // console.log(data,'app page')
       this.currentUser.setData(data)
     })
     const socket = new SocketClient();

@@ -11,7 +11,9 @@ class MainViewPlayer extends Control {
     super(parentNode, 'div', mainViewPlayer.chat_user);
     this.name = userName;
     this.userAvatar = new Control(this.node, 'div', mainViewPlayer.default_avatar_small);
-    this.userAvatar.node.style.backgroundImage = `url(${avatar})`;
+    if(avatar) {
+      this.userAvatar.node.style.backgroundImage = `url(${avatar})`;
+    }
     this.userName = new Control(this.node, 'div', mainViewPlayer.default_name);
     this.userName.node.textContent = userName;
   }

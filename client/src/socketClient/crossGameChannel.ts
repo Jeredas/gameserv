@@ -8,6 +8,7 @@ import MainView from '../components/mainView/mainView';
 import { ICrossMove, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
 import Cross from '../components/games/cross/cross';
 import Vector from '../components//utilities/vector';
+import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
 
 export class CrossGameChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -210,6 +211,7 @@ export class CrossGameChannelView extends MainView {
   constructor(parentNode: HTMLElement, model: channelModel) {
     super(parentNode);
     this.model = model as CrossGameChannelModel;
+    this.mainViewPlayers = new MainViewPlayers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
     const connectionIndicator = new Control(this.node);
