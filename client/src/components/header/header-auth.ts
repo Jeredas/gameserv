@@ -3,10 +3,10 @@ import Control from '../utilities/control';
 import headerStyles from './header.module.css';
 import SettingsUser from '../settingsUser/settingsUser';
 import Signal from '../../socketClient/signal';
+import defaultAvatar from '../../assets/default-avatar.png';
 
 
 class HeaderAuth extends Control {
-  private signIn: Control;
 
   private user: Control;
 
@@ -24,18 +24,12 @@ class HeaderAuth extends Control {
     super(parentNode, 'div', headerStyles.header_auth);
     // this.configControls = configControls;
     this.user = new Control(this.node, 'div', headerStyles.auth_user);
-    this.userAvatar = new Control(this.user.node, 'div', headerStyles.default_avatar);
-    // this.userAvatar.node.style.backgroundImage = `url(${headerStyles.default_avatar})`;
+    this.userAvatar = new Control(this.user.node, 'div', headerStyles.auth_avatar);
+    this.userAvatar.node.style.backgroundImage = `url(${defaultAvatar})`;
     this.userName = new Control(this.user.node, 'div', headerStyles.auth_nickname);
     this.userName.node.textContent = 'NickName';
 
-    // this.signIn = new Control(this.node, 'div', headerStyles.auth_controls);
-    // this.signIn.node.textContent = 'Sign In';
-    // this.signIn.node.onclick = () => {
-    //   this.onSignIn();
-    // };
-
-    this.userName.node.onclick = () => {
+    this.user.node.onclick = () => {
       popupService.init(parentNode);
       popupService.showPopup(SettingsUser).then((res)=>{
         if(res==='save') {
@@ -48,7 +42,7 @@ class HeaderAuth extends Control {
           this.userName.node.textContent = 'NickName';
           console.log(headerStyles.default_avatar)
           //this.userAvatar.node.classList.add(headerStyles.default_avatar)
-          this.userAvatar.node.style.backgroundImage = `url(${headerStyles.default_avatar})`;
+          this.userAvatar.node.style.backgroundImage = `url(${defaultAvatar})`;
          
         }
       })
@@ -57,20 +51,15 @@ class HeaderAuth extends Control {
   }
 
   setAvatar(avatar: string): void {
-    this.userAvatar.node.style.backgroundImage = `url(${avatar})`;
+    if(avatar) {
+      this.userAvatar.node.style.backgroundImage = `url(${avatar})`;
+    }
   }
 
   setUserName(name: string): void {
     this.userName.node.textContent = name;
   }
 
-  hideElement(): void {
-    this.signIn.node.classList.add(headerStyles.default_hidden);
-  }
-
-  showElement(): void {
-    this.signIn.node.classList.remove(headerStyles.default_hidden);
-  }
 }
 
 export default HeaderAuth;

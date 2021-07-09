@@ -44,11 +44,21 @@ export interface IJoinedPlayer {
   player: string;
   players: Array<{login: string, avatar: string}>;
 }
-
+export interface ICrossHistory {
+  sign: string;
+  move: Vector;
+  time: string
+}
 export interface ICrossMove {
-  coords: Vector;
   player: string;
   field: Array<Array<string>>;
   winner: string;
-  sign: string;
+  history: ICrossHistory
 }
+
+export interface ICrossStop {
+  stop: string;
+  player: string;
+  method: string;
+}
+
