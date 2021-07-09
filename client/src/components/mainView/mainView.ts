@@ -3,6 +3,7 @@ import MainViewInput from "./mainViewInput/mainViewInput";
 import mainViewStyles from './mainView.module.css';
 import MainViewMessages from "./mainViewMessages";
 import MainViewPlayers from "./mainViewPlayers/mainViewPlayers";
+import MainViewUsers from "./mainViewUsers/mainViewUsers";
 
 class MainView extends Control {
   public mainViewAction: Control;
@@ -11,6 +12,7 @@ class MainView extends Control {
   public onMessageSend: (message: string) => void = () => {};
   public mainViewInput: MainViewInput;
   public mainViewPlayers: MainViewPlayers;
+  public mainViewUsers: MainViewUsers;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewStyles.chat_main);
