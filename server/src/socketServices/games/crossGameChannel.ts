@@ -8,7 +8,7 @@ interface IChatResponse {
 interface ICrossHistory {
   sign: string;
   move: Vector;
-  time: string
+  time: string;
 }
 
 export class ChannelJoinPlayerResponse {
@@ -143,13 +143,15 @@ export class CrossGameChannel extends ChatChannel {
   async joinPlayer(connection: any, params: any) {
     try {
       const currentClient = this.clients.find((it) => it.connection == connection);
-      this.logic.setPlayers(currentClient.userData.login);
-      this.players.push({
-        login: currentClient.userData.login,
-        avatar: currentClient.userData.avatar
-      });
-      const response = new ChannelJoinPlayerResponse('ok', params.requestId);
-      currentClient.send(response);
+      if (this.players.length < 2 && !this.players.find(player => currentClient.userData.login === player.login)) {
+        this.logic.setPlayers(currentClient.userData.login);
+        this.players.push({
+          login: currentClient.userData.login,
+          avatar: currentClient.userData.avatar
+        });
+        const response = new ChannelJoinPlayerResponse('ok', params.requestId);
+        currentClient.send(response);
+      }
     } catch (err) {
       connection.sendUTF(JSON.stringify(new ChannelJoinPlayerResponse('error', params.requestId)));
     }
@@ -292,6 +294,8 @@ export class CrossGameChannel extends ChatChannel {
       this.players = [];
     }
   }
+
+
 }
 
 let size = 3;

@@ -62,3 +62,8 @@ export interface ICrossStop {
   method: string;
 }
 
+export interface IChatUser {
+  userName: string;
+  avatar: string;
+}
+
