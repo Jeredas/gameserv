@@ -21,7 +21,7 @@ class RegisterCheck extends GenericPopup<string> {
     const regTitle =  new Control(wrapperReg.node, 'div', popupStyles.title_checked_reg, 'Create Account');
     const regSubtitle =  new Control(wrapperReg.node, 'div', popupStyles.description_reg, 'Do not you have an account yet?');
     this.buttonSignUp = new ButtonDefault(wrapperReg.node, popupStyles.settings_button, 'SIGN UP');
-    this.buttonClose = new ButtonDefault(wrapperReg.node, popupStyles.settings_button, 'Close PopUp');
+    this.buttonClose = new ButtonDefault(wrapperReg.node, popupStyles.close_button, '');
     this.buttonSignIn.onClick = () => {
       this.onSelect('SignIn');
     }

@@ -5,7 +5,7 @@
 }
 
 .chat_messages {
-  height: 30%;
+  height: 200px;
   width: 100%;
   padding: 10px;
   background-color: #555;
@@ -14,8 +14,8 @@
 
 .chat_main {
   width: 100%;
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
   flex-grow: 0;
 }
 
@@ -135,7 +135,7 @@
 }
 
 .chat_users {
-  height: 100%;
+  /* height: 100%; */
   width: 100%;
   max-width: 150px;
   background-color: #333;
