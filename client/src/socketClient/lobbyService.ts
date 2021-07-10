@@ -158,7 +158,10 @@ export class LobbyModel{
         params: {
           requestId: requestId,
           channelName: newChannel.channelName,
-          channelType: newChannel.channelType
+          channelType: newChannel.channelType,
+          channelParams: {
+            gameMode: newChannel.gameMode
+          }
         }
       });
     });
@@ -189,7 +192,7 @@ export class LobbyView extends Control{
     }
 
     createChannelButton.node.onclick = ()=>{
-      this.model.createNewChannel({channelName:'dgh', channelType:'OnlyChatChannel'}).then(res=>{
+      this.model.createNewChannel({channelName:'dgh', channelType:'OnlyChatChannel', gameMode: 'network'}).then(res=>{
         console.log(res);
       });
     }

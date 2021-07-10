@@ -26,6 +26,7 @@ export class ChessGameChannelService implements ISocketService {
   public onChessStop: Signal<IChessStop> = new Signal();
   public onChessRemove: Signal<{ method: string; player: string }> = new Signal();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
+  public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
 
   constructor() {}
 
@@ -96,13 +97,25 @@ export class ChessGameChannelService implements ISocketService {
               player: params.player
             });
           }
+        ],
+        [
+          'userList',
+          (params) => {
+            this.onUserList.emit(
+              // params.userList.map((user: string) => ({avatar: '', userName: user}))
+              params.userList
+            );
+          }
+        ],
+        [
+          'playerList',
+          (params) => {
+            this.onPlayerList.emit(
+              // params.userList.map((user: string) => ({avatar: '', userName: user}))
+              params.playerList
+            );
+          }
         ]
-        // [
-        //   'userList',
-        //   (params) => {
-        //     this.onUserList.emit(params.userList);
-        //   }
-        // ],
       ]).get(message.type);
 
       if (processFunction) {
@@ -347,13 +360,15 @@ export class ChessGameChannelView extends MainView {
     });
     this.chessGame.onGameOverClick = () => {
       this.chessGame.clearData();
-    }
+    };
 
-    // this.model.service.onUserList.add((params) => {
-    //   console.log('UserLIST check', params);
+    this.model.service.onUserList.add((params) => {
+      this.mainViewUsers.setUsers(params);
+    });
 
-    //   this.mainViewUsers.setUsers(params);
-    // })
+    this.model.service.onPlayerList.add((params) => {
+      this.mainViewPlayers.setPlayers(params);
+    });
   }
 
   destroy() {

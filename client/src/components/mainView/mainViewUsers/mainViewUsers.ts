@@ -39,6 +39,14 @@ class MainViewUsers extends Control {
     });
   }
 
+  // setUsers(users: Array<string>): void {
+  //   this.deleteUsers();
+  //   users.forEach((user) => {
+  //     const chatUser = new MainViewPlayer(this.usersBlock.node, user.avatar, user.userName);
+  //     this.users.push(chatUser);
+  //   });
+  // }
+
   deleteUser(userName: string): void {
     this.users = this.users.map((user) => {
       if (user.getUserName() === userName) {

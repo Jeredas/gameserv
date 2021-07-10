@@ -6,11 +6,13 @@ class ChatChannel extends Control {
   public onClick: (ChatChannel: string) => void;
   private channelName: string;
   private channelType: string;
+  private gameMode: string = '';
 
-  constructor(parentNode: HTMLElement, channelName: string, channelType: string) {
+  constructor(parentNode: HTMLElement, channelName: string, channelType: string, gameMode = '') {
     super(parentNode, 'div', chatStyles.chat_channel, channelName);
     this.channelName = channelName;
     this.channelType = channelType;
+    this.gameMode = gameMode;
 
     this.node.onclick = () => {
       this.onClick(this.channelName);
@@ -20,7 +22,8 @@ class ChatChannel extends Control {
   getChannelData(): IChannelData {
     return {
       channelName: this.channelName,
-      channelType: this.channelType
+      channelType: this.channelType,
+      gameMode: this.gameMode
     };
   }
 }
