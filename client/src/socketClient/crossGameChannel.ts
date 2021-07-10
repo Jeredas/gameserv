@@ -1,4 +1,3 @@
-import Control from '../components/utilities/control';
 import { ISocketService } from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';

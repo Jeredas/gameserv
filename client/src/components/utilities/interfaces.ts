@@ -77,15 +77,19 @@ export interface IChessStop {
   method: string;
 }
 
+export interface IChessHistory {
+  coords: Array<Vector>,
+  time: string, 
+  figName: string
+}
+
 export interface IChessData {
-  message: string;
-  coords: Array<Vector>;
+  coords: Array<Vector>,
   player: string;
-  // field: Array<string>;
   field: string;
   winner: string;
   rotate: boolean;
-  figure: Array<string>;
-  moves: Array<Array<Vector>>;
+  history: IChessHistory
   king: Vector;
 }
+

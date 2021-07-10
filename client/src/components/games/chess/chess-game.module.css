@@ -241,7 +241,7 @@
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url('../../assets/whiteBishop.svg');
+  background-image: url('../../../assets/chess-figures/whiteBishop.svg');
 }
 
 @media screen and (max-width: 870px) {
