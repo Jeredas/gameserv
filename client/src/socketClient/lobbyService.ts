@@ -36,6 +36,7 @@ export class LobbyService implements ISocketService{
             this.onChannelType.emit(params);
           }],
           ['channelList', (params) => {
+            console.log(params)
             this.onChannelList.emit(params.channelList);
           }]
         ]

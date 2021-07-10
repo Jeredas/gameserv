@@ -64,7 +64,7 @@ class ChatChannels extends Control {
     console.log(channels)
     this.channelContainer.node.innerHTML = '';
     channels.forEach((chan)=>{
-     this.addChannel(chan.name)
+     this.addChannel(chan.name,chan.type,'')
     })
   }
 }

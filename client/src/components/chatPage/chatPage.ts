@@ -114,7 +114,6 @@ class ChatPage extends Control {
         console.log(res,'chat page res')
         if (res.status === 'ok') {
 
-          this.channelBlock.addChannels(res.channelList);
 
           const channelIcon = channelConfig.get(newChannel.channelType).icon;
           console.log(channelIcon);
