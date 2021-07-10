@@ -21,7 +21,7 @@ class InputWrapper extends Control {
     this.name = caption;
     this.caption = new Control(this.node, 'div', popupStyle.caption);
     this.caption.node.innerHTML = caption;
-    this.field = new Control(this.node, 'input', popupStyle.field_input, `${id}`);
+    this.field = new Control(this.node, 'input', popupStyle.input_field, `${id}`);
     this.field.node.id = id;
     (this.field.node as HTMLInputElement).placeholder = `${placeHolder}`;
     (this.field.node as HTMLInputElement).type = type;

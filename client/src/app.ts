@@ -30,6 +30,7 @@ class Application extends Control {
   currentUser: UserDataState;
   model : AuthModel;
   onAuth: (param: IUserAuth) => void = () => { };
+  onAuthFail: (param: string) => void = () => { };
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', 'app');
@@ -39,21 +40,28 @@ class Application extends Control {
     popupService.showPopup(CheckSession).then((res) => {
       if (!res) {
         popupService.showPopup(RegisterCheck).then((res) => {
-          if (!res) {
+          if (res==='SignUp') {
             popupService.showPopup(RegForm).then((res) => {
               if (res === 'register') {
                 console.log('registered');
                 this.showAuthPopUp()
+                this.buildChatPage();
               } else {
                 this.about.show();
                 console.log('registration failed');
               }
             });
-          } else {
+          } else if(res === 'SignIn') {
+            this.buildChatPage();
             this.showAuthPopUp()
+          } else if(res === 'Close'){
+            this.about.show();
           }
         });
       } else {
+        console.log('build here')
+        this.navigation.clearNavs();
+        this.buildChatPage();
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
           this.currentUser.setData(res)
         })
@@ -63,26 +71,41 @@ class Application extends Control {
 
     // popupService.showPopup(SettingsUser)
     // popupService.showPopup(RegForm);
-
     this.navigation = new Navigation(this.node);
     this.currentUser.onUpdate.add(({ from, to }) => {
       this.navigation.setUserData(to)
     })
+    this.navigation.onLogout.add(()=>{
+      this.navigation.clearNavs();
+      this.addPage('about', 'about', this.about);
+      this.about.show();
+      console.log('logged out from header')
+      this.chatPage.destroy();
+    })
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', '');
     this.about = new AboutPage(this.pageContainer.node);
+    this.about.hide();
     this.about.onAuth.add((data)=>{
-      // console.log(data,'app page')
+      this.navigation.clearNavs();
+      this.buildChatPage();
       this.currentUser.setData(data)
+      this.chatPage.joinUserToChannel(data)
     })
-    const socket = new SocketClient();
-    let lobbyModel = new LobbyModel(socket);
-    socket.init(socketURL);
+    this.about.onAuthFail.add((res)=>{
+      console.log(res);
+      this.navigation.clearNavs();
+      this.buildChatPage();
+      this.chatPage.destroy();
+    })
+    // const socket = new SocketClient();
+    // let lobbyModel = new LobbyModel(socket);
+    // socket.init(socketURL);
 
-    this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    this.addPage('about', 'about', this.about);
-    this.addPage('chat', 'chat', this.chatPage);
-    this.router.processHash();
+    // this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
+    // this.addPage('about', 'about', this.about);
+    // this.addPage('chat', 'chat', this.chatPage);
+    // this.router.processHash();
 
   }
 
@@ -98,7 +121,6 @@ class Application extends Control {
         pageComponent.hide();
       }
     );
-
     this.navigation.addLink(linkName, pageName);
     this.router.addRoute(route);
   }
@@ -113,6 +135,15 @@ class Application extends Control {
         return false;
       }
     })
+  }
+  buildChatPage(){
+    const socket = new SocketClient();
+    let lobbyModel = new LobbyModel(socket);
+    socket.init(socketURL);
+    this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
+    this.addPage('about', 'about', this.about);
+    this.addPage('chat', 'chat', this.chatPage);
+    this.router.processHash();
   }
 }
 

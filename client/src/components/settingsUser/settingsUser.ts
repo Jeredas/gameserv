@@ -29,6 +29,7 @@ class SettingsUser extends GenericPopup<any> {
     this.name = new InputWrapper(this.popupWrapper.node, 'You can change your name in the field below',async()=>{return null}, 'Enter your new name', 'name');
     const wrapperButtons = new Control(this.popupWrapper.node, 'div', popupStyles.games);
     this.saveButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Save');
+    this.logOutButton = new ButtonDefault(wrapperButtons.node,  popupStyles.settings_button, 'Log out');
     this.cancelButton = new ButtonDefault(wrapperButtons.node,  popupStyles.settings_button, 'Cancel');
 
     this.saveButton.onClick = () =>{
@@ -40,6 +41,7 @@ class SettingsUser extends GenericPopup<any> {
       this.onSelect('cancel')
     }
     this.logOutButton.onClick = () =>{
+      window.location.hash = '#about';
       localStorage.removeItem('todoListApplicationSessionId');
       this.onSelect('logOut')
     }
