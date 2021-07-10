@@ -39,8 +39,8 @@ class ChatChannels extends Control {
     };
   }
 
-  addChannel(channelName: string): void {
-    const channel = new ChatChannel(this.channelContainer.node, channelName, '');
+  addChannel(channelName: string, channelType: string, channelIcon: string): void {
+    const channel = new ChatChannel(this.channelContainer.node, channelName, channelType, channelIcon, '');
     channel.onClick = (channelName) => {
       console.log(channelName);
     };

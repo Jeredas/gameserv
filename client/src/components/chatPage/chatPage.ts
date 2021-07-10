@@ -77,6 +77,7 @@ class ChatPage extends Control {
       channelModel.joinChannel().then((res) => {
         if (res) {
           const chessMode = 'network';
+          const channelIcon = channelOfChoice.icon
           let channel = new channelOfChoice.view(this.chatMain.node, channelModel, chessMode);
           channel.onLeaveClick = () => {
             channel.destroy();
@@ -92,7 +93,10 @@ class ChatPage extends Control {
       
       this.model.createNewChannel(newChannel).then((res: any) => {
         if (res.status === 'ok') {
-          this.channelBlock.addChannel(newChannel.channelName);
+          const channelIcon = channelConfig.get(newChannel.channelType).icon;
+          console.log(channelIcon);
+          
+          this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
           console.log('channel created with type', res.channelType);
         }
       });
