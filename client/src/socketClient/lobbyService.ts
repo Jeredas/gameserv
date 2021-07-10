@@ -3,7 +3,7 @@ import Control from '../components/utilities//control';
 import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
-import { IChannelData } from 'src/components/utilities/interfaces';
+import { IChannelData } from '../components/utilities/interfaces';
 
 
 export class LobbyService implements ISocketService{
@@ -176,7 +176,10 @@ export class LobbyModel{
         params: {
           requestId: requestId,
           channelName: newChannel.channelName,
-          channelType: newChannel.channelType
+          channelType: newChannel.channelType,
+          channelParams: {
+            gameMode: newChannel.gameMode
+          }
         }
       });
     });
@@ -217,7 +220,7 @@ export class LobbyView extends Control{
     }
 
     createChannelButton.node.onclick = ()=>{
-      this.model.createNewChannel({channelName:'dgh', channelType:'OnlyChatChannel'}).then(res=>{
+      this.model.createNewChannel({channelName:'dgh', channelType:'OnlyChatChannel', gameMode: 'network'}).then(res=>{
         console.log(res);
       });
     }

@@ -6,11 +6,23 @@ class ChatChannel extends Control {
   public onClick: (ChatChannel: string) => void;
   private channelName: string;
   private channelType: string;
+  private gameMode: string = '';
 
-  constructor(parentNode: HTMLElement, channelName: string, channelType: string) {
-    super(parentNode, 'div', chatStyles.chat_channel, channelName);
+  constructor(
+    parentNode: HTMLElement,
+    channelName: string,
+    channelType: string,
+    icon: string,
+    gameMode = ''
+  ) {
+    super(parentNode, 'div', chatStyles.chat_channel);
+    const channelText = new Control(this.node, 'div', chatStyles.chat_channel_text);
+    channelText.node.textContent = channelName;
+    const channelIcon = new Control(this.node, 'div', chatStyles.chat_channel_icon);
+    channelIcon.node.style.backgroundImage = `url(${icon})`;
     this.channelName = channelName;
     this.channelType = channelType;
+    this.gameMode = gameMode;
 
     this.node.onclick = () => {
       this.onClick(this.channelName);
@@ -20,7 +32,8 @@ class ChatChannel extends Control {
   getChannelData(): IChannelData {
     return {
       channelName: this.channelName,
-      channelType: this.channelType
+      channelType: this.channelType,
+      gameMode: this.gameMode
     };
   }
 }

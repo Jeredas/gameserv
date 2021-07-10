@@ -2,6 +2,7 @@ import Vector from '../../utilities/vector';
 import Control from '../../utilities/control';
 import chessStyles from './chess-game.module.css';
 import configFigures from './config-chess';
+import { IChessHistory } from 'src/components/utilities/interfaces';
 
 class ChessHistoryBlock extends Control {
   private historyWrapper: Control;
@@ -16,20 +17,18 @@ class ChessHistoryBlock extends Control {
     this.historyWrapper = new Control(this.node, 'div');
   }
 
-  setHistoryMove(coords: Array<Array<Vector>>, time: string, figName: Array<string>): void {
-    coords.forEach((coord, i) => {
-      const historyItem = new Control(
-        this.historyWrapper.node,
-        'div',
-        chessStyles.chess_history_item
-      );
-      const historyFigure = new Control(historyItem.node, 'div', chessStyles.chess_history_figure);
-      historyFigure.node.style.backgroundImage = `url(${configFigures.get(figName[i])})`;
-      const historyText = new Control(historyItem.node, 'div');
-
-      historyText.node.textContent = `${coord[0].x}${coord[0].y}-${coord[1].x}${coord[1]
-        .y} ${time}`;
-    });
+  setHistoryMove(params: IChessHistory): void {
+    const historyItem = new Control(
+      this.historyWrapper.node,
+      'div',
+      chessStyles.chess_history_item
+    );
+    const historyFigure = new Control(historyItem.node, 'div', chessStyles.chess_history_figure);
+    historyFigure.node.style.backgroundImage = `url(${configFigures.get(params.figName)})`;
+    const historyText = new Control(historyItem.node, 'div');
+    const from = params.coords[0];
+    const to = params.coords[1];
+    historyText.node.textContent = `${from.x}${from.y}-${to.x}${to.y} ${params.time}`;
   }
 
   changeHeight(size: number): void {
