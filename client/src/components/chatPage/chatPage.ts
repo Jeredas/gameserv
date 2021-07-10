@@ -23,7 +23,7 @@ class ChatPage extends Control {
   chatUsers: ChatUsers;
 
   messageContainer: Control;
-  public onJoinChannel: () => void = () => {};
+  public onJoinChannel: () => void = () => { };
   private model: LobbyModel;
   private socket: SocketClient;
 
@@ -37,9 +37,9 @@ class ChatPage extends Control {
 
     this.messageContainer = new Control(this.node);
 
-    this.channelBlock.onJoinChannel = () => {
-      this.joinChannel();
-    };
+    this.channelBlock.onJoinChannel.add((channelName) => {
+      this.joinChannel(channelName);
+    });
 
     this.channelBlock.onCreateChannel = () => {
       this.createChannel();
@@ -62,13 +62,19 @@ class ChatPage extends Control {
     });
   }
 
-  joinChannel() {
-    popupService.showPopup(JoinChannelPopup).then((channelName: string) => {
-      console.log(channelName);
+  joinChannel(chanName?: string) {
+    if (chanName == '') {
+      popupService.showPopup(JoinChannelPopup).then((channelName: string) => {
+        console.log(channelName);
+        const q = this.model
+          .getChannelInfo(channelName)
+          .then((params) => this.joinUserToChannel(params));
+      });
+    } else {
       const q = this.model
-        .getChannelInfo(channelName)
+        .getChannelInfo(chanName)
         .then((params) => this.joinUserToChannel(params));
-    });
+    }
   }
 
   joinUserToChannel(params: any) {

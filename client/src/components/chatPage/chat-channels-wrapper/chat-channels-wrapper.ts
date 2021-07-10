@@ -2,13 +2,14 @@ import Control from '../../utilities/control';
 import ButtonDefault from '../../buttonDefault/buttonDefault';
 import chatStyles from '../chatPage.module.css';
 import ChatChannel from '../chat-channel/chat-channel';
+import Signal from '../../../socketClient/signal';
 
 class ChatChannels extends Control {
   public onChannelClick: (name: string) => void;
 
   public onAddBtnClick: () => void;
 
-  public onJoinChannel: () => void = () => {};
+  public onJoinChannel:Signal <string> = new Signal();
   public onCreateChannel: () => void = () => {};
   private channelContainer: Control;
   private channels: Array<ChatChannel> = [];
@@ -30,7 +31,7 @@ class ChatChannels extends Control {
 
     joinChannel.onClick = () => {
       console.log('join');
-      this.onJoinChannel();
+      this.onJoinChannel.emit('');
     };
 
     createChannel.onClick = () => {
@@ -43,6 +44,7 @@ class ChatChannels extends Control {
     const channel = new ChatChannel(this.channelContainer.node, channelName, '');
     channel.onClick = (channelName) => {
       console.log(channelName);
+      this.onJoinChannel.emit(channelName);
     };
     this.channels.push(channel);
   }
