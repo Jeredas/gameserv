@@ -9,7 +9,9 @@ export class SocketRouter {
   }
 
   route(serviceName, endpointName, connection, params) {
-    this.services[serviceName][endpointName](connection, params);
+    if (endpointName && endpointName[0]!== '_'){
+      this.services[serviceName][endpointName](connection, params);
+    }
   }
 
   closeConnection(userConnection:connection) {

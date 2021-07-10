@@ -134,21 +134,29 @@ export class ChatChannel {
     this.type = type;
   }
 
-  private _sendForAllClients(response: IChatResponse) {
+  protected _sendForAllClients(response: IChatResponse){
     this.clients.forEach((client) => {
       client.send(response);
     });
   }
 
-  hasUser(connection) {
-    return this.clients.findIndex((client) => client.connection == connection) == -1 ? false : true;
+  protected _hasUser(connection){
+    return this.clients.findIndex((client) => client.connection == connection) == -1 ? false : true; 
+  }
+
+  protected _getUserByConnection(connection){
+    return this.clients.find(client => client.connection == connection); 
+  }  
+
+  protected _getUserByLogin(login:string){
+    return this.clients.find((client) => client.userData.login === login);
   }
 
   async joinUser(connection: any, params: any) {
     try {
       const sessionModel = await SessionModel.buildBySessionHash(params.sessionId /*'inikon359'*/);
       const userModel = await UserModel.buildByLogin(sessionModel.login);
-      if (userModel && !this.hasUser(connection)) {
+      if (userModel && !this._hasUser(connection)) {
         const newClient = new ChatClient(connection, new ChatUserData(params.sessionId, userModel));
         this.clients.push(newClient);
         newClient.send(new ChannelJoinUserResponse('ok', params.requestId));
@@ -196,7 +204,7 @@ export class ChatChannel {
 
   sendMessage(connection, params) {
     console.log(params);
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
       this._sendForAllClients(
         new ChannelSendMessageResponse(

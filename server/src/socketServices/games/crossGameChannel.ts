@@ -142,7 +142,7 @@ export class CrossGameChannel extends ChatChannel {
 
   async joinPlayer(connection: any, params: any) {
     try {
-      const currentClient = this.clients.find((it) => it.connection == connection);
+      const currentClient = this._getUserByConnection(connection);
       if (this.players.length < 2 && !this.players.find(player => currentClient.userData.login === player.login)) {
         this.logic.setPlayers(currentClient.userData.login);
         this.players.push({
@@ -158,7 +158,7 @@ export class CrossGameChannel extends ChatChannel {
   }
 
   getPlayers(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
       const response = new ChannelSendPlayersResponse(currentClient.userData.login, this.players);
       this.sendForAllClients(response);
@@ -178,7 +178,7 @@ export class CrossGameChannel extends ChatChannel {
   }
 
   crossStartGame(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
       const time = Date.now();
       const response = new CrossStartResponse(time);
@@ -201,7 +201,7 @@ export class CrossGameChannel extends ChatChannel {
   }
 
   crossMove(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
@@ -225,68 +225,48 @@ export class CrossGameChannel extends ChatChannel {
   }
 
   crossStop(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);//this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
-        const responseDrawAgree = JSON.stringify(
-          new CrossDrawAgreeResponse(params.messageText, currentUser.login)
-        );
-        const responseDraw = JSON.stringify(
-          new CrossDrawResponse(params.messageText, currentUser.login)
-        );
+        const responseDrawAgree = new CrossDrawAgreeResponse(params.messageText, currentUser.login);
+        const responseDraw = new CrossDrawResponse(params.messageText, currentUser.login);
         const clients = this.clients.filter(
           (client) => client.userData.login !== currentUser.login
         );
-        clients.forEach((it) => it.connection.sendUTF(responseDrawAgree));
-        currentClient.connection.sendUTF(responseDraw);
+        clients.forEach((it) => it.send(responseDrawAgree));
+        currentClient.send(responseDraw);
       }
     }
   }
 
   crossRemove(connection, params) {
-    let currentClient = this.clients.find((it) => it.connection == connection);
+    let currentClient = this._getUserByConnection(connection);//this.clients.find((it) => it.connection == connection);
 
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
-      let rivalClient = this.clients.find((client) => client.userData.login === rivalPlayer);
+      let rivalClient = this._getUserByLogin(rivalPlayer);//clients.find((client) => client.userData.login === rivalPlayer);
 
       if (params.messageText === 'agree') {
-        const response = JSON.stringify(new CrossRemoveResponse('draw'));
-        currentClient.connection.sendUTF(response);
-        rivalClient.connection.sendUTF(response);
+        const response = new CrossRemoveResponse('draw');
+        currentClient.send(response);
+        rivalClient.send(response);
       } else if (params.messageText === 'disagree') {
         if (currentPlayer === this.logic.getCurrentPlayer()) {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('won', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('lost', currentPlayer))
-          );
+          currentClient.send(new CrossRemoveResponse('won', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse('lost', currentPlayer));
         } else {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('won', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('lost', currentPlayer))
-          );
+          currentClient.send(new CrossRemoveResponse('won', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse('lost', currentPlayer));
         }
       } else if (this.logic.getWinner()) {
         if (currentPlayer === this.logic.getWinner()) {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('won', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('lost', currentPlayer))
-          );
+          currentClient.send(new CrossRemoveResponse('won', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse('lost', currentPlayer));
         } else {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('lost', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new CrossRemoveResponse('won', currentPlayer))
-          );
+          currentClient.send(new CrossRemoveResponse('lost', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse('won', currentPlayer));
         }
       }
       this.history = this.logic.getFullHistory();
