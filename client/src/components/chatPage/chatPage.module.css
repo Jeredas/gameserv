@@ -2,15 +2,20 @@
   display: flex;
   color: #bbb;
   height: 100%;
+  width: 100%;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .chat_channels {
   height: 100%;
-  width: 100px;
-  background-color: #333;
+  width: 150px;
+  /* background-color: rgba(0, 0, 0, 0.596); */
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
+  padding: 5px;
 }
 
 .chat_messages {
@@ -38,31 +43,37 @@
 
 .chat_channels_controls {
   display: flex;
-  padding: 10px 10px;
 }
 
-.default_button {
-  background-color: #494;
+.chat_button_create {
+  border-radius: 8px;
   border: none;
-  padding: 5px;
-  color: #fff;
-  border-radius: 5px;
-  cursor: pointer;
+  width: 100%;
+  align-self: center;
+  background: linear-gradient(308deg, rgba(243, 213, 116, 0.45) 0%, rgba(226, 18, 35, 0.45) 50%, rgba(243, 83, 158, 0.45) 100%);
+  color: #ccc;
+  padding:10px;
+  font-size: 16px;
+  position: relative;
   transition: .2s all ease;
 }
 
-.default_button:hover {
-  background-color: #59af59;
+.chat_button_create:hover {
+  background: linear-gradient(308deg, rgba(243, 213, 116, 0.863)  0%, rgba(226, 18, 35, 0.781) 60%, rgba(243, 83, 158, 0.808) 100%);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 3px 5px rgba(0, 0, 0, .5);
+  color: #eee;
 }
 
 .chat_channels_list {
-  padding: 10px;
+  padding: 10px 10px 10px 0;
 }
 
 .chat_channel {
   background-color: #555;
+  background-color: rgba(243, 177, 116, 0.418);
   padding: 5px 5px;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   border-radius: 5px;
   width: 100%;
   display: flex;
@@ -89,10 +100,15 @@
 }
 
 .chat_channel:hover {
-  background-color: #8a8888;
+  /* background-color: #8a8888; */
+  background-color: rgba(243, 192, 116, 0.671);
   color: #fff;
 }
 
+.chat_channel.joined {
+  background-color: rgba(231, 105, 73, 0.74);
+  color: #fff;
+}
 
 .relative_pos {
   position: relative;
@@ -152,5 +168,9 @@
 
   .chat_main {
     height: 100%;
+  }
+
+  .chat_button_create {
+    width: 150px;
   }
 }

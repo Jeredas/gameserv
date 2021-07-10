@@ -8,6 +8,8 @@
 
 .chat_message {
   margin-bottom: 10px;
+  position: relative;
+  z-index: 5;
 }
 
 .message_avatar {

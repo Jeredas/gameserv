@@ -8,6 +8,7 @@ import MainView from '../../components/mainView/mainView';
 import { IChatUser, IUserChatMessage } from '../../components/utilities/interfaces';
 import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
 import channelStyles from './onlyChatChannel.module.css';
+import messageBlockImage from '../../assets/message-inner.png';
 
 export class OnlyChatChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -172,6 +173,8 @@ export class OnlyChatChannelView extends MainView {
 
     this.mainViewAction.node.classList.add(channelStyles.chat_action);
     this.mainViewMessages.node.classList.add(channelStyles.chat_messages);
+    this.mainViewMessages.node.style.backgroundImage = `url(${messageBlockImage})`;
+    const mesagesFade = new Control(this.mainViewMessages.node, 'div', channelStyles.chat_messages_fade);
 
     this.mainViewUsers = new MainViewUsers(this.node);
 
