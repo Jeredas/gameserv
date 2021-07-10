@@ -13,9 +13,9 @@ import { AuthForm } from './components/authForm/authForm';
 import RegisterCheck from './components/registerCheck/registerCheck';
 import { SocketClient } from './socketClient/socketClient';
 import { LobbyModel } from './socketClient/lobbyService';
-import { throws } from 'assert/strict';
 import { AuthModel } from './components/authModel/authModel';
 const socketURL = 'ws://localhost:4080';
+import appStyles from './app.module.css';
 class Application extends Control {
   navigation: Navigation;
 
@@ -33,7 +33,7 @@ class Application extends Control {
   onAuthFail: (param: string) => void = () => { };
 
   constructor(parentNode: HTMLElement) {
-    super(parentNode, 'div', 'app');
+    super(parentNode, 'div', appStyles.root);
     this.model = new AuthModel()
     this.currentUser = new UserDataState(null);
     popupService.init(parentNode);
@@ -83,8 +83,9 @@ class Application extends Control {
       this.chatPage.destroy();
     })
     this.router = new Router();
-    this.pageContainer = new Control(this.node, 'div', '');
+    this.pageContainer = new Control(this.node, 'div', appStyles.page_container);
     this.about = new AboutPage(this.pageContainer.node);
+    
     this.about.hide();
     this.about.onAuth.add((data)=>{
       this.navigation.clearNavs();

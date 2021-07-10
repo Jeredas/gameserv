@@ -1,0 +1,8 @@
+.chat_action {
+  padding: 0;
+  height: 0;
+}
+
+.chat_messages {
+  flex: 1 1 auto;
+}
