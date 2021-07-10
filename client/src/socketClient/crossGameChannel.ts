@@ -4,7 +4,13 @@ import Signal from './signal';
 import { ChatChannelModel } from './chatChannelModel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
-import { IChatUser, ICrossMove, ICrossStop, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
+import {
+  IChatUser,
+  ICrossMove,
+  ICrossStop,
+  IJoinedPlayer,
+  IUserChatMessage
+} from '../components/utilities/interfaces';
 import Cross from '../components/games/cross/cross';
 import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
@@ -23,8 +29,9 @@ export class CrossGameChannelService implements ISocketService {
   public onCrossStart: Signal<number> = new Signal();
   public onCrossMove: Signal<ICrossMove> = new Signal();
   public onCrossStop: Signal<ICrossStop> = new Signal();
-  public onCrossRemove: Signal<{method: string, player: string}> = new Signal();
+  public onCrossRemove: Signal<{ method: string; player: string }> = new Signal();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
+  public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
 
   constructor() {}
 
@@ -75,9 +82,9 @@ export class CrossGameChannelService implements ISocketService {
           'crossStop',
           (params) => {
             this.onCrossStop.emit({
-              stop: params.stop, 
-              player: params.player, 
-              method: params.method 
+              stop: params.stop,
+              player: params.player,
+              method: params.method
             });
           }
         ],
@@ -90,12 +97,24 @@ export class CrossGameChannelService implements ISocketService {
             });
           }
         ],
-        // [
-        //   'userList',
-        //   (params) => {
-        //     this.onUserList.emit(params.userList);
-        //   }
-        // ],
+        [
+          'userList',
+          (params) => {
+            this.onUserList.emit(
+              // params.userList.map((user: string) => ({avatar: '', userName: user}))
+              params.userList
+            );
+          }
+        ],
+        [
+          'playerList',
+          (params) => {
+            this.onPlayerList.emit(
+              // params.userList.map((user: string) => ({avatar: '', userName: user}))
+              params.playerList
+            );
+          }
+        ]
       ]).get(message.type);
 
       if (processFunction) {
@@ -233,12 +252,11 @@ export class CrossGameChannelModel extends ChatChannelModel {
 
   crossRemove(message: string) {
     console.log('crossRemove click: ', message);
-    
+
     this.send('crossRemove', {
       messageText: message
     });
   }
-
 
   destroy() {
     this.service.remove();
@@ -257,15 +275,15 @@ export class CrossGameChannelView extends MainView {
     this.mainViewUsers = new MainViewUsers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
-    
+
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
-        console.log('Join', res);
+        console.log('Enter the game', res);
         if (res) {
           this.model.getPlayers('');
         }
       });
-    }
+    };
 
     this.crossGame.onStartClick = () => {
       this.model.crossStartGame('');
@@ -325,31 +343,33 @@ export class CrossGameChannelView extends MainView {
     };
     this.crossGame.onDrawClick = () => {
       this.model.crossStop('draw');
-    }
+    };
 
     this.crossGame.onLossClick = () => {
       this.model.crossStop('loss');
-    }
+    };
 
     this.crossGame.onModalDrawClick = (response: string) => {
       this.model.crossRemove(response);
-    }
+    };
 
     this.model.service.onCrossStop.add((params) => {
-      this.crossGame.createModalDraw(params)
-    })
+      this.crossGame.createModalDraw(params);
+    });
     this.model.service.onCrossRemove.add((params) => {
       this.crossGame.createModalGameOver(params);
-    })
+    });
     this.crossGame.onGameOverClick = () => {
       this.crossGame.clearData();
-    }
+    };
 
-    // this.model.service.onUserList.add((params) => {
-    //   console.log('UserLIST check', params);
-      
-    //   this.mainViewUsers.setUsers(params);
-    // })
+    this.model.service.onUserList.add((params) => {
+      this.mainViewUsers.setUsers(params);
+    });
+
+    this.model.service.onPlayerList.add((params) => {
+      this.mainViewPlayers.setPlayers(params);
+    });
   }
 
   destroy() {

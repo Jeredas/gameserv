@@ -5,15 +5,15 @@ import Control from '../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
 
 class JoinChannelPopup extends GenericPopup<any> {
-  popupWrapper: Control;
+  protected popupWrapper: Control;
 
-  searchField: InputWrapper;
+  private searchField: InputWrapper;
 
-  joinBtn: ButtonDefault;
+  private joinBtn: ButtonDefault;
 
-  cancelBtn: ButtonDefault;
+  private cancelBtn: ButtonDefault;
 
-  onSelect: (value: any) => void;
+  public onSelect: (value: any) => void;
 
   constructor(parentNode:HTMLElement) {
     super(parentNode);

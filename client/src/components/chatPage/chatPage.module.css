@@ -65,8 +65,27 @@
   margin-bottom: 5px;
   border-radius: 5px;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   cursor: pointer;
   transition: .2s all ease;
+}
+
+.chat_channel_text {
+  font-size: 16px;
+  width: calc(100% - 30px);
+  overflow: hidden;
+}
+
+.chat_channel_icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
 }
 
 .chat_channel:hover {
