@@ -1,5 +1,5 @@
 import { CrossGameChannelModel, CrossGameChannelView } from '../../socketClient/crossGameChannel';
-import { OnlyChatChannelModel, OnlyChatChannelView } from '../../socketClient/onlyChatChannel';
+import { OnlyChatChannelModel, OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
 
 export const channelConfig = new Map([
   [

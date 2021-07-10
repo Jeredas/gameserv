@@ -6,6 +6,7 @@ import Control from '../utilities/control';
 import { IAuthData, IUserAuth } from '../utilities/interfaces';
 import { ConcatenationScope } from 'webpack';
 import Signal from '../../socketClient/signal';
+import popupStyles from '../popupService/popupService.module.css';
 
 export class AuthForm extends GenericPopup<any> {
   login: InputWrapper;
@@ -23,18 +24,20 @@ export class AuthForm extends GenericPopup<any> {
     this.model.onLogIn.add((data) => {
       this.onSelect({status:'login',data:data});
     });
-
-    this.login = new InputWrapper(this.popupWrapper.node, 'Login', async () => {
+    this.popupWrapper.node.classList.add(popupStyles.wrapper_auth_main);
+    const wrapperInputs = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_auth_sub);
+    this.login = new InputWrapper(wrapperInputs.node, 'Login', async () => {
       const res = await this.model.authValidation(this.getData());
       if (res === 'ok') {
-        return null
+        return null;
       } else {
-        return 'Not Found'
+        return 'Not Found';
       }
     }, 'Login', 'login');
-    this.password = new InputWrapper(this.popupWrapper.node, 'Password', async () => { return null }, 'Password', 'password');
-    this.loginButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'log in');
-    this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');
+    this.password = new InputWrapper(wrapperInputs.node, 'Password', async () => { return null }, 'Password', 'password');
+    const wrapperButtons = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_btns);
+    this.loginButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Log in');
+    this.cancelButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Cancel');
     this.loginButton.onClick = async () => {
       const res = await this.model.authValidation(this.getData());
       if (res === 'ok') {

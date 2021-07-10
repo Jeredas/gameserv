@@ -5,10 +5,11 @@ import Signal from './signal';
 import { ChatChannelModel } from './chatChannelModel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
-import { ICrossMove, ICrossStop, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
+import { IChatUser, ICrossMove, ICrossStop, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
 import Cross from '../components/games/cross/cross';
 import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
+import MainViewUsers from '../components/mainView/mainViewUsers/mainViewUsers';
 
 export class CrossGameChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -24,6 +25,7 @@ export class CrossGameChannelService implements ISocketService {
   public onCrossMove: Signal<ICrossMove> = new Signal();
   public onCrossStop: Signal<ICrossStop> = new Signal();
   public onCrossRemove: Signal<{method: string, player: string}> = new Signal();
+  public onUserList: Signal<Array<IChatUser>> = new Signal();
 
   constructor() {}
 
@@ -88,7 +90,13 @@ export class CrossGameChannelService implements ISocketService {
               player: params.player
             });
           }
-        ]
+        ],
+        // [
+        //   'userList',
+        //   (params) => {
+        //     this.onUserList.emit(params.userList);
+        //   }
+        // ],
       ]).get(message.type);
 
       if (processFunction) {
@@ -247,14 +255,10 @@ export class CrossGameChannelView extends MainView {
     super(parentNode);
     this.model = model as CrossGameChannelModel;
     this.mainViewPlayers = new MainViewPlayers(this.node);
+    this.mainViewUsers = new MainViewUsers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
-    // const connectionIndicator = new Control(this.node);
-    // const sendMessageButton = new Control(this.node, 'div', '', 'send');
-    // const leaveMessageButton = new Control(this.node, 'div', '', 'leave');
-
-    // const messagesContainer = new Control(this.node);
-
+    
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Join', res);
@@ -294,9 +298,9 @@ export class CrossGameChannelView extends MainView {
       this.mainViewMessages.addMessage(params);
     });
 
-    this.mainViewPlayers.onChannelLeave = () => {
+    this.mainViewUsers.onChannelLeave = () => {
       this.model.leaveChannel();
-      this.onLeaveClick?.();
+      this.onLeaveClick();
     };
 
     // model.service.onClose.add(() => {
@@ -342,6 +346,11 @@ export class CrossGameChannelView extends MainView {
       this.crossGame.clearData();
     }
 
+    // this.model.service.onUserList.add((params) => {
+    //   console.log('UserLIST check', params);
+      
+    //   this.mainViewUsers.setUsers(params);
+    // })
   }
 
   destroy() {

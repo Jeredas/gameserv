@@ -62,3 +62,30 @@ export interface ICrossStop {
   method: string;
 }
 
+export interface IChatUser {
+  userName: string;
+  avatar: string;
+}
+
+export interface IChessStart {
+  field: string;
+  time: number;
+}
+export interface IChessStop {
+  stop: string;
+  player: string;
+  method: string;
+}
+
+export interface IChessData {
+  message: string;
+  coords: Array<Vector>;
+  player: string;
+  // field: Array<string>;
+  field: string;
+  winner: string;
+  rotate: boolean;
+  figure: Array<string>;
+  moves: Array<Array<Vector>>;
+  king: Vector;
+}

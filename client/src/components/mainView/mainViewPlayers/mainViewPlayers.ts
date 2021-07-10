@@ -16,23 +16,21 @@ class MainViewPlayers extends Control {
   public onChannelLeave: () => void = () => {};
 
   constructor(parentNode: HTMLElement) {
-    super(parentNode, 'div', mainViewPlayers.chat_users);
-    this.playersBlock = new Control(this.node, 'div', mainViewPlayers.chat_category);
+    super(parentNode, 'div', mainViewPlayers.chat_players);
     this.controlBlock = new Control(this.node, 'div', mainViewPlayers.chat_category);
+    this.playersBlock = new Control(this.node, 'div', mainViewPlayers.chat_category);
+
+    this.btnEnter = new CrossButton(this.controlBlock.node, 'Enter the game');
+    this.btnEnter.onClick = () => {
+      this.onGameEnter();
+    };
+
     this.playerHeader = new Control(
       this.playersBlock.node,
       'div',
       mainViewPlayers.chat_category_name
     );
     this.playerHeader.node.textContent = 'Players: ';
-    this.btnEnter = new CrossButton(this.controlBlock.node,'Enter the game');
-    this.btnEnter.onClick = () => {
-      this.onGameEnter();
-    }
-    this.btnLeave = new CrossButton(this.controlBlock.node,'Leave the channel');
-    this.btnLeave.onClick = () => {
-      this.onChannelLeave();
-    }
   }
 
   setPlayers(players: Array<{ login: string; avatar: string }>): void {

@@ -6,6 +6,8 @@ import InputWrapper from '../inputWrapper/inputWrapper';
 import Control from '../utilities/control';
 import { IAuthData } from '../utilities/interfaces';
 import getFormattedImgDataLink from '../utilities/imgToDatalink';
+import popupStyles from '../popupService/popupService.module.css';
+import defaultAvatar from '../../assets/select-game-popup/avat-def.png';
 export class RegForm extends GenericPopup<any> {
   login: InputWrapper;
   password: InputWrapper;
@@ -21,12 +23,17 @@ export class RegForm extends GenericPopup<any> {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
+    this.popupWrapper.node.classList.add(popupStyles.wrapper_reg_popup)
     this.model = new AuthModel();
     this.imgSrc = '';
-    this.labelAvatar = new Control(this.popupWrapper.node, 'label', '', 'set your avatar');
-    this.labelAvatar.node.setAttribute('for', 'avatarloader');
+    const wrapperInputs = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_inputs_reg);
+    this.labelAvatar = new Control(this.popupWrapper.node, 'label', popupStyles.label_avatar);
+    this.labelAvatar.node.style.backgroundImage = `url(${defaultAvatar})`;
+    this.labelAvatar.node.setAttribute('for', 'avatarLoader');
     this.avatarLoader = new InputWrapper(this.labelAvatar.node, '', async () => { return null }, 'AvatarLoader', 'avatarLoader', 'file');
-    this.login = new InputWrapper(this.popupWrapper.node, 'Login', async () => {
+    this.avatarLoader.error.destroy();
+    this.avatarLoader.caption.destroy();
+    this.login = new InputWrapper(wrapperInputs.node, 'Login', async () => {
       const res = await this.model.regValidation(this.getData());
       if (res === 'ok') {
         this.state = { ...this.state, name: true }
@@ -42,7 +49,7 @@ export class RegForm extends GenericPopup<any> {
         return 'Wrong name or user already exists';
       }
     }, 'Login', 'login');
-    this.password = new InputWrapper(this.popupWrapper.node, 'Password', async () => {
+    this.password = new InputWrapper(wrapperInputs.node, 'Password', async () => {
       const res = await this.model.passwordValidation(this.getData());
       // return res === 'ok' ? null : 'Invalid password';
       if (res === 'ok') {
@@ -59,9 +66,9 @@ export class RegForm extends GenericPopup<any> {
         return 'Invalid password';
       }
     }, 'Password', 'password');
-
-    this.registerButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'register');
-    this.cancelButton = new ButtonDefault(this.popupWrapper.node, 'button_default', 'cancel');
+    const wrapperButtons = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_btns);
+    this.registerButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Register');
+    this.cancelButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Cancel');
 
     this.registerButton.onClick = () => {
       this.onSelect('register');
@@ -80,7 +87,7 @@ export class RegForm extends GenericPopup<any> {
       this.onSelect('cancel');
     };
     
-    this.avatarLoader.field.node.onchange = () =>{
+    this.avatarLoader.field.node.onchange = async () =>{
       if ((this.avatarLoader.field.node as HTMLInputElement).files != null) {
         const fileBlob = (this.avatarLoader.field.node as HTMLInputElement).files[0];
         getFormattedImgDataLink(200, fileBlob).then((data : string) => {
@@ -88,7 +95,7 @@ export class RegForm extends GenericPopup<any> {
           img.src = data;
           this.imgSrc = data;
           img.classList.add('avatar_img');
-          this.avatarLoader.node.style.backgroundImage = `url(${data})`;
+          this.labelAvatar.node.style.backgroundImage = `url(${data})`;
         });
       }
     };

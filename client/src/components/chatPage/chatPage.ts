@@ -33,7 +33,7 @@ class ChatPage extends Control {
     this.socket = socket;
     this.channelBlock = new ChatChannels(this.node); //langConfig.chat.channels
     this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
-    this.chatUsers = new ChatUsers(this.node);
+    // this.chatUsers = new ChatUsers(this.node);
 
     this.messageContainer = new Control(this.node);
 

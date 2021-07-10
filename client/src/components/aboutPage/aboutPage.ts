@@ -14,6 +14,7 @@ class AboutPage extends Control {
   buttonLogIn: ButtonDefault;
   onSelect: (value: any) => void;
   onAuth: Signal<IUserAuth>
+  onAuthFail: Signal<string> = new Signal();
   constructor(parentNode:HTMLElement) {
     super(parentNode, 'div', 'about_page');
     this.onAuth = new Signal()
@@ -30,23 +31,34 @@ class AboutPage extends Control {
       this.hide()
       popupService.init(parentNode);
       popupService.showPopup(RegisterCheck).then((res)=>{
-        if(!res){
+        if(res === 'SignUp'){
           popupService.showPopup(RegForm).then((res) => {
             if (res === 'register') {
               console.log('registered');
               this.showAuthPopUp().then((res)=>{
-                this.onAuth.emit(res.data)
+                if(res.status ===true){
+                  this.onAuth.emit(res.data)
+                 } else {
+                   this.onAuthFail.emit('fail')
+                 }
               })
             } else {
+              this.onAuthFail.emit('fail')
               this.show();
               console.log('registration failed');
             }
           });
-        } else {
+        } else if(res === 'SignIn'){
         this.showAuthPopUp().then((res)=>{
-          console.log('yes')
+         if(res.status ===true){
           this.onAuth.emit(res.data)
+         } else {
+           this.onAuthFail.emit('fail')
+         }
         })
+        } else if(res === 'Close'){
+          this.show();
+          //this.onAuthFail.emit('fail')
         }
       })
     }

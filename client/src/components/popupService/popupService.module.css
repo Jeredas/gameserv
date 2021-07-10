@@ -177,13 +177,21 @@
   margin-bottom: 10px;
 }
 
-input[type="text"] {
+/* input[type="text"] {
   display: inline-block;
   height: 30px;
   margin-bottom: 10px;
   text-align: center;
   font-size: 15px;
-  align-self: center;
+} */
+
+.popup_inputText {
+  display: inline-block;
+  height: 30px;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 15px;
+  /* align-self: center; */
 }
 
 .input_wrapper {
@@ -319,6 +327,46 @@ input[id="name"] {
 
 .caption {
   font-size: 16px;
+}
+
+/*popup auth*/
+
+.wrapper_auth_main,
+.wrapper_reg_popup {
+  background: rgb(83,156,109);
+  background: linear-gradient(90deg, rgba(83,156,109,1) 0%, rgba(11,164,173,1) 58%, rgba(0,212,255,1) 100%); 
+  border-radius: 10px;
+  padding: 30px;
+}
+
+.caption {
+  font-size: 25px;
+}
+
+.input_error {
+  width: 100%;
+  height: 30px;
+}
+
+.input_field {
+  height: 35px;
+  font-size: 15px;
+}
+
+/*regform*/
+
+.wrapper_reg_popup {
+  display: grid;
+  grid-template-columns: 65% 60%;
+}
+
+.wrapper_inputs_reg {
+  width: 100%;
+}
+
+.wrapper_reg_popup .label_avatar {
+  width: 150px;
+  height: 150px;
 }
 
 @media screen and (max-width: 550px) {

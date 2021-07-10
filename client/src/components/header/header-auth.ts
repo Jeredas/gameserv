@@ -40,9 +40,9 @@ class HeaderAuth extends Control {
         } else if(res === 'logOut'){
           console.log('logOut')
           this.userName.node.textContent = 'NickName';
-          console.log(headerStyles.default_avatar)
           //this.userAvatar.node.classList.add(headerStyles.default_avatar)
           this.userAvatar.node.style.backgroundImage = `url(${defaultAvatar})`;
+          this.onLogout.emit('')
          
         }
       })

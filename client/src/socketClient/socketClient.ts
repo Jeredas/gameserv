@@ -1,7 +1,7 @@
 const socketURL = 'ws://localhost:4080';
 import {ISocketService} from './ISocketService';
 import {LobbyService, LobbyModel, LobbyView} from './lobbyService';
-import {OnlyChatChannelService, OnlyChatChannelModel, OnlyChatChannelView} from './onlyChatChannel';
+import {OnlyChatChannelService, OnlyChatChannelModel, OnlyChatChannelView} from './onlyChatChannel/onlyChatChannel';
 
 
 export class SocketClient{
