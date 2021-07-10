@@ -1,12 +1,13 @@
-import Control from '../components/utilities/control';
-import { ISocketService } from './ISocketService';
-import { SocketClient } from './socketClient';
-import Signal from './signal';
-import { ChatChannelModel } from './chatChannelModel';
+import Control from '../../components/utilities/control';
+import { ISocketService } from '../ISocketService';
+import { SocketClient } from '../socketClient';
+import Signal from '../signal';
+import { ChatChannelModel } from '../chatChannelModel';
 import { channelModel } from 'src/components/utilities/config';
-import MainView from '../components/mainView/mainView';
-import { IUserChatMessage } from '../components/utilities/interfaces';
-import MainViewUsers from '../components/mainView/mainViewUsers/mainViewUsers';
+import MainView from '../../components/mainView/mainView';
+import { IUserChatMessage } from '../../components/utilities/interfaces';
+import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
+import channelStyles from './onlyChatChannel.module.css';
 
 export class OnlyChatChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -158,6 +159,9 @@ export class OnlyChatChannelView extends MainView {
   constructor(parentNode: HTMLElement, model: channelModel) {
     super(parentNode);
     this.model = model;
+
+    this.mainViewAction.node.classList.add(channelStyles.chat_action);
+    this.mainViewMessages.node.classList.add(channelStyles.chat_messages);
 
     this.mainViewUsers = new MainViewUsers(this.node);
 

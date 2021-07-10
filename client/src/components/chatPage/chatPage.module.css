@@ -33,95 +33,8 @@
 
 .chat_main {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 0;
-}
-
-.chat_action {
-  background-color: #444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
   height: 100%;
-  /* height: 70%; */
-  width: 100%;
 }
-
-
-.chat_message {
-  margin-bottom: 10px;
-}
-
-.chat_input {
-  display: flex;
-  padding: 10px;
-  background-color: #555;
-
-}
-
-.chat_input_field {
-  width: 100%;
-  background-color: #777;
-  border: none;
-  padding: 10px;
-  color: #fff;
-  border-bottom-left-radius: 5px;
-  border-top-left-radius: 5px;
-}
-
-.chat_send_button {
-  width: 100px;
-  background-color: #444;
-  border: none;
-  padding: 10px;
-  color: #fff;
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
-}
-
-
-.chat_user {
-  display: flex;
-  margin-bottom: 5px;
-  align-items: center;
-}
-
-.message_avatar {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #fff;
-  border-radius: 100%;
-  flex-shrink: 0;
-  margin-right: 10px;
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.message_wrapper {
-  display: flex;
-}
-
-.message_main {
-  width: 100%;
-}
-
-.message_header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.message_user {
-  display: flex;
-  color: #fff;
-  font-size: bold;
-}
-
-/* .message_date {} */
-
-/* .message_body {} */
 
 .chat_channels_controls {
   display: flex;
@@ -161,42 +74,6 @@
   color: #fff;
 }
 
-.chat_category {
-  margin-bottom: 20px;
-  padding: 10px;
-}
-
-.chat_category_name {
-  margin-bottom: 5px;
-}
-
-/* .chat_category_list {} */
-
-.default_avatar_small {
-  width: 28px;
-  height: 28px;
-  border: 1px solid #fff;
-  border-radius: 100%;
-  flex-shrink: 0;
-  margin-right: 10px;
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
-
-.default_name {
-  color: #fff;
-}
-.btn_enter {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  color: #fff;
-  background-color: #000000;
-}
 
 .relative_pos {
   position: relative;
