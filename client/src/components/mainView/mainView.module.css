@@ -10,6 +10,7 @@
   padding: 10px;
   background-color: #555;
   overflow-y: scroll;
+  position: relative;
   
 }
 

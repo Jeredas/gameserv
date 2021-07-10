@@ -18,12 +18,12 @@ class ChatChannels extends Control {
     const chatChannelControl = new Control(this.node, 'div');
     const createChannel = new ButtonDefault(
       chatChannelControl.node,
-      chatStyles.default_button,
+      chatStyles.chat_button_create,
       'create channel'
     );
     const joinChannel = new ButtonDefault(
       chatChannelControl.node,
-      chatStyles.default_button,
+      '',
       'join channel'
     );
     this.channelContainer = new Control(this.node, 'div', chatStyles.chat_channels_list);
