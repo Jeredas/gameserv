@@ -9,6 +9,8 @@ import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
 import { channelConfig } from '../utilities/config';
+import { GameSelectPopup } from '../game-select-popup/game-select-popup';
+import OtherGamePopup from '../OtherGamePopup/OtherGamePopup';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -88,19 +90,44 @@ class ChatPage extends Control {
   }
 
   createChannel() {
-    popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
-      console.log(newChannel);
+    popupService.showPopup<string>(GameSelectPopup).then((channelType) => {
+      if (channelType !== 'ChessGameChannel') {
+        popupService.showPopup<IChannelData>(OtherGamePopup).then((newChannel) => {
+          newChannel.channelType = channelType;
+          this.model.createNewChannel(newChannel).then((res: any) => {
+            if (res.status === 'ok') {
+              const channelIcon = channelConfig.get(newChannel.channelType).icon;
+              this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
+            }
+          });
+        });
+      } else {
+        popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
+          newChannel.channelType = channelType;
+          console.log(newChannel);
+          this.model.createNewChannel(newChannel).then((res: any) => {
+            if (res.status === 'ok') {
+              const channelIcon = channelConfig.get(newChannel.channelType).icon;
+              console.log(channelIcon);
+              this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
+            }
+          });
+        });
+      }
+    })
+    // popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
+    //   console.log(newChannel);
       
-      this.model.createNewChannel(newChannel).then((res: any) => {
-        if (res.status === 'ok') {
-          const channelIcon = channelConfig.get(newChannel.channelType).icon;
-          console.log(channelIcon);
+    //   this.model.createNewChannel(newChannel).then((res: any) => {
+    //     if (res.status === 'ok') {
+    //       const channelIcon = channelConfig.get(newChannel.channelType).icon;
+    //       console.log(channelIcon);
           
-          this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
-          console.log('channel created with type', res.channelType);
-        }
-      });
-    });
+    //       this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
+    //       console.log('channel created with type', res.channelType);
+    //     }
+    //   });
+    // });
   }
 
   hide(): void {

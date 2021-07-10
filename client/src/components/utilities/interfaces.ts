@@ -31,7 +31,7 @@ export interface IInputState {
 
 export interface IChannelData {
   channelName: string;
-  channelType: string;
+  channelType?: string;
   gameMode: string;
 }
 
