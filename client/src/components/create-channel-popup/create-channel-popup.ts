@@ -25,6 +25,7 @@ class CreateChannelPopup extends GenericPopup<any> {
 
   onSelect: (value: any) => void;
   private channelTypes: Array<Input> = [];
+  private gameModes: Array<Input> = [];
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
@@ -46,14 +47,15 @@ class CreateChannelPopup extends GenericPopup<any> {
       label.node.setAttribute('for', 'channelType');
       this.channelTypes.push(radio);
     });
-    gameModePopup.forEach((radioBtn) => {
-      const radio = new InputWrapper(this.popupWrapper.node, '', () => null, '', radioBtn, 'radio');
-      const label = new Control(radio.node, 'label', '', radioBtn);
-      (radio.field.node as HTMLInputElement).name = 'inputRadio';
-      (radio.node as HTMLInputElement).value = radioBtn;
-      radio.error.destroy();
-      label.node.setAttribute('for', `${radioBtn}`);
-      radio.onValidate = null;
+    gameModePopup.forEach((mode, i) => {
+      const radioWrapper = new Control(this.popupWrapper.node, 'div');
+      const radio = new Input(radioWrapper.node, 'radio', 'gameMode', mode);
+      if (i === 1) {
+        radio.setChecked(true);
+      }
+      const label = new Control(radioWrapper.node, 'label', '', mode);
+      label.node.setAttribute('for', 'gameMode');
+      this.gameModes.push(radio);
     });
     this.createButton = new ButtonDefault(
       this.popupWrapper.node,
@@ -74,9 +76,12 @@ class CreateChannelPopup extends GenericPopup<any> {
       const channelType = this.channelTypes
         .find((type) => type.getCheckedStatus() === true)
         .getValue();
+      const gameMode = this.gameModes.find((mode) => mode.getCheckedStatus() === true).getValue();
+
       const newChannel = {
         channelName: this.channelName.getValue(),
-        channelType: channelType
+        channelType: channelType,
+        gameMode: gameMode
       };
       this.onSelect(newChannel);
     };

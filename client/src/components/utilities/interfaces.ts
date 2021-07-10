@@ -32,6 +32,7 @@ export interface IInputState {
 export interface IChannelData {
   channelName: string;
   channelType: string;
+  gameMode: string;
 }
 
 export interface IUserChatMessage {
@@ -42,18 +43,18 @@ export interface IUserChatMessage {
 }
 export interface IJoinedPlayer {
   player: string;
-  players: Array<{login: string, avatar: string}>;
+  players: Array<{ login: string; avatar: string }>;
 }
 export interface ICrossHistory {
   sign: string;
   move: Vector;
-  time: string
+  time: string;
 }
 export interface ICrossMove {
   player: string;
   field: Array<Array<string>>;
   winner: string;
-  history: ICrossHistory
+  history: ICrossHistory;
 }
 
 export interface ICrossStop {
@@ -78,18 +79,17 @@ export interface IChessStop {
 }
 
 export interface IChessHistory {
-  coords: Array<Vector>,
-  time: string, 
-  figName: string
+  coords: Array<Vector>;
+  time: string;
+  figName: string;
 }
 
 export interface IChessData {
-  coords: Array<Vector>,
+  coords: Array<Vector>;
   player: string;
   field: string;
   winner: string;
   rotate: boolean;
-  history: IChessHistory
+  history: IChessHistory;
   king: Vector;
 }
-

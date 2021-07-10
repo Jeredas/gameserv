@@ -5,7 +5,7 @@ import Signal from '../signal';
 import { ChatChannelModel } from '../chatChannelModel';
 import { channelModel } from 'src/components/utilities/config';
 import MainView from '../../components/mainView/mainView';
-import { IUserChatMessage } from '../../components/utilities/interfaces';
+import { IChatUser, IUserChatMessage } from '../../components/utilities/interfaces';
 import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
 import channelStyles from './onlyChatChannel.module.css';
 
@@ -17,6 +17,7 @@ export class OnlyChatChannelService implements ISocketService {
   public onClose: Signal<any> = new Signal<any>();
   public onOpen: Signal<any> = new Signal<any>();
   public onAny: Signal<any> = new Signal<any>();
+  public onUserList: Signal<Array<IChatUser>> = new Signal();
 
   constructor() {}
 
@@ -35,6 +36,15 @@ export class OnlyChatChannelService implements ISocketService {
               time: new Date().toLocaleString('ru'),
               message: params.messageText
             });
+          }
+        ],
+        [
+          'userList',
+          (params) => {
+            this.onUserList.emit(
+              // params.userList.map((user: string) => ({avatar: '', userName: user}))
+              params.userList
+            );
           }
         ]
       ]).get(message.type);
@@ -197,6 +207,9 @@ export class OnlyChatChannelView extends MainView {
     this.mainViewInput.onEnter = (message) => {
       this.model.sendMessage(message);
     };
+    
+    this.model.service.onUserList.add(params => this.mainViewUsers.setUsers(params))
+
   }
 
   destroy() {
