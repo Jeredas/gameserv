@@ -4,6 +4,20 @@ import InputWrapper from '../inputWrapper/inputWrapper';
 import Control from '../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
 
+interface IJoinChannelPopupLangs{
+  searchFieldLabel: string,
+  searchFieldPlaceHolder: string,
+  joinButtonText: string,
+  cancelButtonText: string
+}
+
+const joinChannelPopupLangEn:IJoinChannelPopupLangs = {
+  searchFieldLabel: 'Enter the name of the channel you want to join',
+  searchFieldPlaceHolder: 'Name Channel',
+  joinButtonText: 'Join channel',
+  cancelButtonText: 'Cancel'
+}
+
 class JoinChannelPopup extends GenericPopup<any> {
   protected popupWrapper: Control;
 
@@ -13,15 +27,15 @@ class JoinChannelPopup extends GenericPopup<any> {
 
   private cancelBtn: ButtonDefault;
 
-  public onSelect: (value: any) => void;
+  public onSelect: (value: string) => void;
 
-  constructor(parentNode:HTMLElement) {
+  constructor(parentNode:HTMLElement, langConfig:IJoinChannelPopupLangs = joinChannelPopupLangEn) {
     super(parentNode);
-    this.searchField = new InputWrapper(this.popupWrapper.node, 'Enter the name of the channel you want to join', () => null, 'Name Channel', '', 'text');
+    this.searchField = new InputWrapper(this.popupWrapper.node, langConfig.searchFieldLabel, () => null, langConfig.searchFieldPlaceHolder, '', 'text');
     this.popupWrapper.node.classList.add(popupStyles.wrapper_join);
     const wrapperBtns = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_btns);
-    this.joinBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, 'Join channel');
-    this.cancelBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, 'Cancel');
+    this.joinBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, langConfig.joinButtonText);
+    this.cancelBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, langConfig.cancelButtonText);
 
     this.joinBtn.onClick = () => {
       console.log('join to the channel');
