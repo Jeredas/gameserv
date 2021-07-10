@@ -2,7 +2,7 @@ import Control from '../components/utilities//control';
 import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
-import { IChannelData } from 'src/components/utilities/interfaces';
+import { IChannelData } from '../components/utilities/interfaces';
 
 
 export class LobbyService implements ISocketService{

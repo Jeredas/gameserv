@@ -1,3 +1,4 @@
+import { ChessGameChannelModel, ChessGameChannelView } from '../../socketClient/chessGameChannel';
 import { CrossGameChannelModel, CrossGameChannelView } from '../../socketClient/crossGameChannel';
 import { OnlyChatChannelModel, OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
 
@@ -15,7 +16,14 @@ export const channelConfig = new Map([
       model: CrossGameChannelModel,
       view: CrossGameChannelView
     }
+  ],
+  [
+    'ChessGameChannel',
+    {
+      model: ChessGameChannelModel,
+      view: ChessGameChannelView
+    }
   ]
 ]);
 
-export type channelModel = OnlyChatChannelModel | CrossGameChannelModel;
+export type channelModel = OnlyChatChannelModel | CrossGameChannelModel | ChessGameChannelModel;

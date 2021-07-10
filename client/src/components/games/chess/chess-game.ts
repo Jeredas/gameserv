@@ -1,3 +1,4 @@
+import { IChessHistory } from './../../utilities/interfaces';
 import Control from '../../utilities/control';
 import Timer from '../../timer/timer';
 import configFigures, { chessModeConfig, fen } from './config-chess';
@@ -10,7 +11,8 @@ import ChessField from './chess-field';
 import ModalDraw from './modal/modal-draw';
 import ChessModel from './chess-model';
 import chessStyles from './chess-game.module.css';
-import { IChessData, IChessStart, IChessStop } from '../../utilities/interfaces';
+import { IChessData, IChessStart, IChessStop, IJoinedPlayer } from '../../utilities/interfaces';
+import ModalGameOver from './modal/modalGameOver';
 
 class ChessGame extends Control {
   private cells: Array<ChessCell> = [];
@@ -63,18 +65,20 @@ class ChessGame extends Control {
 
   private parent: Control;
   private modalPopup: ModalDraw;
+  private modalGameOver: ModalGameOver;
+  public onGameOverClick: () => void = () => {};
 
   constructor(
     parentNode: HTMLElement,
-    chessModel: ChessModel,
+    // chessModel: ChessModel,
     chessMode: string,
     parentHeight: number,
-    parent: Control
+    // parent: Control
   ) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
-    this.parent = parent;
+    // this.parent = parent;
     this.node.classList.add('game_action_size');
-    this.model = chessModel;
+    // this.model = chessModel;
     this.chessMode = chessMode;
     const chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
     const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
@@ -88,6 +92,7 @@ class ChessGame extends Control {
     this.history = new ChessHistoryBlock(this.chessBody.node, parentHeight);
 
     this.chessBoard = new ChessField(this.chessBody.node, configFigures, parentHeight);
+    this.initBoard();
 
     this.btnStart = new ChessButton(chessControls.node, 'Start');
     this.btnStart.buttonDisable();
@@ -122,8 +127,8 @@ class ChessGame extends Control {
 
     window.onresize = () => {
       const parentHeight = Math.min(
-        this.parent.node.clientWidth,
-        this.parent.node.clientHeight - 140
+        parentNode.clientWidth,
+        parentNode.clientHeight - 140
       );
       this.chessBody.node.style.setProperty('--size', `${parentHeight}px`);
       this.chessBoard.changeHeight(parentHeight);
@@ -144,34 +149,37 @@ class ChessGame extends Control {
     }
   }
 
-  clearData(fenField: string) {
+  clearData() {
     this.players = [];
     this.playerOne.node.textContent = 'Player1';
     this.playerTwo.node.textContent = 'Player2';
     // this.chessBoard.clearData();
     this.chessMode = '';
     this.timer.clear();
-    this.destroy();
+    this.initBoard();
+    // this.destroy();
   }
 
-  setPlayer(player: string, players: Array<string>): void {
-    console.log(players);
-    this.playerOne.node.textContent = players[0];
-    this.players.push(players[0]);
+  setPlayer(params: IJoinedPlayer): void {
+    console.log(params);
+    const player1 = params.players[0].login;
+    this.playerOne.node.textContent = player1;
+    this.players.push(player1);
 
     if (this.chessMode !== chessModeConfig.network) {
-      this.host = players[0];
+      this.host = player1;
       this.btnStart.buttonEnable();
-    } else if (players[1]) {
-      this.playerTwo.node.textContent = players[1];
-      this.players.push(players[1]);
-      this.host = player !== players[0] ? players[0] : players[1];
+    } else if (params.players[1]) {
+      const player2 = params.players[1].login;
+      this.playerTwo.node.textContent = player2;
+      this.players.push(player2);
+      this.host = params.player !== player1 ? player1 : player2;
       this.btnStart.buttonEnable();
     }
   }
 
-  setHistoryMove(coords: Array<Array<Vector>>, figName: Array<string>): void {
-    this.history.setHistoryMove(coords, this.timer.getTimeString(), figName);
+  setHistoryMove(params: IChessHistory): void {
+    this.history.setHistoryMove(params);
   }
   
   createModalDraw(data: IChessStop): void {
@@ -203,7 +211,7 @@ class ChessGame extends Control {
     this.host = data.player;
     const newField = fromFen(data.field);
 
-    this.setHistoryMove(data.moves, data.figure);
+    this.setHistoryMove(data.history);
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);
     const newFigPos = new Vector(data.coords[1].x, data.coords[1].y);
 
@@ -225,9 +233,10 @@ class ChessGame extends Control {
     }
   }
 
-  createChessField(data: IChessStart) {
+  startGame(data: IChessStart) {
     this.chessBoard.setChessMode(this.chessMode);
-    this.chessBoard.createFieldCells(fromFen(data.field));
+    this.chessBoard.clearData(fromFen(data.field));
+    // this.chessBoard.createFieldCells(fromFen(data.field));
     this.chessBoard.setDragable(true);
     this.timer.setTimer(data.time);
     this.btnDraw.buttonEnable();
@@ -238,6 +247,24 @@ class ChessGame extends Control {
   getPlayers(): Array<string> {
     return this.players;
   }
+
+  createModalGameOver(params: {method: string, player: string}): void {
+    this.modalPopup && this.modalPopup.destroy();
+    this.modalGameOver = new ModalGameOver(this.node, params, this.players);
+    this.modalGameOver.onGameOverClick = () => {
+      this.onGameOverClick();
+      this.destroyModalGameOver();
+    }
+  }
+
+  destroyModalGameOver(): void {
+    this.modalGameOver.destroy();
+  }
+
+  initBoard(): void {
+    this.chessBoard.createFieldCells(fromFen(fen));
+  }
+
 }
 
 export default ChessGame;

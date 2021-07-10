@@ -9,9 +9,6 @@ import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
 import { channelConfig } from '../utilities/config';
-import { channel } from 'diagnostic_channel';
-import Cross from '../games/cross/cross';
-import { GameSelectPopup } from '../game-select-popup/game-select-popup';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -79,7 +76,8 @@ class ChatPage extends Control {
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          let channel = new channelOfChoice.view(this.chatMain.node, channelModel);
+          const chessMode = 'network';
+          let channel = new channelOfChoice.view(this.chatMain.node, channelModel, chessMode);
           channel.onLeaveClick = () => {
             channel.destroy();
           };

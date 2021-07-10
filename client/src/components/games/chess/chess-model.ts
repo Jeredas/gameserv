@@ -1,7 +1,6 @@
+import { IChessHistory } from './../../utilities/interfaces';
 import Vector from '../../utilities/vector';
-import {
-  IChessData, IChessStart, IChessStop,
-} from '../../utilities/interfaces';
+import { IChessData, IChessStart, IChessStop } from '../../utilities/interfaces';
 import Signal from '../../../socketClient/signal';
 
 class ChessModel {
@@ -36,15 +35,13 @@ class ChessModel {
       }
       // !!!-----------end change
       this.onChessMove.emit({
-        message: `${data.senderNick} -> ${data.messageText}`,
         coords: JSON.parse(data.messageText),
         player: data.senderNick,
         field: data.field,
         winner: data.winner,
         rotate: data.rotate,
-        figure: dataFigure,
-        moves: dataMoves,
-        king: data.king,
+        history: data.history,
+        king: data.king
       });
     }
     if (data.method === 'startGame') {
@@ -76,9 +73,9 @@ class ChessModel {
         endpoint: 'chessMove',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId'),
-        },
-      }),
+          sessionId: localStorage.getItem('todoListApplicationSessionId')
+        }
+      })
     );
   }
 
@@ -89,9 +86,9 @@ class ChessModel {
         endpoint: 'chessFigureGrab',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId'),
-        },
-      }),
+          sessionId: localStorage.getItem('todoListApplicationSessionId')
+        }
+      })
     );
   }
 
@@ -102,9 +99,9 @@ class ChessModel {
         endpoint: 'chessStartGame',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId'),
-        },
-      }),
+          sessionId: localStorage.getItem('todoListApplicationSessionId')
+        }
+      })
     );
   }
 
@@ -115,9 +112,9 @@ class ChessModel {
         endpoint: 'chessStopGame',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId'),
-        },
-      }),
+          sessionId: localStorage.getItem('todoListApplicationSessionId')
+        }
+      })
     );
   }
 
@@ -128,9 +125,9 @@ class ChessModel {
         endpoint: 'chessRemoveGame',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId'),
-        },
-      }),
+          sessionId: localStorage.getItem('todoListApplicationSessionId')
+        }
+      })
     );
   }
 }
