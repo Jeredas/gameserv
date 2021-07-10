@@ -8,8 +8,18 @@ class ChatChannel extends Control {
   private channelType: string;
   private gameMode: string = '';
 
-  constructor(parentNode: HTMLElement, channelName: string, channelType: string, gameMode = '') {
-    super(parentNode, 'div', chatStyles.chat_channel, channelName);
+  constructor(
+    parentNode: HTMLElement,
+    channelName: string,
+    channelType: string,
+    icon: string,
+    gameMode = ''
+  ) {
+    super(parentNode, 'div', chatStyles.chat_channel);
+    const channelText = new Control(this.node, 'div', chatStyles.chat_channel_text);
+    channelText.node.textContent = channelName;
+    const channelIcon = new Control(this.node, 'div', chatStyles.chat_channel_icon);
+    channelIcon.node.style.backgroundImage = `url(${icon})`;
     this.channelName = channelName;
     this.channelType = channelType;
     this.gameMode = gameMode;

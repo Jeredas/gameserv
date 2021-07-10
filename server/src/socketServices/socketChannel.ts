@@ -174,7 +174,9 @@ export class ChatChannel {
   leaveUser(connection, params) {
     const currentClient = this.clients.find((it) => it.connection == connection);
     this.clients = this.clients.filter((it) => it.connection != connection);
-    this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+    if (this.players && this.players.length) {
+      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+    }
     this.clients.forEach((it) => {
       // this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
       this._sendForAllClients(
@@ -182,11 +184,13 @@ export class ChatChannel {
           this.clients.map((it) => ({ userName: it.userData.login, avatar: it.userData.avatar }))
         )
       );
-      this._sendForAllClients(
-        new ChannelPlayerListResponse(
-          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
-        )
-      );
+      if (this.players && this.players.length) {
+        this._sendForAllClients(
+          new ChannelPlayerListResponse(
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          )
+        );
+      }
     });
   }
 
