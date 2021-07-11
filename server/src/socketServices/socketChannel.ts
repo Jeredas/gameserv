@@ -62,9 +62,8 @@ class ChatClient {
 
 class ChannelUserListResponse implements IChatResponse {
   public type: string;
-  // public userList: Array<string>;
   public service: string;
-  channelName: string;
+  public channelName: string;
   public params: {
     userList: Array<{ userName: string; avatar: string }>;
   };
