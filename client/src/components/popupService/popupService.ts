@@ -16,9 +16,9 @@ class PopupService extends Control {
     parentNode.append(this.node);
   }
 
-  showPopup<type>(Popup: any):Promise<type> {
+  showPopup<type>(Popup: any, params?:any):Promise<type> {
     return new Promise((resolve, reject) => {
-      const popup = new Popup(this.node);
+      const popup = new Popup(this.node, params);
       popup.onSelect = (result: type) => {
         resolve(result);
         popup.destroy();

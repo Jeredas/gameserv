@@ -14,14 +14,16 @@ interface ICrossHistory {
 export class ChannelJoinPlayerResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public requestId: number;
   public params: {
     status: string;
   };
 
-  constructor(status: string, requestId: number) {
+  constructor(channelName: string, status: string, requestId: number) {
     this.service = 'chat';
     this.type = 'joined';
+    this.channelName = channelName;
     this.requestId = requestId;
     this.params = { status };
   }
@@ -30,13 +32,20 @@ export class ChannelJoinPlayerResponse {
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     player: string;
     players: Array<{ login: string; avatar: string }>;
   };
 
-  constructor(player: string, players: Array<{ login: string; avatar: string }>) {
-    (this.service = 'chat'), (this.type = 'getPlayers');
+  constructor(
+    channelName: string,
+    player: string,
+    players: Array<{ login: string; avatar: string }>
+  ) {
+    this.service = 'chat';
+    this.type = 'getPlayers';
+    this.channelName = channelName;
     this.params = { player, players };
   }
 }
@@ -44,12 +53,15 @@ class ChannelSendPlayersResponse implements IChatResponse {
 class CrossStartResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     time: number;
   };
 
-  constructor(time: number) {
-    (this.service = 'chat'), (this.type = 'crossStart');
+  constructor(channelName: string, time: number) {
+    this.service = 'chat';
+    this.type = 'crossStart';
+    this.channelName = channelName;
     this.params = { time };
   }
 }
@@ -57,7 +69,7 @@ class CrossStartResponse {
 class CrossMoveResponse {
   public type: string;
   public service: string;
-
+  public channelName: string;
   public params: {
     player: string;
     field: Array<Array<string>>;
@@ -65,8 +77,16 @@ class CrossMoveResponse {
     history: ICrossHistory;
   };
 
-  constructor(player: string, field: Array<Array<string>>, winner: string, history: ICrossHistory) {
-    (this.service = 'chat'), (this.type = 'crossMove');
+  constructor(
+    channelName: string,
+    player: string,
+    field: Array<Array<string>>,
+    winner: string,
+    history: ICrossHistory
+  ) {
+    this.service = 'chat';
+    this.type = 'crossMove';
+    this.channelName = channelName;
     this.params = {
       player,
       field,
@@ -79,6 +99,7 @@ class CrossMoveResponse {
 class CrossDrawResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   time: number;
   public params: {
     stop: string;
@@ -86,8 +107,10 @@ class CrossDrawResponse {
     method: string;
   };
 
-  constructor(stop: string, player: string) {
-    (this.service = 'chat'), (this.type = 'crossStop');
+  constructor(channelName: string, stop: string, player: string) {
+    this.service = 'chat'; 
+    this.type = 'crossStop';
+    this.channelName = channelName;
     this.params = { stop, player, method: 'drawNetwork' };
   }
 }
@@ -95,14 +118,17 @@ class CrossDrawResponse {
 class CrossDrawAgreeResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     stop: string;
     player: string;
     method: string;
   };
 
-  constructor(stop: string, player: string) {
-    (this.service = 'chat'), (this.type = 'crossStop');
+  constructor(channelName: string, stop: string, player: string) {
+    this.service = 'chat'; 
+    this.type = 'crossStop';
+    this.channelName = channelName;
     this.params = { stop, player, method: 'drawAgreeNetwork' };
   }
 }
@@ -110,13 +136,16 @@ class CrossDrawAgreeResponse {
 class CrossRemoveResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     method: string;
     player: string;
   };
 
-  constructor(method: string, player = '') {
-    (this.service = 'chat'), (this.type = 'crossRemove');
+  constructor(channelName: string, method: string, player = '') {
+    this.service = 'chat'; 
+    this.type = 'crossRemove';
+    this.channelName = channelName;
     this.params = { method, player };
   }
 }
@@ -143,24 +172,27 @@ export class CrossGameChannel extends ChatChannel {
   async joinPlayer(connection: any, params: any) {
     try {
       const currentClient = this._getUserByConnection(connection);
-      if (this.players.length < 2 && !this.players.find(player => currentClient.userData.login === player.login)) {
+      if (
+        this.players.length < 2 &&
+        !this.players.find((player) => currentClient.userData.login === player.login)
+      ) {
         this.logic.setPlayers(currentClient.userData.login);
         this.players.push({
           login: currentClient.userData.login,
           avatar: currentClient.userData.avatar
         });
-        const response = new ChannelJoinPlayerResponse('ok', params.requestId);
+        const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
       }
     } catch (err) {
-      connection.sendUTF(JSON.stringify(new ChannelJoinPlayerResponse('error', params.requestId)));
+      connection.sendUTF(JSON.stringify(new ChannelJoinPlayerResponse(this.name, 'error', params.requestId)));
     }
   }
 
   getPlayers(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
-      const response = new ChannelSendPlayersResponse(currentClient.userData.login, this.players);
+      const response = new ChannelSendPlayersResponse(this.name, currentClient.userData.login, this.players);
       this.sendForAllClients(response);
     } else {
       connection.sendUTF(
@@ -181,7 +213,7 @@ export class CrossGameChannel extends ChatChannel {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
       const time = Date.now();
-      const response = new CrossStartResponse(time);
+      const response = new CrossStartResponse(this.name, time);
       this.logic.startGame(time);
       this.history = [];
       console.log('START CROSS', response);
@@ -210,6 +242,7 @@ export class CrossGameChannel extends ChatChannel {
           const clickVector = new Vector(coords.x, coords.y);
           this.logic.writeSignToField(currentUser.login, clickVector);
           const response = new CrossMoveResponse(
+            this.name, 
             currentUser.login,
             this.logic.getField(),
             this.logic.getWinner(),
@@ -225,14 +258,14 @@ export class CrossGameChannel extends ChatChannel {
   }
 
   crossStop(connection, params) {
-    const currentClient = this._getUserByConnection(connection);//this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection); //this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
         console.log(params.messageText);
-        
-        const responseDrawAgree = new CrossDrawAgreeResponse(params.messageText, currentUser.login);
-        const responseDraw = new CrossDrawResponse(params.messageText, currentUser.login);
+
+        const responseDrawAgree = new CrossDrawAgreeResponse(this.name, params.messageText, currentUser.login);
+        const responseDraw = new CrossDrawResponse(this.name, params.messageText, currentUser.login);
         const clients = this.clients.filter(
           (client) => client.userData.login !== currentUser.login
         );
@@ -243,32 +276,32 @@ export class CrossGameChannel extends ChatChannel {
   }
 
   crossRemove(connection, params) {
-    let currentClient = this._getUserByConnection(connection);//this.clients.find((it) => it.connection == connection);
+    let currentClient = this._getUserByConnection(connection); //this.clients.find((it) => it.connection == connection);
 
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
-      let rivalClient = this._getUserByLogin(rivalPlayer);//clients.find((client) => client.userData.login === rivalPlayer);
+      let rivalClient = this._getUserByLogin(rivalPlayer); //clients.find((client) => client.userData.login === rivalPlayer);
 
       if (params.messageText === 'agree') {
-        const response = new CrossRemoveResponse('draw');
+        const response = new CrossRemoveResponse(this.name, 'draw');
         currentClient.send(response);
         rivalClient.send(response);
       } else if (params.messageText === 'disagree') {
         if (currentPlayer === this.logic.getCurrentPlayer()) {
-          currentClient.send(new CrossRemoveResponse('won', rivalPlayer));
-          rivalClient.send(new CrossRemoveResponse('lost', currentPlayer));
+          currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
         } else {
-          currentClient.send(new CrossRemoveResponse('won', rivalPlayer));
-          rivalClient.send(new CrossRemoveResponse('lost', currentPlayer));
+          currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
         }
       } else if (this.logic.getWinner()) {
         if (currentPlayer === this.logic.getWinner()) {
-          currentClient.send(new CrossRemoveResponse('won', rivalPlayer));
-          rivalClient.send(new CrossRemoveResponse('lost', currentPlayer));
+          currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
         } else {
-          currentClient.send(new CrossRemoveResponse('lost', rivalPlayer));
-          rivalClient.send(new CrossRemoveResponse('won', currentPlayer));
+          currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
         }
       }
       this.history = this.logic.getFullHistory();
@@ -276,8 +309,6 @@ export class CrossGameChannel extends ChatChannel {
       this.players = [];
     }
   }
-
-
 }
 
 let size = 3;

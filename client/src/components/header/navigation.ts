@@ -48,11 +48,14 @@ export class Navigation extends Control {
     });
   }
   setUserData(data: IUserAuth): void {
-    this.userBlock.setUserName(data.login);
-    this.userBlock.setAvatar(data.avatar);
-  }
-  clearNavs(){
-    this.navContainer.node.innerHTML ='';
+    if(data == null) {
+      this.userBlock.setHidden();
+    } else {
+      this.userBlock.setUserName(data.login);
+      this.userBlock.setAvatar(data.avatar);
+      this.userBlock.removeHidden();
+    }
+    
   }
   addConnection(): void {
     this.logo.node.classList.add(headerStyles.connected);
@@ -60,5 +63,11 @@ export class Navigation extends Control {
 
   removeConnection(): void {
     this.logo.node.classList.remove(headerStyles.connected);
+  }
+
+  removeLink(hash: string) {
+    const navItem = this.navItems.find((item) => item.getHash() === hash);
+    this.navItems = this.navItems.filter((item) => item !== navItem);
+    navItem.destroy();
   }
 }

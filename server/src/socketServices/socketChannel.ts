@@ -62,14 +62,16 @@ class ChatClient {
 
 class ChannelUserListResponse implements IChatResponse {
   public type: string;
-  // public userList: Array<string>;
   public service: string;
+  public channelName: string;
   public params: {
     userList: Array<{ userName: string; avatar: string }>;
   };
 
-  constructor(userList: Array<{ userName: string; avatar: string }>) {
-    (this.service = 'chat'), (this.type = 'userList');
+  constructor(channelName: string, userList: Array<{ userName: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'userList';
+    this.channelName = channelName;
     this.params = {
       userList: [ ...userList ]
     };
@@ -79,14 +81,17 @@ class ChannelUserListResponse implements IChatResponse {
 class ChannelSendMessageResponse implements IChatResponse {
   public type: string;
   public service: string;
+  public channelName: string
   public params: {
     senderNick: string;
     messageText: string;
     avatar: string;
   };
 
-  constructor(senderNick: string, messageText: string, avatar = '') {
-    (this.service = 'chat'), (this.type = 'message');
+  constructor(channelName: string, senderNick: string, messageText: string, avatar = '') {
+    this.service = 'chat'; 
+    this.type = 'message';
+    this.channelName = channelName;
     this.params = { senderNick, messageText, avatar };
   }
 }
@@ -94,14 +99,16 @@ class ChannelSendMessageResponse implements IChatResponse {
 class ChannelJoinUserResponse implements IChatResponse {
   public type: string;
   public service: string;
+  public channelName: string
   public requestId: number;
   public params: {
     status: string;
   };
 
-  constructor(status: string, requestId: number) {
+  constructor(channelName: string, status: string, requestId: number) {
     this.service = 'chat';
     this.type = 'joined';
+    this.channelName = channelName;
     this.requestId = requestId;
     this.params = { status };
   }
@@ -110,12 +117,15 @@ class ChannelJoinUserResponse implements IChatResponse {
 class ChannelPlayerListResponse implements IChatResponse {
   public type: string;
   public service: string;
+  public channelName: string
   public params: {
     playerList: Array<{ login: string; avatar: string }>;
   };
 
-  constructor(playerList: Array<{ login: string; avatar: string }>) {
-    (this.service = 'chat'), (this.type = 'playerList');
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat'; 
+    this.type = 'playerList';
+    this.channelName = channelName;
     this.params = {
       playerList: [ ...playerList ]
     };
@@ -161,14 +171,14 @@ export class ChatChannel {
       if (userModel && !this._hasUser(connection)) {
         const newClient = new ChatClient(connection, new ChatUserData(params.sessionId, userModel));
         this.clients.push(newClient);
-        newClient.send(new ChannelJoinUserResponse('ok', params.requestId));
+        newClient.send(new ChannelJoinUserResponse(this.name, 'ok', params.requestId));
         this._sendForAllClients(
-          new ChannelUserListResponse(
+          new ChannelUserListResponse(this.name, 
             this.clients.map((it) => ({ userName: it.userData.login, avatar: it.userData.avatar }))
           )
         );
         this._sendForAllClients(
-          new ChannelPlayerListResponse(
+          new ChannelPlayerListResponse(this.name, 
             this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
           )
         );
@@ -176,7 +186,7 @@ export class ChatChannel {
         throw new Error('err');
       }
     } catch (err) {
-      connection.sendUTF(JSON.stringify(new ChannelJoinUserResponse('error', params.requestId)));
+      connection.sendUTF(JSON.stringify(new ChannelJoinUserResponse(this.name, 'error', params.requestId)));
       //send respons for user
     }
   }
@@ -194,13 +204,13 @@ export class ChatChannel {
     this.clients.forEach((it) => {
       // this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
       this._sendForAllClients(
-        new ChannelUserListResponse(
+        new ChannelUserListResponse(this.name, 
           this.clients.map((it) => ({ userName: it.userData.login, avatar: it.userData.avatar }))
         )
       );
       if (this.players && this.players.length) {
         this._sendForAllClients(
-          new ChannelPlayerListResponse(
+          new ChannelPlayerListResponse(this.name, 
             this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
           )
         );
@@ -214,6 +224,7 @@ export class ChatChannel {
     if (currentClient && currentClient.userData) {
       this._sendForAllClients(
         new ChannelSendMessageResponse(
+          this.name,
           currentClient.userData.login,
           params.messageText,
           currentClient.userData.avatar

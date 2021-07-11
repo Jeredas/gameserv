@@ -16,6 +16,39 @@ import { LobbyModel } from './socketClient/lobbyService';
 import { AuthModel } from './components/authModel/authModel';
 const socketURL = 'ws://localhost:4080';
 import appStyles from './app.module.css';
+import RecordPage from './components/recordPage/recordPage';
+import GenericPopup from './components/genericPopup/genericPopup';
+import ButtonDefault from './components/buttonDefault/buttonDefault';
+
+
+class ConnectToServer extends GenericPopup<boolean>{
+  onClick: () => void
+  private openHandler: ()=> void;
+  private closeHandler: ()=> void;
+  private client: SocketClient;
+
+  constructor(parentNode: HTMLElement, params: {client: SocketClient}) {
+    super(parentNode);
+    this.client = params.client;
+    const button = new ButtonDefault(this.node, '', 'Reconnect');
+    this.openHandler = () => this.onSelect(true);
+    this.closeHandler = () => button.buttonEnable();
+
+    this.client.onOpen.add(this.openHandler);
+    this.client.onClose.add(this.closeHandler);
+    button.node.onclick = () => {
+      this.client.reconnent();
+      button.buttonDisable();
+    }
+  }
+  destroy() {
+    this.client.onOpen.remove(this.openHandler);
+    this.client.onClose.remove(this.closeHandler);
+    super.destroy();
+  }
+
+}
+
 class Application extends Control {
   navigation: Navigation;
 
@@ -31,6 +64,8 @@ class Application extends Control {
   model : AuthModel;
   onAuth: (param: IUserAuth) => void = () => { };
   onAuthFail: (param: string) => void = () => { };
+  private recordPage: RecordPage;
+  private lostConnectionPopupOpen: boolean = false;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', appStyles.root);
@@ -39,75 +74,76 @@ class Application extends Control {
     popupService.init(parentNode);
     popupService.showPopup(CheckSession).then((res) => {
       if (!res) {
-        popupService.showPopup(RegisterCheck).then((res) => {
-          if (res==='SignUp') {
-            popupService.showPopup(RegForm).then((res) => {
-              if (res === 'register') {
-                console.log('registered');
-                this.showAuthPopUp()
-                this.buildChatPage();
-              } else {
-                this.about.show();
-                console.log('registration failed');
-              }
-            });
-          } else if(res === 'SignIn') {
-            this.buildChatPage();
-            this.showAuthPopUp()
-          } else if(res === 'Close'){
-            this.about.show();
-          }
-        });
+        // popupService.showPopup(RegisterCheck).then((res) => {
+        //   if (res==='SignUp') {
+        //     popupService.showPopup(RegForm).then((res) => {
+        //       if (res === 'register') {
+        //         console.log('registered');
+        //         this.showAuthPopUp().then(res => {
+        //           if(res) {
+        //             this.buildChatPage();
+        //           } else {
+        //             this.router.activateRouteByName('about');
+        //           }
+        //         })
+        //       } else {
+        //         this.router.activateRouteByName('about');
+        //         console.log('registration failed');
+        //       }
+        //     });
+        //   } else if(res === 'SignIn') {
+        //     this.showAuthPopUp().then(res => {
+        //       if(res) {
+        //         this.buildChatPage();
+        //       } else {
+        //         this.router.activateRouteByName('about');
+        //       }
+        //     })
+        //   } else if(res === 'Close'){
+        //     this.router.activateRouteByName('about');
+        //   }
+        // });
       } else {
         console.log('build here')
-        this.navigation.clearNavs();
-        this.buildChatPage();
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
           this.currentUser.setData(res)
+          this.buildChatPage();
         })
         console.log('Go to chat Page');
       }
     });
-
-    // popupService.showPopup(SettingsUser)
-    // popupService.showPopup(RegForm);
     this.navigation = new Navigation(this.node);
+    this.navigation.setUserData(this.currentUser.getData());
     this.currentUser.onUpdate.add(({ from, to }) => {
-      this.navigation.setUserData(to)
+      this.navigation.setUserData(to);
+      this.about.setUserData(to);
+      
     })
     this.navigation.onLogout.add(()=>{
-      this.navigation.clearNavs();
-      this.addPage('about', 'about', this.about);
-      this.about.show();
+      this.removePage('chat');
+      this.router.selectPage('about');
       console.log('logged out from header')
       this.chatPage.destroy();
+      this.currentUser.setData(null);
     })
-    this.router = new Router();
+    this.router = new Router('about');
     this.pageContainer = new Control(this.node, 'div', appStyles.page_container);
     this.about = new AboutPage(this.pageContainer.node);
-    
-    this.about.hide();
+    this.about.setUserData(this.currentUser.getData());
+    this.recordPage = new RecordPage(this.pageContainer.node)
+
+    this.addPage('about', 'about', this.about);
+    this.addPage('statistics', 'stat', this.recordPage);
     this.about.onAuth.add((data)=>{
-      this.navigation.clearNavs();
       this.buildChatPage();
       this.currentUser.setData(data)
       this.chatPage.joinUserToChannel(data)
     })
     this.about.onAuthFail.add((res)=>{
       console.log(res);
-      this.navigation.clearNavs();
-      this.buildChatPage();
-      this.chatPage.destroy();
     })
-    // const socket = new SocketClient();
-    // let lobbyModel = new LobbyModel(socket);
-    // socket.init(socketURL);
-
-    // this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    // this.addPage('about', 'about', this.about);
-    // this.addPage('chat', 'chat', this.chatPage);
-    // this.router.processHash();
-
+    this.router.processHash();
+    // this.router.selectPage('about');
   }
 
   addPage(linkName: string, pageName: string, pageComponent: IPageComponent) {
@@ -128,11 +164,13 @@ class Application extends Control {
 
   private showAuthPopUp() {
     return popupService.showPopup<{ status: string, data: IUserAuth }>(AuthForm).then((res) => {
+      console.log('popup AUTH',res);
+      
       if (res.status === 'login') {
         this.currentUser.setData(res.data)
         return true;
       } else {
-        this.about.show();
+        // this.about.show();
         return false;
       }
     })
@@ -147,12 +185,23 @@ class Application extends Control {
 
     lobbyModel.service.onClose.add(() => {
       this.navigation.removeConnection();
+      if(!this.lostConnectionPopupOpen) {
+        this.lostConnectionPopupOpen = true;
+        popupService.showPopup(ConnectToServer, {client: socket}).then((res) => {
+        this.lostConnectionPopupOpen = false;
+      })
+      }
+      
     });
     
     this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    this.addPage('about', 'about', this.about);
     this.addPage('chat', 'chat', this.chatPage);
     this.router.processHash();
+  }
+
+  removePage(name: string) {
+    this.navigation.removeLink(name);
+    this.router.removeRoute(name);
   }
 }
 

@@ -32,13 +32,16 @@ export class CrossGameChannelService implements ISocketService {
   public onCrossRemove: Signal<{ method: string; player: string }> = new Signal();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
   public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
+  private channelName: string;
 
-  constructor() {}
+  constructor(channelName: string) {
+    this.channelName = channelName;
+  }
 
   messageHandler(rawMessage: string) {
     // console.log(rawMessage);
     const message = JSON.parse(rawMessage);
-    if (message.service === 'chat') {
+    if (message.service === 'chat' && message.channelName === this.channelName) {
       this.onAny.emit(message);
       const processFunction = new Map<string, ((params: any) => void)>([
         [
@@ -168,7 +171,7 @@ export class CrossGameChannelModel extends ChatChannelModel {
 
   constructor(socketClient: SocketClient, channelName: string) {
     super(socketClient, channelName);
-    this.service = new CrossGameChannelService();
+    this.service = new CrossGameChannelService(channelName);
     this.socketClient.addService(this.service);
   }
 

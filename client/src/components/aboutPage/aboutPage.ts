@@ -12,61 +12,48 @@ import aboutImage from '../../assets/bg-about.jpg';
 import aboutWelcome from './config_about';
 import aboutStyles from './about.module.css';
 
-class AboutPage extends Control {
-  wrapper: Control;
+
+class UnregisteredUser extends Control {
   buttonLogIn: ButtonDefault;
-  onSelect: (value: any) => void;
-  onAuth: Signal<IUserAuth>;
+  
+  public onLoginClick: () => void;
+
+  constructor(parentNode: HTMLElement) {
+    super(parentNode, 'div', aboutStyles.about_welcome);
+    aboutWelcome.forEach((text) => {
+      const textItem = new Control(this.node, 'div', aboutStyles.about_welcome);
+      textItem.node.textContent = text;
+    });
+
+    this.buttonLogIn = new ButtonDefault(this.node, aboutStyles.about_button, 'Log In');
+    this.buttonLogIn.onClick = () => {
+      this.onLoginClick?.()
+    };
+  }
+}
+
+class RegisteredUser extends Control {
+  constructor(parentNode: HTMLElement, userData: IUserAuth) {
+    super(parentNode, 'div', aboutStyles.about_welcome);
+    aboutWelcome.forEach((text) => {
+      const textItem = new Control(this.node, 'div', aboutStyles.about_welcome);
+      textItem.node.textContent = text;
+    });
+  }
+}
+
+class AboutPage extends Control {
+  // buttonLogIn: ButtonDefault;
+  // onSelect: (value: any) => void;
+  onAuth: Signal<IUserAuth> = new Signal();
   onAuthFail: Signal<string> = new Signal();
+
+  private aboutFade: Control;
+  private aboutView: Control = null;
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', aboutStyles.about_wrapper);
     this.node.style.backgroundImage = `url(${aboutImage})`;
-    const aboutFade = new Control(this.node, 'div', aboutStyles.about_fade);
-    const inner = new Control(aboutFade.node, 'div', aboutStyles.about_inner);
-    const textBlock = new Control(inner.node, 'div', aboutStyles.about_welcome);
-    aboutWelcome.forEach((text) => {
-      const textItem = new Control(textBlock.node, 'div', aboutStyles.about_welcome);
-      textItem.node.textContent = text;
-    });
-    this.onAuth = new Signal();
-
-    this.buttonLogIn = new ButtonDefault(inner.node, aboutStyles.about_button, 'Log In');
-
-    this.buttonLogIn.onClick = () => {
-      this.hide();
-      popupService.init(parentNode);
-      popupService.showPopup(RegisterCheck).then((res) => {
-        if (res === 'SignUp') {
-          popupService.showPopup(RegForm).then((res) => {
-            if (res === 'register') {
-              console.log('registered');
-              this.showAuthPopUp().then((res) => {
-                if (res.status === true) {
-                  this.onAuth.emit(res.data);
-                } else {
-                  this.onAuthFail.emit('fail');
-                }
-              });
-            } else {
-              this.onAuthFail.emit('fail');
-              this.show();
-              console.log('registration failed');
-            }
-          });
-        } else if (res === 'SignIn') {
-          this.showAuthPopUp().then((res) => {
-            if (res.status === true) {
-              this.onAuth.emit(res.data);
-            } else {
-              this.onAuthFail.emit('fail');
-            }
-          });
-        } else if (res === 'Close') {
-          this.show();
-          //this.onAuthFail.emit('fail')
-        }
-      });
-    };
+    this.aboutFade = new Control(this.node, 'div', aboutStyles.about_fade);
   }
 
   hide(): void {
@@ -82,11 +69,52 @@ class AboutPage extends Control {
         console.log(res.data, 'res data');
         return { status: true, data: res.data };
       } else {
-        this.show();
         return { status: false };
       }
     });
   }
+
+  setUserData(userData: IUserAuth) {
+    if(this.aboutView) this.aboutView.destroy()
+    if(userData != null) {
+      this.aboutView = new RegisteredUser(this.aboutFade.node, userData)
+    } else {
+      const unregistered = new UnregisteredUser(this.aboutFade.node);
+      this.aboutView = unregistered;
+      unregistered.onLoginClick = () => {
+          popupService.showPopup(RegisterCheck).then((res) => {
+        if (res === 'SignUp') {
+          popupService.showPopup(RegForm).then((res) => {
+            if (res === 'register') {
+              console.log('registered');
+              this.showAuthPopUp().then((res) => {
+                if (res.status === true) {
+                  this.onAuth.emit(res.data);
+                } else {
+                  this.onAuthFail.emit('fail');
+                }
+              });
+            } else {
+              this.onAuthFail.emit('fail');
+              console.log('registration failed');
+            }
+          });
+        } else if (res === 'SignIn') {
+          this.showAuthPopUp().then((res) => {
+            if (res.status === true) {
+              this.onAuth.emit(res.data);
+            } else {
+              this.onAuthFail.emit('fail');
+            }
+          });
+        } else if (res === 'Close') {
+          //this.onAuthFail.emit('fail')
+        }
+      });
+      }
+    }
+  }
+
 }
 
 export default AboutPage;

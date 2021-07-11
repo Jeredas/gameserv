@@ -6,7 +6,7 @@ class GenericPopup<type> extends Control {
 
   onSelect: (value: type) => void;
 
-  constructor(parentNode: HTMLElement) {
+  constructor(parentNode: HTMLElement, params?: any) {
     super(parentNode, 'div', stylePopup.popup_blackout);
     this.popupWrapper = new Control(this.node, 'div', stylePopup.popup_wrapper);
   }

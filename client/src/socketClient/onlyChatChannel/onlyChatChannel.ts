@@ -9,6 +9,7 @@ import { IChatUser, IUserChatMessage } from '../../components/utilities/interfac
 import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
 import channelStyles from './onlyChatChannel.module.css';
 import messageBlockImage from '../../assets/message-inner.png';
+import { throws } from 'assert';
 
 export class OnlyChatChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -19,12 +20,15 @@ export class OnlyChatChannelService implements ISocketService {
   public onOpen: Signal<any> = new Signal<any>();
   public onAny: Signal<any> = new Signal<any>();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
+  private channelName: string;
 
-  constructor() {}
+  constructor(channelName: string) {
+    this.channelName = channelName;
+  }
 
   messageHandler(rawMessage: string) {
     const message = JSON.parse(rawMessage);
-    if (message.service === 'chat') {
+    if (message.service === 'chat' && message.channelName === this.channelName) {
       this.onAny.emit(message);
       const processFunction = new Map<string, ((params: any) => void)>([
         [
@@ -97,7 +101,7 @@ export class OnlyChatChannelModel extends ChatChannelModel {
 
   constructor(socketClient: SocketClient, channelName: string) {
     super(socketClient, channelName);
-    this.service = new OnlyChatChannelService();
+    this.service = new OnlyChatChannelService(channelName);
     this.socketClient.addService(this.service);
   }
 
