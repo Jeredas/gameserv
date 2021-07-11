@@ -45,6 +45,7 @@ class OtherGamePopup extends GenericPopup<IChannelData> {
 
       const newChannel = {
         channelName: this.channelName.getValue(),
+        channelType: 'OnlyChatChannel',
         gameMode: 'network'
       };
       this.onSelect(newChannel);

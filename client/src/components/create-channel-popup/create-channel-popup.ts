@@ -87,7 +87,7 @@ class CreateChannelPopup extends GenericPopup<IChannelData> {
 
       const newChannel = {
         channelName: this.channelName.getValue(),
-        // channelType: channelType,
+        channelType: 'ChessGameChannel',
         gameMode: gameMode
       };
       this.onSelect(newChannel);
