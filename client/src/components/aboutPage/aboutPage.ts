@@ -33,7 +33,7 @@ class AboutPage extends Control {
     this.buttonLogIn = new ButtonDefault(inner.node, aboutStyles.about_button, 'Log In');
 
     this.buttonLogIn.onClick = () => {
-      this.hide();
+      // this.hide();
       popupService.init(parentNode);
       popupService.showPopup(RegisterCheck).then((res) => {
         if (res === 'SignUp') {
@@ -49,7 +49,7 @@ class AboutPage extends Control {
               });
             } else {
               this.onAuthFail.emit('fail');
-              this.show();
+              // this.show();
               console.log('registration failed');
             }
           });

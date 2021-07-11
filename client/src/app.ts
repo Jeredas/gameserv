@@ -82,10 +82,13 @@ class Application extends Control {
                 this.showAuthPopUp().then(res => {
                   if(res) {
                     this.buildChatPage();
+                  } else {
+                    this.router.activateRouteByName('about');
                   }
                 })
               } else {
-                this.about.show();
+                this.router.activateRouteByName('about');
+                // this.about.show();
                 console.log('registration failed');
               }
             });
@@ -93,18 +96,21 @@ class Application extends Control {
             this.showAuthPopUp().then(res => {
               if(res) {
                 this.buildChatPage();
+              } else {
+                this.router.activateRouteByName('about');
               }
             })
           } else if(res === 'Close'){
-            this.about.show();
+            this.router.activateRouteByName('about');
+            // this.about.show();
           }
         });
       } else {
         console.log('build here')
-        this.navigation.clearNavs();
-        this.buildChatPage();
+        // this.navigation.clearNavs();
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
           this.currentUser.setData(res)
+          this.buildChatPage();
         })
         console.log('Go to chat Page');
       }
@@ -117,28 +123,37 @@ class Application extends Control {
       this.navigation.setUserData(to)
     })
     this.navigation.onLogout.add(()=>{
-      this.navigation.clearNavs();
-      this.addPage('about', 'about', this.about);
-      this.about.show();
+      this.removePage('chat');
+      // this.navigation.clearNavs();
+      // this.addPage('about', 'about', this.about);
+      // this.about.show();
+      this.router.activateRouteByName('about');
       console.log('logged out from header')
       this.chatPage.destroy();
     })
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', appStyles.page_container);
     this.about = new AboutPage(this.pageContainer.node);
+    this.recordPage = new RecordPage(this.pageContainer.node)
+
+    this.addPage('about', 'about', this.about);
+    this.addPage('statistics', 'stat', this.recordPage);
     
-    this.about.hide();
+    
+    // this.about.hide();
     this.about.onAuth.add((data)=>{
-      this.navigation.clearNavs();
+      // this.navigation.clearNavs();
+      // this.removePage('chat');
       this.buildChatPage();
       this.currentUser.setData(data)
       this.chatPage.joinUserToChannel(data)
     })
     this.about.onAuthFail.add((res)=>{
       console.log(res);
-      this.navigation.clearNavs();
-      this.buildChatPage();
-      this.chatPage.destroy();
+      // this.removePage('chat');
+      // this.navigation.clearNavs();
+      // this.buildChatPage();
+      // this.chatPage.destroy();
     })
     // const socket = new SocketClient();
     // let lobbyModel = new LobbyModel(socket);
@@ -169,6 +184,8 @@ class Application extends Control {
 
   private showAuthPopUp() {
     return popupService.showPopup<{ status: string, data: IUserAuth }>(AuthForm).then((res) => {
+      console.log('popup AUTH',res);
+      
       if (res.status === 'login') {
         this.currentUser.setData(res.data)
         return true;
@@ -199,11 +216,16 @@ class Application extends Control {
     });
     
     this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    this.recordPage = new RecordPage(this.pageContainer.node)
-    this.addPage('about', 'about', this.about);
+    // this.recordPage = new RecordPage(this.pageContainer.node)
+    // this.addPage('about', 'about', this.about);
     this.addPage('chat', 'chat', this.chatPage);
-    this.addPage('statistics', 'stat', this.recordPage);
+    // this.addPage('statistics', 'stat', this.recordPage);
     this.router.processHash();
+  }
+
+  removePage(name: string) {
+    this.navigation.removeLink(name);
+    this.router.removeRoute(name);
   }
 }
 

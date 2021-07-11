@@ -51,14 +51,20 @@ export class Navigation extends Control {
     this.userBlock.setUserName(data.login);
     this.userBlock.setAvatar(data.avatar);
   }
-  clearNavs(){
-    this.navContainer.node.innerHTML ='';
-  }
+  // clearNavs(){
+  //   this.navContainer.node.innerHTML ='';
+  // }
   addConnection(): void {
     this.logo.node.classList.add(headerStyles.connected);
   }
 
   removeConnection(): void {
     this.logo.node.classList.remove(headerStyles.connected);
+  }
+
+  removeLink(hash: string) {
+    const navItem = this.navItems.find((item) => item.getHash() === hash);
+    this.navItems = this.navItems.filter((item) => item !== navItem);
+    navItem.destroy();
   }
 }

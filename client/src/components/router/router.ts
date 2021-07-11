@@ -27,4 +27,10 @@ export class Router {
     route.deactivate();
     this.routes.push(route);
   }
+
+  removeRoute(name:string) {
+    const routeItem = this.routes.find((item) => item.pageName === name);
+    this.routes = this.routes.filter((item) => item !== routeItem);
+    routeItem.deactivate();
+  }
 }
