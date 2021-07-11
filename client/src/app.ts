@@ -79,16 +79,22 @@ class Application extends Control {
             popupService.showPopup(RegForm).then((res) => {
               if (res === 'register') {
                 console.log('registered');
-                this.showAuthPopUp()
-                this.buildChatPage();
+                this.showAuthPopUp().then(res => {
+                  if(res) {
+                    this.buildChatPage();
+                  }
+                })
               } else {
                 this.about.show();
                 console.log('registration failed');
               }
             });
           } else if(res === 'SignIn') {
-            this.buildChatPage();
-            this.showAuthPopUp()
+            this.showAuthPopUp().then(res => {
+              if(res) {
+                this.buildChatPage();
+              }
+            })
           } else if(res === 'Close'){
             this.about.show();
           }
