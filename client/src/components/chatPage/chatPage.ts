@@ -11,6 +11,7 @@ import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
 import { channelConfig } from '../utilities/config';
+import chatImage from '../../assets/bg-chat.jpg';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -31,6 +32,7 @@ class ChatPage extends Control {
 
   constructor(parentNode: HTMLElement, model: LobbyModel, socket: SocketClient) {
     super(parentNode, 'div', chatStyles.chat_wrapper);
+    this.node.style.backgroundImage = `url(${chatImage})`;
     this.model = model;
     this.socket = socket;
     this.channelBlock = new ChatChannels(this.node,model); //langConfig.chat.channels
