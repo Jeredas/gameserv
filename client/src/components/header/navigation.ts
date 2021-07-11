@@ -48,8 +48,14 @@ export class Navigation extends Control {
     });
   }
   setUserData(data: IUserAuth): void {
-    this.userBlock.setUserName(data.login);
-    this.userBlock.setAvatar(data.avatar);
+    if(data == null) {
+      this.userBlock.setHidden();
+    } else {
+      this.userBlock.setUserName(data.login);
+      this.userBlock.setAvatar(data.avatar);
+      this.userBlock.removeHidden();
+    }
+    
   }
   addConnection(): void {
     this.logo.node.classList.add(headerStyles.connected);

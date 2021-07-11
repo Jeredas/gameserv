@@ -113,18 +113,22 @@ class Application extends Control {
       }
     });
     this.navigation = new Navigation(this.node);
+    this.navigation.setUserData(this.currentUser.getData());
     this.currentUser.onUpdate.add(({ from, to }) => {
-      this.navigation.setUserData(to)
+      this.navigation.setUserData(to);
+      this.about.setUserData(to);
     })
     this.navigation.onLogout.add(()=>{
       this.removePage('chat');
       this.router.activateRouteByName('about');
       console.log('logged out from header')
       this.chatPage.destroy();
+      this.currentUser.setData(null);
     })
     this.router = new Router();
     this.pageContainer = new Control(this.node, 'div', appStyles.page_container);
     this.about = new AboutPage(this.pageContainer.node);
+    this.about.setUserData(this.currentUser.getData());
     this.recordPage = new RecordPage(this.pageContainer.node)
 
     this.addPage('about', 'about', this.about);

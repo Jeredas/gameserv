@@ -19,6 +19,7 @@ class HeaderAuth extends Control {
   public onUserClick: () => void = () => {};
   
   public onLogout : Signal<''> = new Signal();
+  private signIn: Control;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', headerStyles.header_auth);
@@ -29,8 +30,14 @@ class HeaderAuth extends Control {
     this.userName = new Control(this.user.node, 'div', headerStyles.auth_nickname);
     this.userName.node.textContent = 'NickName';
 
+    this.signIn = new Control(this.node, 'div', headerStyles.auth_controls);
+    this.signIn.node.textContent = 'Sign In';
+    this.signIn.node.onclick = () => {
+      this.onSignIn();
+    };
+
     this.user.node.onclick = () => {
-      popupService.init(parentNode);
+      // popupService.init(parentNode);
       popupService.showPopup(SettingsUser).then((res)=>{
         if(res==='save') {
           //TODO:Изменить аватар и имя после редактирования
@@ -38,10 +45,9 @@ class HeaderAuth extends Control {
         }  else if (res ==='cancel') {
           console.log('Changes not saved')
         } else if(res === 'logOut'){
-          console.log('logOut')
-          this.userName.node.textContent = 'NickName';
+          console.log('logOut');
+          
           //this.userAvatar.node.classList.add(headerStyles.default_avatar)
-          this.userAvatar.node.style.backgroundImage = `url(${defaultAvatar})`;
           this.onLogout.emit('')
          
         }
@@ -58,6 +64,16 @@ class HeaderAuth extends Control {
 
   setUserName(name: string): void {
     this.userName.node.textContent = name;
+  }
+
+  setHidden() {
+    this.user.node.classList.add(headerStyles.default_hidden);
+    this.signIn.node.classList.remove(headerStyles.default_hidden);
+  }
+
+  removeHidden() {
+    this.user.node.classList.remove(headerStyles.default_hidden);
+    this.signIn.node.classList.add(headerStyles.default_hidden);
   }
 
 }
