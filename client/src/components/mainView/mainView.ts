@@ -17,13 +17,9 @@ class MainView extends Control {
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewStyles.mainView_main);
     this.mainViewAction = new Control(this.node, 'div', mainViewStyles.chat_action);
-    // // this.chatAction.node.style.backgroundImage = `url(${bgImage})`;
     this.mainViewMessages = new MainViewMessages(this.node);
     this.mainViewInput = new MainViewInput(this.node);
-    
   }
-
-
 }
 
 export default MainView;

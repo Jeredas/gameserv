@@ -127,7 +127,7 @@ export class CrossGameChannel extends ChatChannel {
   history: Array<ICrossHistory>;
 
   constructor(name: string, type: string, params: any) {
-    super(name, type);
+    super(name, type, params);
     console.log('created CrossGameChannel');
     this.logic = new CrossGameLogic();
     this.players = [];
@@ -229,6 +229,8 @@ export class CrossGameChannel extends ChatChannel {
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
+        console.log(params.messageText);
+        
         const responseDrawAgree = new CrossDrawAgreeResponse(params.messageText, currentUser.login);
         const responseDraw = new CrossDrawResponse(params.messageText, currentUser.login);
         const clients = this.clients.filter(

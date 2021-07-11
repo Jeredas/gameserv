@@ -36,6 +36,13 @@ class ChatChannel extends Control {
       gameMode: this.gameMode
     };
   }
+
+  addActiveChannel(): void {
+    this.node.classList.add(chatStyles.chat_channel_joined);
+  }
+  removeActiveChannel(): void {
+    this.node.classList.remove(chatStyles.chat_channel_joined);
+  }
 }
 
 export default ChatChannel;
