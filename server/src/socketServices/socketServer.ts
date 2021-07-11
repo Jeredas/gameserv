@@ -82,7 +82,7 @@ export class SocketServer {
 
       const connection = request.accept(null, request.origin);
       this.clients.push(connection);
-
+      this.router.acceptConnection(connection);
       connection.on('message', (message)=>{this.messageHandler(connection, message)});
       connection.on('close', (reasonCode, description)=>{this.closeHandler(connection, reasonCode, description)});
     });
