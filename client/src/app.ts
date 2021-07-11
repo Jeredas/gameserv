@@ -88,7 +88,6 @@ class Application extends Control {
                 })
               } else {
                 this.router.activateRouteByName('about');
-                // this.about.show();
                 console.log('registration failed');
               }
             });
@@ -102,12 +101,10 @@ class Application extends Control {
             })
           } else if(res === 'Close'){
             this.router.activateRouteByName('about');
-            // this.about.show();
           }
         });
       } else {
         console.log('build here')
-        // this.navigation.clearNavs();
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
           this.currentUser.setData(res)
           this.buildChatPage();
@@ -115,18 +112,12 @@ class Application extends Control {
         console.log('Go to chat Page');
       }
     });
-
-    // popupService.showPopup(SettingsUser)
-    // popupService.showPopup(RegForm);
     this.navigation = new Navigation(this.node);
     this.currentUser.onUpdate.add(({ from, to }) => {
       this.navigation.setUserData(to)
     })
     this.navigation.onLogout.add(()=>{
       this.removePage('chat');
-      // this.navigation.clearNavs();
-      // this.addPage('about', 'about', this.about);
-      // this.about.show();
       this.router.activateRouteByName('about');
       console.log('logged out from header')
       this.chatPage.destroy();
@@ -138,32 +129,14 @@ class Application extends Control {
 
     this.addPage('about', 'about', this.about);
     this.addPage('statistics', 'stat', this.recordPage);
-    
-    
-    // this.about.hide();
     this.about.onAuth.add((data)=>{
-      // this.navigation.clearNavs();
-      // this.removePage('chat');
       this.buildChatPage();
       this.currentUser.setData(data)
       this.chatPage.joinUserToChannel(data)
     })
     this.about.onAuthFail.add((res)=>{
       console.log(res);
-      // this.removePage('chat');
-      // this.navigation.clearNavs();
-      // this.buildChatPage();
-      // this.chatPage.destroy();
     })
-    // const socket = new SocketClient();
-    // let lobbyModel = new LobbyModel(socket);
-    // socket.init(socketURL);
-
-    // this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    // this.addPage('about', 'about', this.about);
-    // this.addPage('chat', 'chat', this.chatPage);
-    // this.router.processHash();
-
   }
 
   addPage(linkName: string, pageName: string, pageComponent: IPageComponent) {
@@ -205,7 +178,6 @@ class Application extends Control {
 
     lobbyModel.service.onClose.add(() => {
       this.navigation.removeConnection();
-      // popup on Reconnecttion to server
       if(!this.lostConnectionPopupOpen) {
         this.lostConnectionPopupOpen = true;
         popupService.showPopup(ConnectToServer, {client: socket}).then((res) => {
@@ -216,10 +188,7 @@ class Application extends Control {
     });
     
     this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    // this.recordPage = new RecordPage(this.pageContainer.node)
-    // this.addPage('about', 'about', this.about);
     this.addPage('chat', 'chat', this.chatPage);
-    // this.addPage('statistics', 'stat', this.recordPage);
     this.router.processHash();
   }
 

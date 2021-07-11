@@ -33,7 +33,6 @@ class AboutPage extends Control {
     this.buttonLogIn = new ButtonDefault(inner.node, aboutStyles.about_button, 'Log In');
 
     this.buttonLogIn.onClick = () => {
-      // this.hide();
       popupService.init(parentNode);
       popupService.showPopup(RegisterCheck).then((res) => {
         if (res === 'SignUp') {
@@ -49,7 +48,6 @@ class AboutPage extends Control {
               });
             } else {
               this.onAuthFail.emit('fail');
-              // this.show();
               console.log('registration failed');
             }
           });
@@ -62,7 +60,6 @@ class AboutPage extends Control {
             }
           });
         } else if (res === 'Close') {
-          this.show();
           //this.onAuthFail.emit('fail')
         }
       });
@@ -82,7 +79,6 @@ class AboutPage extends Control {
         console.log(res.data, 'res data');
         return { status: true, data: res.data };
       } else {
-        this.show();
         return { status: false };
       }
     });

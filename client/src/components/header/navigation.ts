@@ -51,9 +51,6 @@ export class Navigation extends Control {
     this.userBlock.setUserName(data.login);
     this.userBlock.setAvatar(data.avatar);
   }
-  // clearNavs(){
-  //   this.navContainer.node.innerHTML ='';
-  // }
   addConnection(): void {
     this.logo.node.classList.add(headerStyles.connected);
   }
