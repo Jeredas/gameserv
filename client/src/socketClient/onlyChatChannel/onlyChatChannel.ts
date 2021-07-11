@@ -23,7 +23,6 @@ export class OnlyChatChannelService implements ISocketService {
   constructor() {}
 
   messageHandler(rawMessage: string) {
-    // console.log(rawMessage);
     const message = JSON.parse(rawMessage);
     if (message.service === 'chat') {
       this.onAny.emit(message);
@@ -43,7 +42,6 @@ export class OnlyChatChannelService implements ISocketService {
           'userList',
           (params) => {
             this.onUserList.emit(
-              // params.userList.map((user: string) => ({avatar: '', userName: user}))
               params.userList
             );
           }
@@ -96,22 +94,15 @@ export class OnlyChatChannelService implements ISocketService {
 export class OnlyChatChannelModel extends ChatChannelModel {
   service: OnlyChatChannelService;
   serviceName: string = 'chat';
-  // channelName:string;
-  //socketClient:SocketClient;
 
   constructor(socketClient: SocketClient, channelName: string) {
     super(socketClient, channelName);
-    //this.socketClient = socketClient;
     this.service = new OnlyChatChannelService();
     this.socketClient.addService(this.service);
-    /*this.service.onCreated.add(params=>{
-      console.log(params);
-    })*/
   }
 
   private send(method: string, params: Object) {
     this.service.send({
-      // sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
       service: this.serviceName,
       endpoint: 'sendToChannel',
       params: {
