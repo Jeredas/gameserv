@@ -5,7 +5,6 @@ import { CrossGameChannel } from './games/crossGameChannel';
 import { ChessGameChannel } from './games/chessGameChannel';
 
 function createChannel(type: string, channelName, params: any): ChatChannel {
-
   return new { OnlyChatChannel, CrossGameChannel, ChessGameChannel }[type](
     channelName,
     type,
@@ -30,7 +29,6 @@ export class LobbyService {
       foundChannel[params.channelMethod](userConnection, params.channelRequestParams);
       // console.log('foundChannel', foundChannel);
     } else {
-
       userConnection.sendUTF(
         JSON.stringify({
           service: 'chat',
@@ -73,7 +71,7 @@ export class LobbyService {
             return {
               name: channels.name,
               type: channels.type
-            }
+            };
           })
         }
       });
@@ -98,70 +96,73 @@ export class LobbyService {
     });
   }
   channelList(userConnection: connection) {
-    userConnection.sendUTF(JSON.stringify({
-      service: 'chat',
-      type: 'channelList',
-      params: {
-        channelList: this.channels.map((channels) => {
-          return {
-            name: channels.name,
-            type: channels.type
-          }
-        })
-      }
-    }));
+    userConnection.sendUTF(
+      JSON.stringify({
+        service: 'chat',
+        type: 'channelList',
+        params: {
+          channelList: this.channels.map((channels) => {
+            return {
+              name: channels.name,
+              type: channels.type
+            };
+          })
+        }
+      })
+    );
   }
   getChannelInfo(userConnection: connection, params: any) {
-    const foundChannel = this.channels.find(channel => channel.name == params.channelName);
+    const foundChannel = this.channels.find((channel) => channel.name == params.channelName);
     if (foundChannel) {
       // foundChannel[params.channelMethod](userConnection, params.channelRequestParams);
-      userConnection.sendUTF(JSON.stringify({
-        service: 'chat',
-        type: 'channelType',
-        params: {
-          requestId: params.requestId,
-          status: 'ok',
-          channelType: foundChannel.type,
-          channelName: foundChannel.name,
-          gameMode: foundChannel.gameMode,
-        }
-      }));
+      userConnection.sendUTF(
+        JSON.stringify({
+          service: 'chat',
+          type: 'channelType',
+          params: {
+            requestId: params.requestId,
+            status: 'ok',
+            channelType: foundChannel.type,
+            channelName: foundChannel.name,
+            gameMode: foundChannel.gameMode
+          }
+        })
+      );
 
       // console.log('foundChannel', foundChannel);
-
     } else {
-      userConnection.sendUTF(JSON.stringify({
-        service: 'chat',
-        type: 'channelType',
-        params: {
-          requestId: params.requestId,
-          status: 'error',
-          description: 'channel not found'
-        }
-      }));
+      userConnection.sendUTF(
+        JSON.stringify({
+          service: 'chat',
+          type: 'channelType',
+          params: {
+            requestId: params.requestId,
+            status: 'error',
+            description: 'channel not found'
+          }
+        })
+      );
     }
   }
   _joinUser(userConnection: connection) {
-    if (this.clients.find((client) => {
-      client == userConnection
-    })) {
-
+    if (
+      this.clients.find((client) => {
+        client == userConnection;
+      })
+    ) {
     } else {
-      this.clients.push(userConnection)
+      this.clients.push(userConnection);
     }
   }
-  _leaveUser(userConnection:connection) {
-    this.clients = this.clients.filter((client)=>{
-      client !== userConnection;
-    })
+  _leaveUser(userConnection: connection) {
+    this.clients = this.clients.filter((client) => client !== userConnection);
   }
-  acceptConnection(userConnection:connection){
-    this._joinUser(userConnection)
+  acceptConnection(userConnection: connection) {
+    this._joinUser(userConnection);
   }
-  _sendToAll(message:Object){
-    this.clients.forEach((client)=>{
-      client.sendUTF(JSON.stringify(message))
-    })
+  _sendToAll(message: Object) {
+    this.clients.forEach((client) => {
+      client.sendUTF(JSON.stringify(message));
+    });
   }
 }
-
