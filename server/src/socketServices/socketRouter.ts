@@ -19,4 +19,9 @@ export class SocketRouter {
       this.services[it].closeConnection(userConnection);
     })
   }
+  acceptConnection(userConnection:connection) {
+    Object.keys(this.services).forEach(it => {
+      this.services[it].acceptConnection(userConnection);
+    })
+  }
 }

@@ -1,5 +1,3 @@
-
-import { channel } from 'diagnostic_channel';
 import { ChatChannel } from './socketChannel';
 import { OnlyChatChannel } from './games/onlyChatChannel';
 import { connection } from 'websocket';
@@ -18,9 +16,11 @@ function createChannel(type: string, channelName, params: any): ChatChannel {
 export class LobbyService {
   readonly serviceName = 'lobby';
   private channels: Array<ChatChannel>;
+  clients: connection[];
 
   constructor() {
     this.channels = [];
+    this.clients = [];
   }
 
   sendToChannel(userConnection: connection, params: any) {
@@ -65,6 +65,18 @@ export class LobbyService {
           }
         })
       );
+      this._sendToAll({
+        service: 'chat',
+        type: 'channelList',
+        params: {
+          channelList: this.channels.map((channels) => {
+            return {
+              name: channels.name,
+              type: channels.type
+            }
+          })
+        }
+      });
     } else {
       userConnection.sendUTF(
         JSON.stringify({
@@ -77,31 +89,25 @@ export class LobbyService {
         })
       );
     }
-    // console.log(this.channels);
   }
 
-  // getChannels(userConnection:connection){
-  //   userConnection.sendUTF(JSON.stringify({
-  //     service: 'chat', 
-  //     type: 'channels', 
-  //     params:{
-  //       status: 'ok',
-  //       channelList:this.channels
-  //     }
-  //   }));
-  // }
-
   closeConnection(connection) {
+    this._leaveUser(connection);
     this.channels.forEach((channel) => {
       channel.leaveUser(connection, {});
     });
   }
   channelList(userConnection: connection) {
     userConnection.sendUTF(JSON.stringify({
-      service : 'chat',
-      type:'channelList',
-      params:{
-        channelList: this.channels
+      service: 'chat',
+      type: 'channelList',
+      params: {
+        channelList: this.channels.map((channels) => {
+          return {
+            name: channels.name,
+            type: channels.type
+          }
+        })
       }
     }));
   }
@@ -134,6 +140,28 @@ export class LobbyService {
         }
       }));
     }
+  }
+  _joinUser(userConnection: connection) {
+    if (this.clients.find((client) => {
+      client == userConnection
+    })) {
+
+    } else {
+      this.clients.push(userConnection)
+    }
+  }
+  _leaveUser(userConnection:connection) {
+    this.clients = this.clients.filter((client)=>{
+      client !== userConnection;
+    })
+  }
+  acceptConnection(userConnection:connection){
+    this._joinUser(userConnection)
+  }
+  _sendToAll(message:Object){
+    this.clients.forEach((client)=>{
+      client.sendUTF(JSON.stringify(message))
+    })
   }
 }
 
