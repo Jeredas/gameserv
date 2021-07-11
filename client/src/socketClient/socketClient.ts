@@ -21,6 +21,7 @@ export class SocketClient{
   }
 
   closeHandler(){
+    this.socket = null;
     this.services.forEach(service => {
       service.closeHandler();
     });

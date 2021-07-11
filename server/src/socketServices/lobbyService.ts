@@ -1,3 +1,5 @@
+
+import { channel } from 'diagnostic_channel';
 import { ChatChannel } from './socketChannel';
 import { OnlyChatChannel } from './games/onlyChatChannel';
 import { connection } from 'websocket';
@@ -5,6 +7,7 @@ import { CrossGameChannel } from './games/crossGameChannel';
 import { ChessGameChannel } from './games/chessGameChannel';
 
 function createChannel(type: string, channelName, params: any): ChatChannel {
+
   return new { OnlyChatChannel, CrossGameChannel, ChessGameChannel }[type](
     channelName,
     type,
@@ -22,10 +25,12 @@ export class LobbyService {
 
   sendToChannel(userConnection: connection, params: any) {
     const foundChannel = this.channels.find((channel) => channel.name == params.channelName);
+
     if (foundChannel) {
       foundChannel[params.channelMethod](userConnection, params.channelRequestParams);
       // console.log('foundChannel', foundChannel);
     } else {
+
       userConnection.sendUTF(
         JSON.stringify({
           service: 'chat',
@@ -75,42 +80,59 @@ export class LobbyService {
     // console.log(this.channels);
   }
 
+  // getChannels(userConnection:connection){
+  //   userConnection.sendUTF(JSON.stringify({
+  //     service: 'chat', 
+  //     type: 'channels', 
+  //     params:{
+  //       status: 'ok',
+  //       channelList:this.channels
+  //     }
+  //   }));
+  // }
+
   closeConnection(connection) {
     this.channels.forEach((channel) => {
       channel.leaveUser(connection, {});
     });
   }
-
+  channelList(userConnection: connection) {
+    userConnection.sendUTF(JSON.stringify({
+      service : 'chat',
+      type:'channelList',
+      params:{
+        channelList: this.channels
+      }
+    }));
+  }
   getChannelInfo(userConnection: connection, params: any) {
-    const foundChannel = this.channels.find((channel) => channel.name == params.channelName);
+    const foundChannel = this.channels.find(channel => channel.name == params.channelName);
     if (foundChannel) {
       // foundChannel[params.channelMethod](userConnection, params.channelRequestParams);
-      userConnection.sendUTF(
-        JSON.stringify({
-          service: 'chat',
-          type: 'channelType',
-          params: {
-            requestId: params.requestId,
-            status: 'ok',
-            channelType: foundChannel.type,
-            channelName: foundChannel.name
-          }
-        })
-      );
+      userConnection.sendUTF(JSON.stringify({
+        service: 'chat',
+        type: 'channelType',
+        params: {
+          requestId: params.requestId,
+          status: 'ok',
+          channelType: foundChannel.type,
+          channelName: foundChannel.name
+        }
+      }));
 
       // console.log('foundChannel', foundChannel);
+
     } else {
-      userConnection.sendUTF(
-        JSON.stringify({
-          service: 'chat',
-          type: 'channelType',
-          params: {
-            requestId: params.requestId,
-            status: 'error',
-            description: 'channel not found'
-          }
-        })
-      );
+      userConnection.sendUTF(JSON.stringify({
+        service: 'chat',
+        type: 'channelType',
+        params: {
+          requestId: params.requestId,
+          status: 'error',
+          description: 'channel not found'
+        }
+      }));
     }
   }
 }
+

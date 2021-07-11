@@ -1,3 +1,4 @@
+import { State } from './../components/state/state';
 import Control from '../components/utilities//control';
 import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
@@ -14,9 +15,10 @@ export class LobbyService implements ISocketService{
   public onClose: Signal<any> = new Signal<any>();
   public onOpen: Signal<any> = new Signal<any>();
   public onChannelType: Signal<any> = new Signal<any>();
+  public onChannelList: Signal<any> = new Signal<any>();
 
   constructor(){
-
+    
   }
 
   messageHandler(rawMessage:string){
@@ -32,6 +34,10 @@ export class LobbyService implements ISocketService{
           }],
           ['channelType', (params) => {
             this.onChannelType.emit(params);
+          }],
+          ['channelList', (params) => {
+            console.log(params)
+            this.onChannelList.emit(params.channelList);
           }]
         ]
       ).get(message.type)
@@ -82,15 +88,28 @@ export class LobbyService implements ISocketService{
 export class LobbyModel{
   service: LobbyService;
   serviceName:string = 'chat';
+  channels: State<Array<any>>
+
   //socketClient:SocketClient;
 
   constructor(socketClient:SocketClient){
+    this.channels = new State([]);
     //this.socketClient = socketClient;
     this.service = new LobbyService();
     socketClient.addService(this.service);
     /*this.service.onCreated.add(params=>{
       console.log(params);
     })*/
+    this.service.onChannelList.add((param)=>{
+      console.log(param)
+      this.channels.setData(param)
+    })
+    if(socketClient.socket){
+      this.channelList();
+    }
+    this.service.onOpen.add((data)=>{
+      this.channelList();
+    })
   }
 
   getChannelInfo(channelName:string){
@@ -166,7 +185,17 @@ export class LobbyModel{
       });
     });
   }
-
+  channelList(): void {
+    this.service.send(
+      {
+        service: this.serviceName ,
+        endpoint: 'channelList',
+        params: {
+          sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
+        },
+      },
+    );
+  }
   destroy(){
     this.service.remove();
   }
