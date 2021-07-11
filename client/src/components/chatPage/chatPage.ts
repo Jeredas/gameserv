@@ -77,6 +77,7 @@ class ChatPage extends Control {
           this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
             this.channelBlock.removeActiveChannels();
+            this.chatMain.remove(params.channelName);
             channel.destroy();
           };
         }
