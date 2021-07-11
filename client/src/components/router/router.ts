@@ -2,25 +2,37 @@ import { Route } from "./route";
 
 export class Router {
   public routes:Array<Route> = [];
+  private defaultRoute: string;
 
-  constructor() {
+  constructor(defaultRoute: string) {
     window.onpopstate = () => this.processHash();
+    this.defaultRoute = defaultRoute;
   }
 
   processHash() {
     const hash = window.location.hash.slice(1);
     console.log(hash);
-    this.activateRouteByName(hash);
+    const isSuccess = this.activateRouteByName(hash);
+    if(!isSuccess) {
+      this.selectPage(this.defaultRoute);
+      console.log('process Hash');
+      
+    }
   }
 
-  activateRouteByName(name:string) {
+  private activateRouteByName(name:string) {
+    console.log("NAME", name);
+    
+    let isActivated = false;
     this.routes.forEach((route) => {
       if (route.pageName === name) {
         route.activate();
+        isActivated = true;
       } else {
         route.deactivate();
       }
     });
+    return isActivated;
   }
 
   addRoute(route:Route) {
@@ -32,5 +44,9 @@ export class Router {
     const routeItem = this.routes.find((item) => item.pageName === name);
     this.routes = this.routes.filter((item) => item !== routeItem);
     routeItem.deactivate();
+  }
+
+  selectPage(name: string) {
+    window.location.hash = `#${name}`;
   }
 }

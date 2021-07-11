@@ -74,35 +74,35 @@ class Application extends Control {
     popupService.init(parentNode);
     popupService.showPopup(CheckSession).then((res) => {
       if (!res) {
-        popupService.showPopup(RegisterCheck).then((res) => {
-          if (res==='SignUp') {
-            popupService.showPopup(RegForm).then((res) => {
-              if (res === 'register') {
-                console.log('registered');
-                this.showAuthPopUp().then(res => {
-                  if(res) {
-                    this.buildChatPage();
-                  } else {
-                    this.router.activateRouteByName('about');
-                  }
-                })
-              } else {
-                this.router.activateRouteByName('about');
-                console.log('registration failed');
-              }
-            });
-          } else if(res === 'SignIn') {
-            this.showAuthPopUp().then(res => {
-              if(res) {
-                this.buildChatPage();
-              } else {
-                this.router.activateRouteByName('about');
-              }
-            })
-          } else if(res === 'Close'){
-            this.router.activateRouteByName('about');
-          }
-        });
+        // popupService.showPopup(RegisterCheck).then((res) => {
+        //   if (res==='SignUp') {
+        //     popupService.showPopup(RegForm).then((res) => {
+        //       if (res === 'register') {
+        //         console.log('registered');
+        //         this.showAuthPopUp().then(res => {
+        //           if(res) {
+        //             this.buildChatPage();
+        //           } else {
+        //             this.router.activateRouteByName('about');
+        //           }
+        //         })
+        //       } else {
+        //         this.router.activateRouteByName('about');
+        //         console.log('registration failed');
+        //       }
+        //     });
+        //   } else if(res === 'SignIn') {
+        //     this.showAuthPopUp().then(res => {
+        //       if(res) {
+        //         this.buildChatPage();
+        //       } else {
+        //         this.router.activateRouteByName('about');
+        //       }
+        //     })
+        //   } else if(res === 'Close'){
+        //     this.router.activateRouteByName('about');
+        //   }
+        // });
       } else {
         console.log('build here')
         this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
@@ -117,15 +117,16 @@ class Application extends Control {
     this.currentUser.onUpdate.add(({ from, to }) => {
       this.navigation.setUserData(to);
       this.about.setUserData(to);
+      
     })
     this.navigation.onLogout.add(()=>{
       this.removePage('chat');
-      this.router.activateRouteByName('about');
+      this.router.selectPage('about');
       console.log('logged out from header')
       this.chatPage.destroy();
       this.currentUser.setData(null);
     })
-    this.router = new Router();
+    this.router = new Router('about');
     this.pageContainer = new Control(this.node, 'div', appStyles.page_container);
     this.about = new AboutPage(this.pageContainer.node);
     this.about.setUserData(this.currentUser.getData());
@@ -141,6 +142,8 @@ class Application extends Control {
     this.about.onAuthFail.add((res)=>{
       console.log(res);
     })
+    this.router.processHash();
+    // this.router.selectPage('about');
   }
 
   addPage(linkName: string, pageName: string, pageComponent: IPageComponent) {
@@ -167,7 +170,7 @@ class Application extends Control {
         this.currentUser.setData(res.data)
         return true;
       } else {
-        this.about.show();
+        // this.about.show();
         return false;
       }
     })
