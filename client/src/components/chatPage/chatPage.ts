@@ -14,13 +14,12 @@ import { channelConfig } from '../utilities/config';
 import chatImage from '../../assets/bg-chat.jpg';
 import { GameSelectPopup } from '../game-select-popup/game-select-popup';
 import OtherGamePopup from '../OtherGamePopup/OtherGamePopup';
+import PaginatedContainer from './paginate-container';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
 
-  chatMain: Control;
-
-  chatAction: Control;
+  chatMain: PaginatedContainer;
 
   chatUsers: ChatUsers;
 
@@ -36,7 +35,7 @@ class ChatPage extends Control {
     this.model = model;
     this.socket = socket;
     this.channelBlock = new ChatChannels(this.node,model);
-    this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
+    this.chatMain = new PaginatedContainer(this.node, chatStyles.chat_main);
     this.channelBlock.addChannels(this.model.channels.getData())
     this.channelBlock.onJoinChannel.add((channelName) => {
       this.joinChannel(channelName);
@@ -74,7 +73,8 @@ class ChatPage extends Control {
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          let channel = new channelOfChoice.view(this.chatMain.node, channelModel, params.chessMode);
+          let channel = new channelOfChoice.view(null, channelModel, params.chessMode);
+          this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
             this.channelBlock.removeActiveChannels();
             channel.destroy();
