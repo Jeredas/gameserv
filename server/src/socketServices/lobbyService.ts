@@ -1,5 +1,3 @@
-
-import { channel } from 'diagnostic_channel';
 import { ChatChannel } from './socketChannel';
 import { OnlyChatChannel } from './games/onlyChatChannel';
 import { connection } from 'websocket';

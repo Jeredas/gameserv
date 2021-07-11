@@ -2,6 +2,7 @@ const socketURL = 'ws://localhost:4080';
 import {ISocketService} from './ISocketService';
 import {LobbyService, LobbyModel, LobbyView} from './lobbyService';
 import {OnlyChatChannelService, OnlyChatChannelModel, OnlyChatChannelView} from './onlyChatChannel/onlyChatChannel';
+import Signal from './signal';
 
 
 export class SocketClient{
@@ -9,6 +10,9 @@ export class SocketClient{
 
   services: Array<ISocketService>;
   url:string;
+
+  public onOpen: Signal<void> = new Signal();
+  public onClose: Signal<void> = new Signal();
 
   constructor(){
     this.services = [];
@@ -21,6 +25,7 @@ export class SocketClient{
   }
 
   closeHandler(){
+    this.onClose.emit();
     this.socket = null;
     this.services.forEach(service => {
       service.closeHandler();
@@ -28,6 +33,7 @@ export class SocketClient{
   }
 
   openHandler(){
+    this.onOpen.emit();
     this.services.forEach(service => {
       service.openHandler();
     });
