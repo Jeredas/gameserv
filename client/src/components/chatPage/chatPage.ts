@@ -35,7 +35,7 @@ class ChatPage extends Control {
     this.node.style.backgroundImage = `url(${chatImage})`;
     this.model = model;
     this.socket = socket;
-    this.channelBlock = new ChatChannels(this.node,model); //langConfig.chat.channels
+    this.channelBlock = new ChatChannels(this.node,model);
     this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
     this.channelBlock.addChannels(this.model.channels.getData())
     this.channelBlock.onJoinChannel.add((channelName) => {
@@ -68,8 +68,6 @@ class ChatPage extends Control {
   }
 
   joinUserToChannel(params: any) {
-    console.log('joinUserToChannel', params);
-    
     if (params.status === 'ok') {
       const channelOfChoice = channelConfig.get(params.channelType);
 
@@ -101,27 +99,15 @@ class ChatPage extends Control {
       } else {
         popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
           newChannel.channelType = channelType;
-          console.log(newChannel);
           this.model.createNewChannel(newChannel).then((res: any) => {
             if (res.status === 'ok') {
               const channelIcon = channelConfig.get(newChannel.channelType).icon;
-              console.log(channelIcon);
               this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
             }
           });
         });
       }
     })
-
-    // popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
-    //   this.model.createNewChannel(newChannel).then((res: any) => {
-    //     console.log(res,'chat page res')
-    //     if (res.status === 'ok') {
-    //       const channelIcon = channelConfig.get(newChannel.channelType).icon;
-    //       this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
-    //     }
-    //   });
-    // });
   }
   channelList(): void {
     this.model.channelList()

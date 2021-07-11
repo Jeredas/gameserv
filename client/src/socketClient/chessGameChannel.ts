@@ -31,7 +31,6 @@ export class ChessGameChannelService implements ISocketService {
   constructor() {}
 
   messageHandler(rawMessage: string) {
-    // console.log(rawMessage);
     const message = JSON.parse(rawMessage);
     if (message.service === 'chat') {
       this.onAny.emit(message);
@@ -102,7 +101,6 @@ export class ChessGameChannelService implements ISocketService {
           'userList',
           (params) => {
             this.onUserList.emit(
-              // params.userList.map((user: string) => ({avatar: '', userName: user}))
               params.userList
             );
           }
