@@ -64,7 +64,6 @@
   font-size: 40px;
   margin-bottom: 40px;
   text-align: center;
-  color: #fff;
 }
 
 .game-settings-popup {
@@ -194,18 +193,26 @@
   /* align-self: center; */
 }
 
-.input_wrapper {
+/*settings-create game chess*/
+
+.wrapper_all_radio_btns {
+  display: flex;
+}
+
+.radio_wrapper {
   display: flex;
   flex-direction: column;
+  flex-basis: 31%;
 	margin-right: 10px;
+  margin-bottom: 20px;
   font-size: 15px;
 }
 
-.input_wrapper input[type=radio] {
+.input_radio {
 	display: none;
 }
 
-.input_wrapper label {
+.label_radio {
 	display: inline-block;
 	cursor: pointer;
 	padding: 0px 15px;
@@ -219,12 +226,12 @@
 }
 
 /* Checked */
-.input_wrapper input[type="radio"]:checked + label {
-  background: -webkit-linear-gradient(left, #b22429,#963eac,#9e338a);
-  background: linear-gradient(to right, #b22429,#963eac,#9e338a);
+.radio_wrapper .input_radio:checked + .label_radio {
+  background: rgb(60,67,158);
+  background: linear-gradient(180deg, rgba(60,67,158,1) 44%, rgba(188,0,255,1) 100%);
 }
 /* Hover */
-.input_wrapper label:hover {
+.label_radio:hover {
 	color: rgb(171, 240, 10);
 }
 
@@ -332,7 +339,8 @@ input[id="name"] {
 /*popup auth*/
 
 .wrapper_auth_main,
-.wrapper_reg_popup {
+.wrapper_reg_popup,
+.wrapper_settings_game_chess {
   background: rgb(83,156,109);
   background: linear-gradient(90deg, rgba(83,156,109,1) 0%, rgba(11,164,173,1) 58%, rgba(0,212,255,1) 100%); 
   border-radius: 10px;
@@ -351,6 +359,7 @@ input[id="name"] {
 .input_field {
   height: 35px;
   font-size: 15px;
+  width: 100%;
 }
 
 /*regform*/
