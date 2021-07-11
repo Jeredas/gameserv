@@ -12,14 +12,14 @@ export class Navigation extends Control {
   private navItems: Array<NavItem> = [];
 
   private userBlock: HeaderAuth;
-
-  // public onLogout: () => void = () => {};
   public onUserClick: () => void = () => {};
-  onLogout : Signal<null> = new Signal();
+  public onLogout : Signal<null> = new Signal();
+  private logo: Control;
+
   constructor(parentNode: HTMLElement | null = null) {
     super(parentNode, 'div', headerStyles.header_wrapper);
 
-    const logo = new Control(this.node, 'div', headerStyles.header_logo);
+    this.logo = new Control(this.node, 'div', headerStyles.header_logo);
     // logo.node.style.backgroundImage = `url()`;
     this.navContainer = new Control(this.node, 'div', headerStyles.header_nav);
     this.userBlock = new HeaderAuth(this.node);
@@ -54,5 +54,11 @@ export class Navigation extends Control {
   clearNavs(){
     this.navContainer.node.innerHTML ='';
   }
+  addConnection(): void {
+    this.logo.node.classList.add(headerStyles.connected);
+  }
 
+  removeConnection(): void {
+    this.logo.node.classList.remove(headerStyles.connected);
+  }
 }

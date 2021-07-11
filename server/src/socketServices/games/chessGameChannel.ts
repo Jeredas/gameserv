@@ -127,7 +127,7 @@ export class ChessGameChannel extends ChatChannel {
   gameMode: string;
 
   constructor(name: string, type: string, params: any) {
-    super(name, type);
+    super(name, type, params);
     console.log('created ChessGameChannel');
     this.logic = new ChessGameLogic();
     this.players = [];

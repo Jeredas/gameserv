@@ -22,8 +22,6 @@ class ChatPage extends Control {
 
   chatUsers: ChatUsers;
 
-  messageContainer: Control;
-
   channels : Array<IChannelInfo>
 
   public onJoinChannel: () => void = () => { };
@@ -37,8 +35,6 @@ class ChatPage extends Control {
     this.socket = socket;
     this.channelBlock = new ChatChannels(this.node,model); //langConfig.chat.channels
     this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
-    // this.chatUsers = new ChatUsers(this.node);
-    this.messageContainer = new Control(this.node);
     this.channelBlock.addChannels(this.model.channels.getData())
     this.channelBlock.onJoinChannel.add((channelName) => {
       this.joinChannel(channelName);
@@ -48,26 +44,6 @@ class ChatPage extends Control {
       this.createChannel();
     };
 
-    const connectionIndicator = new Control(this.node);
-    connectionIndicator.node.style.color = '#0000ff';
-    model.service.onClose.add(() => {
-      connectionIndicator.node.textContent = 'disconnected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
-    });
-
-    model.service.onOpen.add(() => {
-      connectionIndicator.node.textContent = 'connected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
-    });
-    // this.channelList();
-    // this.model.service.onChannelList.add((data)=>{
-    //   console.log(data,'console.')
-    // })
-    
     this.model.channels.onUpdate.add((channels)=>{
       console.log(channels)
       this.channelBlock.addChannels(channels.to)
@@ -90,17 +66,17 @@ class ChatPage extends Control {
   }
 
   joinUserToChannel(params: any) {
-    console.log('get channelInfo endpoint', params);
+    console.log('joinUserToChannel', params);
+    
     if (params.status === 'ok') {
       const channelOfChoice = channelConfig.get(params.channelType);
 
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          const chessMode = 'network';
-          const channelIcon = channelOfChoice.icon
-          let channel = new channelOfChoice.view(this.chatMain.node, channelModel, chessMode);
+          let channel = new channelOfChoice.view(this.chatMain.node, channelModel, params.chessMode);
           channel.onLeaveClick = () => {
+            this.channelBlock.removeActiveChannels();
             channel.destroy();
           };
         }
@@ -110,19 +86,11 @@ class ChatPage extends Control {
 
   createChannel() {
     popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
-      console.log(newChannel);
-      
       this.model.createNewChannel(newChannel).then((res: any) => {
         console.log(res,'chat page res')
         if (res.status === 'ok') {
-
-
           const channelIcon = channelConfig.get(newChannel.channelType).icon;
-          console.log(channelIcon);
-          
           this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
-
-          console.log('channel created with type', res.channelType);
         }
       });
     });

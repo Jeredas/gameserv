@@ -2,6 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0px 20px;
   background-color: #000;
   color: #ccc;
@@ -12,8 +13,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
@@ -108,4 +110,24 @@
 
 .default_hidden {
   display: none;
+}
+
+.connected {
+  /* box-shadow: 0 0 3px 7px rgba(243, 213, 116, 0.8); */
+  animation-name: online;
+  animation-duration: 3s;
+  animation-direction: normal;
+  animation-iteration-count: infinite;
+}
+
+@keyframes online {
+  0% {
+    box-shadow: 0 0 3px 7px transparent;
+  }
+  50% {
+    box-shadow: 0 0 3px 7px rgba(243, 213, 116, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 3px 7px transparent;
+  }
 }

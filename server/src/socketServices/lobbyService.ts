@@ -116,7 +116,8 @@ export class LobbyService {
           requestId: params.requestId,
           status: 'ok',
           channelType: foundChannel.type,
-          channelName: foundChannel.name
+          channelName: foundChannel.name,
+          gameMode: foundChannel.gameMode,
         }
       }));
 

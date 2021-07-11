@@ -174,11 +174,7 @@ export class OnlyChatChannelView extends MainView {
     this.mainViewAction.node.classList.add(channelStyles.chat_action);
     this.mainViewMessages.node.classList.add(channelStyles.chat_messages);
     this.mainViewMessages.node.style.backgroundImage = `url(${messageBlockImage})`;
-    const mesagesFade = new Control(this.mainViewMessages.node, 'div', channelStyles.chat_messages_fade);
-
     this.mainViewUsers = new MainViewUsers(this.node);
-
-    const connectionIndicator = new Control(this.node);
 
     this.model.service.onMessage.add((params) => {
       this.mainViewMessages.addMessage(params);
@@ -188,20 +184,6 @@ export class OnlyChatChannelView extends MainView {
       this.model.leaveChannel();
       this.onLeaveClick();
     };
-
-    model.service.onClose.add(() => {
-      connectionIndicator.node.textContent = 'disconnected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
-    });
-
-    model.service.onOpen.add(() => {
-      connectionIndicator.node.textContent = 'connected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
-    });
 
     this.mainViewInput.onClick = (message) => {
       this.model.sendMessage(message);

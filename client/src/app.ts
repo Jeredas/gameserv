@@ -141,6 +141,14 @@ class Application extends Control {
     const socket = new SocketClient();
     let lobbyModel = new LobbyModel(socket);
     socket.init(socketURL);
+    lobbyModel.service.onOpen.add(() => {
+      this.navigation.addConnection();
+    });
+
+    lobbyModel.service.onClose.add(() => {
+      this.navigation.removeConnection();
+    });
+    
     this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
     this.addPage('about', 'about', this.about);
     this.addPage('chat', 'chat', this.chatPage);

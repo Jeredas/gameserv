@@ -127,11 +127,13 @@ export class ChatChannel {
   public clients: Array<ChatClient>;
   public players: Array<{ login: string; avatar: string }>;
   public type: string;
+  public gameMode: string;
 
-  constructor(name: string, type: string) {
+  constructor(name: string, type: string, params) {
     this.name = name;
     this.clients = [];
     this.type = type;
+    this.gameMode = params.gameMode;
   }
 
   protected _sendForAllClients(response: IChatResponse){
@@ -180,11 +182,15 @@ export class ChatChannel {
   }
 
   leaveUser(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    // const currentClient = this.clients.find((it) => it.connection == connection);
     this.clients = this.clients.filter((it) => it.connection != connection);
-    if (this.players && this.players.length) {
-      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+    const currentClient = this._getUserByConnection(connection);
+    if (currentClient && currentClient.userData) {
+      if (this.players && this.players.length) {
+        this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+      }
     }
+    
     this.clients.forEach((it) => {
       // this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
       this._sendForAllClients(
