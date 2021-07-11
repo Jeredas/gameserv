@@ -43,7 +43,8 @@ export interface IUserChatMessage {
 }
 export interface IJoinedPlayer {
   player: string;
-  players: Array<{ login: string; avatar: string }>;
+  players: Array<{ login: string, avatar: string }>;
+
 }
 export interface ICrossHistory {
   sign: string;
@@ -92,4 +93,10 @@ export interface IChessData {
   rotate: boolean;
   history: IChessHistory;
   king: Vector;
+}
+
+export interface IChannelInfo {
+  clients: [],
+  name: string,
+  type: string
 }

@@ -1,3 +1,5 @@
+import { LobbyService } from '../../socketClient/lobbyService';
+import { IChannelInfo } from './../utilities/interfaces';
 import Control from '../utilities/control';
 import ChatChannels from '../chatPage/chat-channels-wrapper/chat-channels-wrapper';
 import chatStyles from './chatPage.module.css';
@@ -21,7 +23,10 @@ class ChatPage extends Control {
   chatUsers: ChatUsers;
 
   messageContainer: Control;
-  public onJoinChannel: () => void = () => {};
+
+  channels : Array<IChannelInfo>
+
+  public onJoinChannel: () => void = () => { };
   private model: LobbyModel;
   private socket: SocketClient;
 
@@ -30,15 +35,14 @@ class ChatPage extends Control {
     this.node.style.backgroundImage = `url(${chatImage})`;
     this.model = model;
     this.socket = socket;
-    this.channelBlock = new ChatChannels(this.node); //langConfig.chat.channels
+    this.channelBlock = new ChatChannels(this.node,model); //langConfig.chat.channels
     this.chatMain = new Control(this.node, 'div', chatStyles.chat_main);
     // this.chatUsers = new ChatUsers(this.node);
-
     this.messageContainer = new Control(this.node);
-
-    this.channelBlock.onJoinChannel = () => {
-      this.joinChannel();
-    };
+    this.channelBlock.addChannels(this.model.channels.getData())
+    this.channelBlock.onJoinChannel.add((channelName) => {
+      this.joinChannel(channelName);
+    });
 
     this.channelBlock.onCreateChannel = () => {
       this.createChannel();
@@ -59,15 +63,30 @@ class ChatPage extends Control {
       //  model.socketClient.reconnent();
       //}
     });
+    // this.channelList();
+    // this.model.service.onChannelList.add((data)=>{
+    //   console.log(data,'console.')
+    // })
+    
+    this.model.channels.onUpdate.add((channels)=>{
+      console.log(channels)
+      this.channelBlock.addChannels(channels.to)
+    })
   }
 
-  joinChannel() {
-    popupService.showPopup(JoinChannelPopup).then((channelName: string) => {
-      console.log(channelName);
+  joinChannel(chanName?: string) {
+    if (chanName == '') {
+      popupService.showPopup(JoinChannelPopup).then((channelName: string) => {
+        console.log(channelName);
+        const q = this.model
+          .getChannelInfo(channelName)
+          .then((params) => this.joinUserToChannel(params));
+      });
+    } else {
       const q = this.model
-        .getChannelInfo(channelName)
+        .getChannelInfo(chanName)
         .then((params) => this.joinUserToChannel(params));
-    });
+    }
   }
 
   joinUserToChannel(params: any) {
@@ -94,17 +113,23 @@ class ChatPage extends Control {
       console.log(newChannel);
       
       this.model.createNewChannel(newChannel).then((res: any) => {
+        console.log(res,'chat page res')
         if (res.status === 'ok') {
+
+
           const channelIcon = channelConfig.get(newChannel.channelType).icon;
           console.log(channelIcon);
           
           this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
+
           console.log('channel created with type', res.channelType);
         }
       });
     });
   }
-
+  channelList(): void {
+    this.model.channelList()
+  }
   hide(): void {
     this.node.classList.add(chatStyles.default_hidden);
   }
