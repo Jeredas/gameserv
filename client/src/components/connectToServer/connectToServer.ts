@@ -14,7 +14,7 @@ class ConnectToServer extends GenericPopup<boolean>{
     super(parentNode);
     this.popupWrapper.node.classList.add(popupStyles.reconnect_popup);
     this.client = params.client;
-    const title = new Control(this.popupWrapper.node, 'div', popupStyles.reconnect_title, 'Unfortunately, there was an unexpected disconnection from the server, click on the button below to reconnect');
+    const title = new Control(this.popupWrapper.node, 'div', popupStyles.reconnect_title, `Unfortunately, there was an unexpected server's disconnection. Click the button below to reconnect`);
     const button = new ButtonDefault(this.popupWrapper.node, popupStyles.settings_button, 'Reconnect');
     this.openHandler = () => this.onSelect(true);
     this.closeHandler = () => button.buttonEnable();
