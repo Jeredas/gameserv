@@ -81,4 +81,13 @@ export class ChessProcessor implements IChessProcessor {
   getKingPos(): CellCoord {
     return this.field.getKingCoord();
   }
+  startGame(): void {
+    this.historyItems.startHistory();
+  }
+  getStartTime(): number {
+    return this.historyItems.getStartTime();
+  }
+  getPlayerColor(): ChessColor {
+    return this.field.playerColor;
+  }
 }

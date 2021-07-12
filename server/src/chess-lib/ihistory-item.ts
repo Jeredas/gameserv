@@ -4,5 +4,5 @@ export interface IHistoryItem {
   readonly figure: string;
   readonly startCell: ICellCoord;
   readonly endCell: ICellCoord;
-  readonly time: Date;
+  readonly time: number;
 }
