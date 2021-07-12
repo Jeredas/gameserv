@@ -15,14 +15,10 @@ export class Router {
     const isSuccess = this.activateRouteByName(hash);
     if(!isSuccess) {
       this.selectPage(this.defaultRoute);
-      console.log('process Hash');
-      
     }
   }
 
   private activateRouteByName(name:string) {
-    console.log("NAME", name);
-    
     let isActivated = false;
     this.routes.forEach((route) => {
       if (route.pageName === name) {
