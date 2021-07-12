@@ -35,7 +35,7 @@ class ChessGame extends Control {
 
   private btnStart: ChessButton;
 
-  public onStartClick: () => void = () => {};
+  public onStartClick: (player: string) => void = () => {};
 
   private btnDraw: ChessButton;
 
@@ -76,7 +76,6 @@ class ChessGame extends Control {
     // parent: Control
   ) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
-    console.log('chess Mode', chessMode);
     
     // this.parent = parent;
     this.node.classList.add('game_action_size');
@@ -99,7 +98,7 @@ class ChessGame extends Control {
     this.btnStart = new ChessButton(chessControls.node, 'Start');
     this.btnStart.buttonDisable();
     this.btnStart.onClick = () => {
-      // this.model.chessStartGame(this.host);
+      this.onStartClick(this.host)
       this.btnStart.buttonDisable();
     };
     this.btnDraw = new ChessButton(chessControls.node, 'Draw');
@@ -118,15 +117,9 @@ class ChessGame extends Control {
     };
 
     this.chessBoard.onFigureGrab = (pos: Vector) => {
-      // this.model.chessFigureGrab(JSON.stringify(pos));
+      this.onFigureGrab(pos);
     };
-
-    // this.model.onChessMove.add((data) => this.onFigureMove(data));
-
-    // this.model.onStartGame.add((data) => this.createChessField(data));
-    // this.model.onStopGame.add((data) => this.createModalDraw(data));
-    // this.model.onChessFigureGrab.add((data) => this.showAllowedMoves(data));
-
+    
     window.onresize = () => {
       const parentHeight = Math.min(
         parentNode.clientWidth,
@@ -176,6 +169,8 @@ class ChessGame extends Control {
       this.playerTwo.node.textContent = player2;
       this.players.push(player2);
       this.host = params.player !== player1 ? player1 : player2;
+      console.log('HOST', this.host);
+      
       this.btnStart.buttonEnable();
     }
   }

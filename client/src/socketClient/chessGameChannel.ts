@@ -27,6 +27,7 @@ export class ChessGameChannelService implements ISocketService {
   public onChessRemove: Signal<{ method: string; player: string }> = new Signal();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
   public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
+  public onChessGrab: Signal<Array<Vector>> = new Signal();
   private channelName: string;
 
   constructor(channelName: string) {
@@ -35,7 +36,7 @@ export class ChessGameChannelService implements ISocketService {
 
   messageHandler(rawMessage: string) {
     const message = JSON.parse(rawMessage);
-    if (message.service === 'chat'  && message.channelName === this.channelName) {
+    if (message.service === 'chat' && message.channelName === this.channelName) {
       this.onAny.emit(message);
       const processFunction = new Map<string, ((params: any) => void)>([
         [
@@ -82,6 +83,12 @@ export class ChessGameChannelService implements ISocketService {
           }
         ],
         [
+          'chessGrab',
+          (params) => {
+            this.onChessGrab.emit(params.allowed);
+          }
+        ],
+        [
           'chessStop',
           (params) => {
             this.onChessStop.emit({
@@ -103,9 +110,7 @@ export class ChessGameChannelService implements ISocketService {
         [
           'userList',
           (params) => {
-            this.onUserList.emit(
-              params.userList
-            );
+            this.onUserList.emit(params.userList);
           }
         ],
         [
@@ -258,6 +263,12 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
+  chessGrab(message: string) {
+    this.send('chessFigureGrab', {
+      messageText: message
+    });
+  }
+
   destroy() {
     this.service.remove();
   }
@@ -286,12 +297,16 @@ export class ChessGameChannelView extends MainView {
       });
     };
 
-    this.chessGame.onStartClick = () => {
-      this.model.chessStartGame('');
+    this.chessGame.onStartClick = (player: string) => {
+      this.model.chessStartGame(player);
     };
 
     this.chessGame.onCellClick = (coords: Vector) => {
       this.model.chessMove(JSON.stringify(coords));
+    };
+
+    this.chessGame.onFigureGrab = (coords: Vector) => {
+      this.model.chessGrab(JSON.stringify(coords));
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
@@ -302,6 +317,7 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessStart.add((params) => {
       this.chessGame.startGame(params);
     });
+
     this.model.service.onChessMove.add((params) => {
       // this.chessGame.updateGameField(params.field);
       if (params.winner) {
@@ -370,6 +386,11 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onPlayerList.add((params) => {
       this.mainViewPlayers.setPlayers(params);
     });
+
+    this.model.service.onChessGrab.add((allowed) => {
+      const allowedMoves = allowed.map((move) => new Vector(move.x, move.y));
+      this.chessGame.showAllowedMoves(allowedMoves);
+    })
   }
 
   destroy() {
