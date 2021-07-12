@@ -4,6 +4,7 @@ import Vector from '../../utils/vector';
 import { IChessProcessor } from '../../chess-lib/ichess-processor';
 import { ChessProcessor } from '../../chess-lib/chess-processor';
 import { ChessColor } from '../../chess-lib/chess-color';
+import { Move } from '../../chess-lib/move';
 
 interface IChatResponse {
   type: string;
@@ -209,6 +210,19 @@ export class ChessGameChannel extends ChatChannel {
               color: this.players.length == 0 ? ChessColor.white : ChessColor.black
             });
           }
+        } else if (this.gameMode === 'oneScreen') {
+          if (this.players.length < 1) {
+            this.players.push({
+              login: currentClient.userData.login,
+              avatar: currentClient.userData.avatar,
+              color: ChessColor.white
+            });
+            this.players.push({
+              login: currentClient.userData.login,
+              avatar: currentClient.userData.avatar,
+              color: ChessColor.black
+            });
+          }
         } else {
           if (this.players.length < 1) {
             // this.logic.setPlayers(currentClient.userData.login);
@@ -280,16 +294,14 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
-        if (
-          this.players.filter((player) => player.login == currentUser.login)[0].color ==
-          this.chessProcessor.getPlayerColor()
-        ) {
+        if (this.players.filter(player => player.color == this.chessProcessor.getPlayerColor())[0].login ==
+        currentUser.login) {
           let coords = JSON.parse(params.messageText);
-
-          const moveAllowed = this.chessProcessor.makeMove(coords[0], coords[1]);
-          console.log('moveAllowed', moveAllowed);
-          
-          // this.logic.writeSignToField(currentUser.login, clickVector);
+          const startCoord = new CellCoord(coords[0].x, coords[0].y);
+          const targetCoord = new CellCoord(coords[1].x, coords[1].y);
+          const moveAllowed = this.chessProcessor.makeMove(startCoord, targetCoord);
+          console.log('MOVE: ', startCoord.toString() + '-' + targetCoord.toString(), moveAllowed ? '[OK]' : '[ERROR]');
+          console.log('\tposition: ', this.chessProcessor.getField());
           const response = new ChessMoveResponse(
             this.name,
             currentUser.login,
@@ -313,8 +325,8 @@ export class ChessGameChannel extends ChatChannel {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
-      if(this.players.filter((player) => player.login == currentUser.login)[0].color ==
-      this.chessProcessor.getPlayerColor()) {
+      if(this.players.filter(player => player.color == this.chessProcessor.getPlayerColor())[0].login ==
+      currentUser.login) {
         const coord = JSON.parse(params.messageText);
         const moves = this.chessProcessor.getMoves(new CellCoord(coord.x, coord.y));
         const allowed = new Array<Vector>();
