@@ -116,9 +116,9 @@ class Cross extends Control {
 
   clearData() {
     this.cells.forEach((cell) => cell.clearCell());
-    // this.players = [];
-    // this.playerOne.node.textContent = 'Player1';
-    // this.playerTwo.node.textContent = 'Player2';
+    this.players = [];
+    this.playerOne.node.textContent = 'Player1';
+    this.playerTwo.node.textContent = 'Player2';
     this.timer.clear();
     this.history.clearHistory();
     this.btnStart.buttonDisable();
@@ -127,7 +127,6 @@ class Cross extends Control {
   }
 
   setPlayer(params: IJoinedPlayer): void {
-    console.log(params);
     const player1 = params.players[0].login;
 
     this.playerOne.node.textContent = player1;
@@ -158,7 +157,9 @@ class Cross extends Control {
 
   createModalDraw(data: ICrossStop): void {
     console.log(data.player, this.host);
-
+    if(data.method === 'disagree') {
+      this.createModalGameOver({method: data.method, player: data.player})
+    }
     this.modalPopup = new ModalDraw(this.node, data.stop, data.player, this.players, data.method);
     this.modalPopup.onModalDrawClick = (response: string) => {
       this.onModalDrawClick(response);
