@@ -44,9 +44,10 @@ class RecordPage extends Control {
       const headerItem = new Control(chessTableTitle.node, 'div');
       headerItem.node.textContent = item;
     })
-    
 
-    //this.addRecordToChess(chessRecord);
+    this.model.getStatistic().then(async (res: Array<IGameRecord>) => {
+      this.addRecordToChess(res);
+    })
   }
 
   async addRecordToChess(records: Array<IGameRecord>): Promise<void> {
