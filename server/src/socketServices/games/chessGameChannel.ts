@@ -317,22 +317,17 @@ export class ChessGameChannel extends ChatChannel {
       this.chessProcessor.getPlayerColor()) {
         const coord = JSON.parse(params.messageText);
         const moves = this.chessProcessor.getMoves(new CellCoord(coord.x, coord.y));
-
-        console.log('GRAB', moves);
-
-        let resultStr = '';
-        let result = [];
-        // moves.forEach((move) => {
-        //   resultStr = resultStr + move.toString() + ' ';
-        //   const destCoord = move.getResultPosition();
-        //   result.push(new Vector(destCoord.x, destCoord.y));
-        // });
-
-        const allowed = [ new Vector(1, 5), new Vector(1, 4) ];
+        const allowed = new Array<Vector>();
+        const log = Array<string>();
+        for (let move of moves) {
+          let target = move.getTargetCell();
+          allowed.push(new Vector(target.x, target.y))
+          log.push(move.toString())
+        }
+        console.log('GRAB: ', log.join(' '));
         const response = new ChessGrabResponse(this.name, allowed);
         currentClient.send(response);
         // this.sendForAllClients(response);
-        // }
       }
     }
   }
