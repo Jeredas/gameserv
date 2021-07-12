@@ -65,7 +65,7 @@ class ChessStartResponse {
 
   constructor(channelName: string, startTime: number, startField: string) {
     this.service = 'chat';
-    this.type = 'crossStart';
+    this.type = 'chessStart';
     this.channelName = channelName;
     this.params = {
       time: startTime,
@@ -261,13 +261,15 @@ export class ChessGameChannel extends ChatChannel {
       if (currentUser.login === params.messageText) {
         this.chessProcessor.startGame();
 
-        console.log('chessStartGame() -> field: ', this.chessProcessor.getField());
         const time = Date.now();
         const response = new ChessStartResponse(
           this.name,
           this.chessProcessor.getStartTime(),
           this.chessProcessor.getField()
         );
+
+        console.log('START', response);
+        
         this.history = [];
         this.sendForAllClients(response);
       }

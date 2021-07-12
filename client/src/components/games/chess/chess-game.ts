@@ -118,15 +118,8 @@ class ChessGame extends Control {
 
     this.chessBoard.onFigureGrab = (pos: Vector) => {
       this.onFigureGrab(pos);
-      // this.model.chessFigureGrab(JSON.stringify(pos));
     };
-
-    // this.model.onChessMove.add((data) => this.onFigureMove(data));
-
-    // this.model.onStartGame.add((data) => this.createChessField(data));
-    // this.model.onStopGame.add((data) => this.createModalDraw(data));
-    // this.model.onChessFigureGrab.add((data) => this.showAllowedMoves(data));
-
+    
     window.onresize = () => {
       const parentHeight = Math.min(
         parentNode.clientWidth,
