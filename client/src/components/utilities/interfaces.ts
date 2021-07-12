@@ -81,7 +81,7 @@ export interface IChessStop {
 
 export interface IChessHistory {
   coords: Array<Vector>;
-  time: string;
+  time: number;
   figName: string;
 }
 

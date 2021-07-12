@@ -9,6 +9,7 @@ import { Vector } from './vector';
 import { HistoryItems } from './history-items';
 import { IHistoryItem } from './ihistory-item';
 import { King } from './figures/king';
+import { ICellCoord } from './icell-coord';
 
 export class ChessProcessor implements IChessProcessor {
   private field: IField;
@@ -62,7 +63,7 @@ export class ChessProcessor implements IChessProcessor {
   getField(): string {
     return this.field.toFEN();
   }
-  makeMove(start_coord: CellCoord, end_coord: CellCoord): boolean {
+  makeMove(start_coord: ICellCoord, end_coord: ICellCoord): boolean {
     const move = new Move(start_coord, new Vector(end_coord.x - start_coord.x, end_coord.y - start_coord.y));
     if (move.isValid(this.field)) {
       this.historyItems.addItem(move, this.field);
@@ -75,10 +76,10 @@ export class ChessProcessor implements IChessProcessor {
   getHistory(): Array<IHistoryItem> {
     return this.historyItems.getHistory();
   }
-  getMoves(coord: CellCoord): Moves {
+  getMoves(coord: ICellCoord): Moves {
     return this.field.getAllowedMoves(coord);
   }
-  getKingPos(): CellCoord {
+  getKingPos(): ICellCoord {
     return this.field.getKingCoord();
   }
   startGame(): void {
@@ -89,5 +90,8 @@ export class ChessProcessor implements IChessProcessor {
   }
   getPlayerColor(): ChessColor {
     return this.field.playerColor;
+  }
+  getFigureStr(coord: ICellCoord): string {
+    return this.field.getFigure(coord).toString();
   }
 }

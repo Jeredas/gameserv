@@ -17,18 +17,28 @@ class ChessHistoryBlock extends Control {
     this.historyWrapper = new Control(this.node, 'div');
   }
 
-  setHistoryMove(params: IChessHistory): void {
-    const historyItem = new Control(
-      this.historyWrapper.node,
-      'div',
-      chessStyles.chess_history_item
-    );
-    const historyFigure = new Control(historyItem.node, 'div', chessStyles.chess_history_figure);
-    historyFigure.node.style.backgroundImage = `url(${configFigures.get(params.figName)})`;
-    const historyText = new Control(historyItem.node, 'div');
-    const from = params.coords[0];
-    const to = params.coords[1];
-    historyText.node.textContent = `${from.x}${from.y}-${to.x}${to.y} ${params.time}`;
+  private getTimeString(time: number): string {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+
+    const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
+    return `${minOutput}:${secOutput}`;
+  }
+  setHistoryMove(params: IChessHistory | null): void {
+    if (params !== null) {
+      const historyItem = new Control(
+        this.historyWrapper.node,
+        'div',
+        chessStyles.chess_history_item
+      );
+      const historyFigure = new Control(historyItem.node, 'div', chessStyles.chess_history_figure);
+      historyFigure.node.style.backgroundImage = `url(${configFigures.get(params.figName)})`;
+      const historyText = new Control(historyItem.node, 'div');
+      const from = params.coords[0];
+      const to = params.coords[1];
+      historyText.node.textContent = `${from.x}${from.y}-${to.x}${to.y} ${this.getTimeString(params.time)}`;
+    }
   }
 
   changeHeight(size: number): void {

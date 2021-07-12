@@ -5,15 +5,15 @@ import { IChessProcessor } from '../../chess-lib/ichess-processor';
 import { ChessProcessor } from '../../chess-lib/chess-processor';
 import { ChessColor } from '../../chess-lib/chess-color';
 import { Move } from '../../chess-lib/move';
+import { time } from 'console';
 
 interface IChatResponse {
   type: string;
 }
 
 interface IChessHistory {
-  sign: string;
-  move: Array<Vector>;
-  time: string;
+  coords: Array<Vector>;
+  time: number;
   figName: string;
 }
 
@@ -81,18 +81,18 @@ class ChessMoveResponse {
     player: string;
     field: string;
     coords: string;
-    // history: IChessHistory;
+    history: IChessHistory;
   };
 
-  constructor(channelName: string, player: string, field: string, coords: string, history: string) {
+  constructor(channelName: string, player: string, field: string, coords: string, history: IChessHistory | null) {
     this.service = 'chat';
     this.type = 'chessMove';
     this.channelName = channelName;
     this.params = {
       player,
       field,
-      coords
-      // history
+      coords,
+      history
     };
   }
 }
@@ -299,9 +299,25 @@ export class ChessGameChannel extends ChatChannel {
           let coords = JSON.parse(params.messageText);
           const startCoord = new CellCoord(coords[0].x, coords[0].y);
           const targetCoord = new CellCoord(coords[1].x, coords[1].y);
+          const figure = this.chessProcessor.getFigureStr(startCoord);
           const moveAllowed = this.chessProcessor.makeMove(startCoord, targetCoord);
           console.log('MOVE: ', startCoord.toString() + '-' + targetCoord.toString(), moveAllowed ? '[OK]' : '[ERROR]');
           console.log('\tposition: ', this.chessProcessor.getField());
+          let historyItem: IChessHistory | null;
+          if (!moveAllowed) {
+            historyItem = null;
+          } else {
+            const history = this.chessProcessor.getHistory();
+            const historyLastEl = history[history.length - 1];
+            const moveCoords = new Array<Vector>();
+            moveCoords.push(new Vector(startCoord.x, startCoord.y));
+            moveCoords.push(new Vector(targetCoord.x, targetCoord.y));
+            historyItem = {
+              time: historyLastEl.time - this.chessProcessor.getStartTime(),
+              figName: figure,
+              coords: moveCoords
+            }
+          }
           const response = new ChessMoveResponse(
             this.name,
             currentUser.login,
@@ -309,7 +325,7 @@ export class ChessGameChannel extends ChatChannel {
             // this.logic.getWinner(),
             // this.logic.getHistory()
             params.messageText,
-            ''
+            historyItem
           );
           // this.clients.forEach((it) => it.connection.sendUTF(JSON.stringify(response)));
           this.sendForAllClients(response);

@@ -20,8 +20,8 @@
 // chessStopGame() -> очистка игры, рассылка всем stop: true;
 // chessRemoveGame() -> то же, что и chessStopGame(), но с выдачей fen
 
-import { CellCoord } from './cell-coord';
 import { ChessColor } from './chess-color';
+import { ICellCoord } from './icell-coord';
 import { IHistoryItem } from './ihistory-item';
 import { Moves } from './moves';
 
@@ -34,11 +34,12 @@ export interface IChessProcessor {
   // getCurrentPlayer(): string;
   clearData(): void;
   getField(): string;
-  makeMove(start_coord: CellCoord, end_coord: CellCoord): boolean;
+  makeMove(start_coord: ICellCoord, end_coord: ICellCoord): boolean;
   getHistory(): Array<IHistoryItem>;
-  getMoves(coord: CellCoord): Moves;
-  getKingPos(): CellCoord;
+  getMoves(coord: ICellCoord): Moves;
+  getKingPos(): ICellCoord;
   startGame(): void;
   getStartTime(): number;
   getPlayerColor(): ChessColor;
+  getFigureStr(coord: ICellCoord): string;
 }
