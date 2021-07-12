@@ -32,7 +32,7 @@ class Cross extends Control {
 
   private btnStart: CrossButton;
 
-  public onStartClick: () => void = () => {};
+  public onStartClick: (player: string) => void = () => {};
 
   private btnDraw: CrossButton;
 
@@ -79,7 +79,7 @@ class Cross extends Control {
     this.btnStart.buttonDisable();
 
     this.btnStart.onClick = () => {
-      this.onStartClick();
+      this.onStartClick(this.host);
     };
     this.btnDraw = new CrossButton(crossControls.node, 'Draw');
     // this.model.chessStopGame('draw');
