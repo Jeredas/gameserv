@@ -19,6 +19,7 @@ interface IChessHistory {
 export class ChannelJoinPlayerResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public requestId: number;
   public params: {
     status: string;
@@ -27,6 +28,7 @@ export class ChannelJoinPlayerResponse {
   constructor(channelName: string, status: string, requestId: number) {
     this.service = 'chat';
     this.type = 'joined';
+    this.channelName = channelName;
     this.requestId = requestId;
     this.params = { status };
   }
@@ -35,13 +37,16 @@ export class ChannelJoinPlayerResponse {
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     player: string;
     players: Array<{ login: string; avatar: string }>;
   };
 
   constructor(channelName: string, player: string, players: Array<{ login: string; avatar: string }>) {
-    (this.service = 'chat'), (this.type = 'getPlayers');
+    this.service = 'chat';
+    this.type = 'getPlayers';
+    this.channelName = channelName;
     this.params = { player, players };
   }
 }
