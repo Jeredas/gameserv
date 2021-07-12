@@ -312,6 +312,9 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
+
+        //TODO НУЖЕН Текущий игрок, чтобы только ему показывать возможные ходы
+
         // if (this.chessProcessor.getCurrentPlayer() === currentUser.login) {
 
         const coord = JSON.parse(params.messageText);
