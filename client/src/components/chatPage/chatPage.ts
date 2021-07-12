@@ -72,6 +72,8 @@ class ChatPage extends Control {
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
+          console.log('Chat height', this.node.clientHeight);
+          
           let channel = new channelOfChoice.view(null, channelModel, params.gameMode);
           this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
@@ -79,6 +81,7 @@ class ChatPage extends Control {
             this.chatMain.remove(params.channelName);
             channel.destroy();
           };
+          window.onresize(null)
         }
       });
     }

@@ -91,6 +91,8 @@ class ChessGame extends Control {
 
     this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
+    console.log(this.node.getBoundingClientRect().height);
+    
     this.history = new ChessHistoryBlock(this.chessBody.node, parentHeight);
 
     this.chessBoard = new ChessField(this.chessBody.node, configFigures, parentHeight);
@@ -136,6 +138,8 @@ class ChessGame extends Control {
       this.chessBoard.changeHeight(parentHeight);
       this.history.changeHeight(parentHeight);
     };
+
+    window.onresize(null)
   }
 
   updateGameField(rotate: boolean): void {
