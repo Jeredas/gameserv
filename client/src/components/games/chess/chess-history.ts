@@ -18,12 +18,18 @@ class ChessHistoryBlock extends Control {
   }
 
   private getTimeString(time: number): string {
+    time = time / 1000;
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
 
     const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
     const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
     return `${minOutput}:${secOutput}`;
+  }
+  private coordToString(coord: Vector): string {
+    const NOVEMDECIMAL_BASE = 19;
+    const BOARD_SIZE = 8;
+    return Number(coord.x + 10).toString(NOVEMDECIMAL_BASE) + (BOARD_SIZE - coord.y);
   }
   setHistoryMove(params: IChessHistory | null): void {
     if (params !== null) {
@@ -37,7 +43,7 @@ class ChessHistoryBlock extends Control {
       const historyText = new Control(historyItem.node, 'div');
       const from = params.coords[0];
       const to = params.coords[1];
-      historyText.node.textContent = `${from.x}${from.y}-${to.x}${to.y} ${this.getTimeString(params.time)}`;
+      historyText.node.textContent = `${this.coordToString(from)}-${this.coordToString(to)} ${this.getTimeString(params.time)}`;
     }
   }
 

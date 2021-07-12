@@ -208,7 +208,7 @@ class ChessGame extends Control {
     this.host = data.player;
     const newField = fromFen(data.field);
 
-    // this.setHistoryMove(data.history);
+    this.setHistoryMove(data.history);
     
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);
     const newFigPos = new Vector(data.coords[1].x, data.coords[1].y);
