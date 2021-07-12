@@ -113,7 +113,7 @@ class ChessGame extends Control {
     };
 
     this.chessBoard.onFigureDrop = (posStart: Vector, posDrop: Vector) => {
-      // this.model.chessMove(JSON.stringify([ posStart, posDrop ]));
+      this.onFigureDrop(posStart, posDrop);
     };
 
     this.chessBoard.onFigureGrab = (pos: Vector) => {
@@ -208,16 +208,18 @@ class ChessGame extends Control {
     this.host = data.player;
     const newField = fromFen(data.field);
 
-    this.setHistoryMove(data.history);
+    // this.setHistoryMove(data.history);
+    
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);
     const newFigPos = new Vector(data.coords[1].x, data.coords[1].y);
 
     this.setFigurePosition(oldFigPos, newFigPos);
     this.chessBoard.clearData(newField);
 
-    this.updateGameField(data.rotate);
+    // this.updateGameField(data.rotate);
+    this.updateGameField(false);
     this.removeAllowedMoves();
-    this.chessBoard.showKingCheck(data.king);
+    // this.chessBoard.showKingCheck(data.king);
 
     if (this.chessMode === chessModeConfig.network) {
       if (this.playerOne.node.textContent !== data.player) {

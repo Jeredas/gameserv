@@ -72,7 +72,7 @@ export class ChessGameChannelService implements ISocketService {
           'chessMove',
           (params) => {
             this.onChessMove.emit({
-              coords: params.coords,
+              coords: JSON.parse(params.coords),
               player: params.player,
               field: params.field,
               rotate: params.rotate,
@@ -301,8 +301,8 @@ export class ChessGameChannelView extends MainView {
       this.model.chessStartGame(player);
     };
 
-    this.chessGame.onCellClick = (coords: Vector) => {
-      this.model.chessMove(JSON.stringify(coords));
+    this.chessGame.onFigureDrop = (posStart: Vector, posDrop: Vector) => {
+      this.model.chessMove(JSON.stringify([posStart, posDrop]));
     };
 
     this.chessGame.onFigureGrab = (coords: Vector) => {
@@ -319,12 +319,12 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessMove.add((params) => {
-      // this.chessGame.updateGameField(params.field);
-      if (params.winner) {
-        console.log(`Winner: ${params.winner}`);
-        this.model.chessRemove('won');
-        this.chessGame.timer.stop();
-      }
+      this.chessGame.onFigureMove(params);
+      // if (params.winner) {
+      //   console.log(`Winner: ${params.winner}`);
+      //   this.model.chessRemove('won');
+      //   this.chessGame.timer.stop();
+      // }
     });
 
     this.model.service.onMessage.add((params) => {

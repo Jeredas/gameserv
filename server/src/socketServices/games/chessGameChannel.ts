@@ -79,18 +79,18 @@ class ChessMoveResponse {
   public params: {
     player: string;
     field: string;
-    winner: string;
+    coords: string;
     // history: IChessHistory;
   };
 
-  constructor(channelName: string, player: string, field: string, winner: string, history: string) {
+  constructor(channelName: string, player: string, field: string, coords: string, history: string) {
     this.service = 'chat';
     this.type = 'chessMove';
     this.channelName = channelName;
     this.params = {
       player,
       field,
-      winner
+      coords
       // history
     };
   }
@@ -276,17 +276,19 @@ export class ChessGameChannel extends ChatChannel {
   }
 
   chessMove(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
-        // if (this.logic.getCurrentPlayer() === currentUser.login) {
         if (
           this.players.filter((player) => player.login == currentUser.login)[0].color ==
           this.chessProcessor.getPlayerColor()
         ) {
           let coords = JSON.parse(params.messageText);
-          const clickVector = new Vector(coords.x, coords.y);
+
+          const moveAllowed = this.chessProcessor.makeMove(coords[0], coords[1]);
+          console.log('moveAllowed', moveAllowed);
+          
           // this.logic.writeSignToField(currentUser.login, clickVector);
           const response = new ChessMoveResponse(
             this.name,
@@ -294,10 +296,11 @@ export class ChessGameChannel extends ChatChannel {
             this.chessProcessor.getField(),
             // this.logic.getWinner(),
             // this.logic.getHistory()
-            '',
+            params.messageText,
             ''
           );
-          this.clients.forEach((it) => it.connection.sendUTF(JSON.stringify(response)));
+          // this.clients.forEach((it) => it.connection.sendUTF(JSON.stringify(response)));
+          this.sendForAllClients(response);
           // if (this.logic.getWinner()) {
           //   this.logic.clearData();
           // }
@@ -310,12 +313,8 @@ export class ChessGameChannel extends ChatChannel {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
-      if (currentUser) {
-
-        //TODO НУЖЕН Текущий игрок, чтобы только ему показывать возможные ходы
-
-        // if (this.chessProcessor.getCurrentPlayer() === currentUser.login) {
-
+      if(this.players.filter((player) => player.login == currentUser.login)[0].color ==
+      this.chessProcessor.getPlayerColor()) {
         const coord = JSON.parse(params.messageText);
         const moves = this.chessProcessor.getMoves(new CellCoord(coord.x, coord.y));
 
