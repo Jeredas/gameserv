@@ -76,6 +76,8 @@ class ChessGame extends Control {
     // parent: Control
   ) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
+    console.log('chess Mode', chessMode);
+    
     // this.parent = parent;
     this.node.classList.add('game_action_size');
     // this.model = chessModel;

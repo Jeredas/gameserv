@@ -20,6 +20,7 @@ class ModalGameOver extends Control {
     let messageDraw = 'There is a game draw. Nobody won, nobody lost';
     let messageLost = `You have lost. The player ${params.player} won`;
     let messageWon = `You have won. The player ${params.player} lost`;
+    let messageNoMoves = 'No more moves!';
 
     this.messageHead = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
     this.messageBody = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
@@ -34,6 +35,10 @@ class ModalGameOver extends Control {
 
     if (params.method === 'lost') {
       this.messageBody.node.textContent = messageLost;
+    }
+
+    if (params.method === 'noMoves') {
+      this.messageBody.node.textContent = messageNoMoves;
     }
 
     this.btnOk = new CrossButton(this.modalMessage.node, 'OK');

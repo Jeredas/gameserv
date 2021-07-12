@@ -33,6 +33,7 @@ export class CrossGameChannelService implements ISocketService {
   public onUserList: Signal<Array<IChatUser>> = new Signal();
   public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
   private channelName: string;
+  public onCrossNoMoves: Signal<{ method: string; player: string }> = new Signal();
 
   constructor(channelName: string) {
     this.channelName = channelName;
@@ -117,7 +118,16 @@ export class CrossGameChannelService implements ISocketService {
               params.playerList
             );
           }
-        ]
+        ],
+        [
+          'crossNoMoves',
+          (params) => {
+            this.onCrossNoMoves.emit({
+              method: params.method,
+              player: params.player
+            });
+          }
+        ],
       ]).get(message.type);
 
       if (processFunction) {
@@ -359,10 +369,12 @@ export class CrossGameChannelView extends MainView {
     this.model.service.onCrossStop.add((params) => {
       this.crossGame.createModalDraw(params);
     });
+
     this.model.service.onCrossRemove.add((params) => {
       this.crossGame.createModalGameOver(params);
     });
     this.crossGame.onGameOverClick = () => {
+      this.mainViewPlayers.setPlayers([]);
       this.crossGame.clearData();
     };
 
@@ -372,6 +384,9 @@ export class CrossGameChannelView extends MainView {
 
     this.model.service.onPlayerList.add((params) => {
       this.mainViewPlayers.setPlayers(params);
+    });
+    this.model.service.onCrossNoMoves.add((params) => {
+      this.crossGame.createModalGameOver(params);
     });
   }
 
