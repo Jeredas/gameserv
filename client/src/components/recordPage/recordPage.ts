@@ -1,40 +1,39 @@
+import { RecordModel } from './recordModel';
+import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 import Record from './record';
 import recordStyles from './recordPage.module.css';
 
 export interface IGameRecord {
+  gameType:string;
   date: string;
   player1: string;
   player2: string;
   winner: string;
   time: string;
-  link: string;
+  history:[];
 }
 
-const chessRecord = [
-  {
-    date: '11.07.2021',
-    player1: 'Player1',
-    player2: 'Player2',
-    winner: 'Player1',
-    time: '02:53',
-    link: 'link to DB'
-  }
-];
 
 const tableHeader = ['Date', 'Players', 'Winner', 'Time', ''];
 
 class RecordPage extends Control {
   private chessRecordBlock: Control;
   private recordChess: Array<Record>;
-
+  model : RecordModel = new RecordModel();
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', recordStyles.record_wrapper);
     const title = new Control(this.node, 'div', recordStyles.record_title);
     title.node.textContent = 'Game Statistics';
-
+    
     this.chessRecordBlock = new Control(this.node, 'div', recordStyles.record_table_wrapper);
     const chessTitle = new Control(this.chessRecordBlock.node, 'div', );
+    const refreshBtn = new ButtonDefault(this.node, recordStyles.record_button, 'Refresh');
+    refreshBtn.onClick = () => {
+      this.model.getStatistic().then(async (res: Array<IGameRecord>) => {
+        this.addRecordToChess(res);
+      })
+    }
     chessTitle.node.textContent = 'Chess';
     const chessTableTitle = new Control(
       this.chessRecordBlock.node,
@@ -47,14 +46,24 @@ class RecordPage extends Control {
     })
     
 
-    this.addRecordToChess(chessRecord);
+    //this.addRecordToChess(chessRecord);
   }
 
-  addRecordToChess(records: Array<IGameRecord>): void {
-    this.recordChess = records.map((record) => {
-      const tableLine = new Record(this.chessRecordBlock.node, record);
-      return tableLine;
-    });
+  async addRecordToChess(records: Array<IGameRecord>): Promise<void> {
+    this.chessRecordBlock.node.innerHTML='';
+        const chessTableTitle = new Control(
+          this.chessRecordBlock.node,
+          'div',
+          recordStyles.record_table_header
+        );
+        tableHeader.forEach((item) => {
+          const headerItem = new Control(chessTableTitle.node, 'div');
+          headerItem.node.textContent = item;
+        })
+        const stats = await records;
+        stats.forEach((game) => {
+          new Record(this.chessRecordBlock.node,game)
+        })
   }
 
   hide(): void {

@@ -1,3 +1,4 @@
+import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 import { IGameRecord } from './recordPage';
@@ -5,9 +6,12 @@ import recordStyles from './recordPage.module.css';
 
 class Record extends Control {
   chessRecordBlock: Control;
-  
+  model: RecordModel = new RecordModel();
+
   constructor(parentNode: HTMLElement, record: IGameRecord) {
     super(parentNode, 'div', recordStyles.record_line);
+    const gameType = new Control(this.node, 'div', recordStyles.record_date);
+    gameType.node.textContent = record.gameType;
     const recordDate = new Control(this.node, 'div', recordStyles.record_date);
     recordDate.node.textContent = record.date;
 
@@ -21,6 +25,9 @@ class Record extends Control {
     recordTime.node.textContent = record.time;
 
     const brnWatch = new ButtonDefault(this.node, recordStyles.record_button, 'Watch');
+    brnWatch.onClick = () => {
+      console.log('watch replay')
+    }
   }
 }
 
