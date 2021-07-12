@@ -17,8 +17,9 @@ class CheckSession extends GenericPopup<boolean> {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode);
+    this.popupWrapper.node.classList.add(stylePopup.check_popup)
     this.model = new AuthModel();
-    this.title = new Control(this.popupWrapper.node, 'div', '');
+    this.title = new Control(this.popupWrapper.node, 'div', stylePopup.title_check);
     this.spinner = new Control(this.popupWrapper.node, 'div', stylePopup.loader);
     // this.ButtonYes = new ButtonDefault(this.popupWrapper.node,stylePopup.popup_default_button, 'yes');
     // this.ButtonNo = new ButtonDefault(this.popupWrapper.node,stylePopup.popup_default_button, 'no');
@@ -35,11 +36,11 @@ class CheckSession extends GenericPopup<boolean> {
 
   tryConnect(count: number = 0) {
     if (count > 5) {
-      this.spinner.node.style.display = 'none';
+      this.spinner.node.classList.add(stylePopup.default_hidden);
       this.title.node.textContent =  'Cannot connect to server. Press button below';
       const btnConnect = new ButtonDefault(
         this.popupWrapper.node,
-        stylePopup.popup_default_button,
+        stylePopup.settings_button,
         'Connect'
       );
       btnConnect.onClick = () => {
@@ -47,8 +48,8 @@ class CheckSession extends GenericPopup<boolean> {
         this.tryConnect(0);
       };
     } else {
-      this.title.node.textContent =  'Trying to connect to server';
-      this.spinner.node.style.display = '';
+      this.title.node.textContent = 'Trying to connect to server';
+      this.spinner.node.classList.remove(stylePopup.default_hidden);
       this.model
         .testAccess()
         .then((res) => {

@@ -34,8 +34,8 @@ class ChatPage extends Control {
     this.node.style.backgroundImage = `url(${chatImage})`;
     this.model = model;
     this.socket = socket;
-    this.channelBlock = new ChatChannels(this.node,model);
     this.chatMain = new PaginatedContainer(this.node, chatStyles.chat_main);
+    this.channelBlock = new ChatChannels(this.node,model);
     this.channelBlock.addChannels(this.model.channels.getData())
     this.channelBlock.onJoinChannel.add((channelName) => {
       this.joinChannel(channelName);
