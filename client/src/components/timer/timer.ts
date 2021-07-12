@@ -14,7 +14,7 @@ class Timer extends Control {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', timerStyles.cross_timer);
-    this.node.textContent = '00:10';
+    this.node.textContent = '00:00';
   }
 
   start() {
