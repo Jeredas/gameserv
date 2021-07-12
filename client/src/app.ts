@@ -8,46 +8,14 @@ import ChatPage from './components/chatPage/chatPage';
 import { IPageComponent, IUserAuth } from './components/utilities/interfaces';
 import { Router } from './components/router/router';
 import { Route } from './components/router/route';
-import { RegForm } from './components/regForm/regForm';
 import { AuthForm } from './components/authForm/authForm';
-import RegisterCheck from './components/registerCheck/registerCheck';
 import { SocketClient } from './socketClient/socketClient';
 import { LobbyModel } from './socketClient/lobbyService';
 import { AuthModel } from './components/authModel/authModel';
 const socketURL = 'ws://localhost:4080';
 import appStyles from './app.module.css';
 import RecordPage from './components/recordPage/recordPage';
-import GenericPopup from './components/genericPopup/genericPopup';
-import ButtonDefault from './components/buttonDefault/buttonDefault';
-
-
-class ConnectToServer extends GenericPopup<boolean>{
-  onClick: () => void
-  private openHandler: ()=> void;
-  private closeHandler: ()=> void;
-  private client: SocketClient;
-
-  constructor(parentNode: HTMLElement, params: {client: SocketClient}) {
-    super(parentNode);
-    this.client = params.client;
-    const button = new ButtonDefault(this.node, '', 'Reconnect');
-    this.openHandler = () => this.onSelect(true);
-    this.closeHandler = () => button.buttonEnable();
-
-    this.client.onOpen.add(this.openHandler);
-    this.client.onClose.add(this.closeHandler);
-    button.node.onclick = () => {
-      this.client.reconnent();
-      button.buttonDisable();
-    }
-  }
-  destroy() {
-    this.client.onOpen.remove(this.openHandler);
-    this.client.onClose.remove(this.closeHandler);
-    super.destroy();
-  }
-
-}
+import ConnectToServer from './components/connectToServer/connectToServer';
 
 class Application extends Control {
   navigation: Navigation;
