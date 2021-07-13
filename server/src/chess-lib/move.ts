@@ -66,7 +66,7 @@ export class Move implements IMove {
     }
     return castlingFlags;
   }
-  makeMove(field: IField): IField {
+  makeMove(field: IField, changePlayer = true): IField {
     const resultPosition: IPosition = field.getPosition();
     const targetCell = this.getTargetCell();
     const figure = field.getFigure(this.startCell);
@@ -83,8 +83,11 @@ export class Move implements IMove {
       if (figure.toString().toLowerCase() == new Pawn(ChessColor.black).toString() && Math.abs(this.vector.y) == 2) {
         pawnTresspassing = new CellCoord(this.startCell.x, this.startCell.y + Math.round(this.vector.y / 2));
       }
+
       return new Field( resultPosition,
-                        field.playerColor == ChessColor.white ? ChessColor.black : ChessColor.white,
+                        changePlayer ?
+                          (field.playerColor == ChessColor.white ? ChessColor.black : ChessColor.white)
+                          : field.playerColor,
                         this.updateCastlingFlags(field.castlingFlags, this.startCell.toString(), targetCell.toString()),
                         pawnTresspassing,
                         ( figure.toString().toLowerCase() == new Pawn(ChessColor.black).toString() ||

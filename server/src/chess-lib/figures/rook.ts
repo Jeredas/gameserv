@@ -12,14 +12,15 @@ export class Rook extends Figure {
   constructor(color: ChessColor) {
     super(FigureType.rook, color);
   }
-  getMoves(position: CellCoord, field: IField): Moves {
+  getMoves(position: CellCoord, field: IField, checkDanger: boolean = true): Moves {
     const result = new Moves();
     if (!field.isFreeCell(position) && field.getFigure(position).toString() == this.toString() && field.playerColor == this.color) {
       for (let vector of COMMON.HV_MOVES) {
         let resultPosition = vector.resultPosition(position);
         let currentVector = vector.copy();
         while (resultPosition.isCorrect() && (field.isFreeCell(resultPosition) || field.getFigure(resultPosition)?.color !== this.color)) {
-          result.add(new Move(position, currentVector));
+          const move = new Move(position, currentVector);
+          if (!checkDanger || !this.isDangerousMove(move, field)) result.add(move);
           if (!field.isFreeCell(resultPosition)) {
             currentVector = new Vector(COMMON.BOARD_SIZE, COMMON.BOARD_SIZE); //exit from While
           } else {

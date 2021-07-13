@@ -11,13 +11,14 @@ export class Knight extends Figure {
   constructor(color: ChessColor) {
     super(FigureType.knight, color);
   }
-  getMoves(position: CellCoord, field: IField): Moves {
+  getMoves(position: CellCoord, field: IField, checkDanger: boolean = true): Moves {
     const result = new Moves();
     if (!field.isFreeCell(position) && field.getFigure(position).toString() == this.toString() && field.playerColor == this.color) {
       for (let vector of COMMON.KNIGHT_MOVES) {
         const resultPosition = vector.resultPosition(position);
         if (resultPosition.isCorrect() && (field.isFreeCell(resultPosition) || field.getFigure(resultPosition)?.color !== this.color)) {
-          result.add(new Move(position, vector));
+          const move = new Move(position, vector);
+          if (!checkDanger || !this.isDangerousMove(move, field)) result.add(move);
         }
       }
     }

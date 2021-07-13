@@ -26,11 +26,11 @@ export interface IField {
   getKingCoord(): ICellCoord;
   getAttackedCells(): Set<string>;
   getKingRivals(): Set<string>;
+  isCheck(): boolean;
   // static fromFEN(fen: string): IField;
   // static getStartField(): IField;
 
   // TODO: Implement next functions
   // getRecommendMoves(): Moves;
-  // isCheck(): boolean;
   // isMate(): boolean;
 }

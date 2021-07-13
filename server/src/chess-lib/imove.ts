@@ -9,5 +9,5 @@ export interface IMove {
   getTargetCell(): ICellCoord;
   toString(): string;
   isValid(field: IField): boolean;
-  makeMove(field: IField): IField;
+  makeMove(field: IField, changePlayer?: boolean): IField;
 }

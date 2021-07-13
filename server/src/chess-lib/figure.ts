@@ -4,6 +4,7 @@ import { COMMON } from './common';
 import { FigureType } from './figure-type';
 import { IField } from './ifield';
 import { IFigure } from './ifigure';
+import { IMove } from './imove';
 import { Moves } from './moves';
 
 export abstract class Figure implements IFigure {
@@ -13,7 +14,11 @@ export abstract class Figure implements IFigure {
     this.type = type;
     this.color = color;
   }
-  abstract getMoves(position: CellCoord, field: IField): Moves;
+  abstract getMoves(position: CellCoord, field: IField, checkDanger?: boolean): Moves;
+  protected isDangerousMove (move: IMove, field: IField): boolean {
+    const newField = move.makeMove(field, false);
+    return newField.isCheck();
+  }
   toString(): string {
     let shortName = COMMON.FIGURE_SHORT_NAMES.get(COMMON.DEFAULT_LOCALE)?.get(this.type);
     if (shortName !== undefined) {

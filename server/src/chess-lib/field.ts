@@ -76,17 +76,12 @@ export class Field implements IField {
   getFigure(coord: ICellCoord): IFigure | undefined {
     return this.position.getFigure(coord);
   }
-
-  getAllowedMoves(coord: ICellCoord, checkKingDanger: boolean = true): Moves {
+  getAllowedMoves(coord: ICellCoord, checkDanger: boolean = true): Moves {
     let figure = this.getFigure(coord);
     if (figure === undefined || figure.color != this.playerColor) {
       return new Moves();
     } else {
-      if (figure instanceof King) {
-        return figure.getMoves(coord, this, checkKingDanger);
-      } else {
-        return figure.getMoves(coord, this);
-      }
+        return figure.getMoves(coord, this, checkDanger);
     }
   }
   getAttackedCells(): Set<string> {
@@ -119,6 +114,9 @@ export class Field implements IField {
       }
     }
     return result;
+  }
+  isCheck(): boolean {
+    return this.getKingRivals().size > 0;
   }
   isFreeCell(coord: ICellCoord): boolean {
     return !this.position.hasFigure(coord);

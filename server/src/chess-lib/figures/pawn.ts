@@ -12,7 +12,7 @@ export class Pawn extends Figure {
   constructor(color: ChessColor) {
     super(FigureType.pawn, color);
   }
-  getMoves(position: CellCoord, field: IField): Moves {
+  getMoves(position: CellCoord, field: IField, checkDanger: boolean = true): Moves {
     const result = new Moves();
     const hMoves = field.playerColor == ChessColor.white ? COMMON.UP_MOVES : COMMON.DOWN_MOVES;
     const dMoves = field.playerColor == ChessColor.white ? COMMON.UP_DIAG_MOVES : COMMON.DOWN_DIAG_MOVES;
@@ -21,7 +21,8 @@ export class Pawn extends Figure {
       for (let vector of hMoves) {
         let resultPosition = vector.resultPosition(position);
         if (resultPosition.isCorrect() && field.isFreeCell(resultPosition)) {
-          result.add(new Move(position, vector));
+          const move = new Move(position, vector);
+          if (!checkDanger || !this.isDangerousMove(move, field)) result.add(move);
         }
       }
       for (let vector of dMoves) {
@@ -30,7 +31,8 @@ export class Pawn extends Figure {
               ((!field.isFreeCell(resultPosition) && field.getFigure(resultPosition)?.color !== this.color) ||
                (field.pawnTresspassing !== null && resultPosition.equal(field.pawnTresspassing)))
            ) {
-          result.add(new Move(position, vector));
+            const move = new Move(position, vector);
+            if (!checkDanger || !this.isDangerousMove(move, field)) result.add(move);
         }
       }
       if (position.y == tresspassingStartRow) {
@@ -39,7 +41,8 @@ export class Pawn extends Figure {
             vector = vector.sum(vector);
             let resultPosition = vector.resultPosition(position);
             if (resultPosition.isCorrect() && field.isFreeCell(resultPosition)) {
-              result.add(new Move(position, vector));
+              const move = new Move(position, vector);
+              if (!checkDanger || !this.isDangerousMove(move, field)) result.add(move);
             }
           }
         }

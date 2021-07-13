@@ -11,6 +11,6 @@ export interface IFigure {
   // getCoords(): CellCoord;
   // move(vector: IVector): boolean;
   toString(): string;
-  getMoves(position: CellCoord, field: IField): Moves;
+  getMoves(position: CellCoord, field: IField, checkDanger?: boolean): Moves;
   // TODO: обработка рокировки (isMoved или isRocked какой...)
 }
