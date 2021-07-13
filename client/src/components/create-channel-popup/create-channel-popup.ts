@@ -83,7 +83,11 @@ class CreateChannelPopup extends GenericPopup<IChannelData> {
 
     this.createButton.buttonDisable(popupStyles.settings_button_disabled);
     this.channelName.onValueEnter = (value: string) => {
-      if(value) this.createButton.buttonEnable(popupStyles.settings_button_disabled);
+      if(value) {
+        this.createButton.buttonEnable(popupStyles.settings_button_disabled);
+      } else {
+        this.createButton.buttonDisable(popupStyles.settings_button_disabled);
+      }
     }
 
 

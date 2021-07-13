@@ -336,6 +336,7 @@ export class CrossGameChannelView extends MainView {
     });
 
     this.mainViewUsers.onChannelLeave = () => {
+      // this.model.crossStop('loss');
       this.model.leavePlayer();
       this.onLeaveClick();
     };
