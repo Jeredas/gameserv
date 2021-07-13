@@ -29,6 +29,24 @@ export class ChannelJoinPlayerResponse {
   }
 }
 
+class ChannelPlayerListResponse implements IChatResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    playerList: Array<{ login: string; avatar: string }>;
+  };
+
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'playerList';
+    this.channelName = channelName;
+    this.params = {
+      playerList: [ ...playerList ]
+    };
+  }
+}
+
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
@@ -108,7 +126,7 @@ class ChessDrawResponse {
   };
 
   constructor(channelName: string, stop: string, player: string) {
-    this.service = 'chat'; 
+    this.service = 'chat';
     this.type = 'chessStop';
     this.channelName = channelName;
     this.params = { stop, player, method: 'drawNetwork' };
@@ -126,7 +144,7 @@ class ChessDrawAgreeResponse {
   };
 
   constructor(channelName: string, stop: string, player: string) {
-    this.service = 'chat'; 
+    this.service = 'chat';
     this.type = 'chessStop';
     this.channelName = channelName;
     this.params = { stop, player, method: 'drawAgreeNetwork' };
@@ -143,7 +161,7 @@ class ChessRemoveResponse {
   };
 
   constructor(channelName: string, method: string, player = '') {
-    this.service = 'chat'; 
+    this.service = 'chat';
     this.type = 'chessRemove';
     this.channelName = channelName;
     this.params = { method, player };
@@ -183,16 +201,28 @@ export class ChessGameChannel extends ChatChannel {
         });
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
+        this._sendForAllClients(
+          new ChannelPlayerListResponse(
+            this.name,
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          )
+        );
       }
     } catch (err) {
-      connection.sendUTF(JSON.stringify(new ChannelJoinPlayerResponse(this.name, 'error', params.requestId)));
+      connection.sendUTF(
+        JSON.stringify(new ChannelJoinPlayerResponse(this.name, 'error', params.requestId))
+      );
     }
   }
 
   getPlayers(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
-      const response = new ChannelSendPlayersResponse(this.name, currentClient.userData.login, this.players);
+      const response = new ChannelSendPlayersResponse(
+        this.name,
+        currentClient.userData.login,
+        this.players
+      );
       this.sendForAllClients(response);
     } else {
       connection.sendUTF(
@@ -209,6 +239,23 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
+  leaveChessChannel(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    this.clients = this.clients.filter((it) => it.connection != connection);
+
+    if (this.players && this.players.length) {
+      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+
+      this._sendForAllClients(
+        new ChannelPlayerListResponse(
+          this.name,
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+        )
+      );
+      super.leaveUser(connection, params);
+    }
+  }
+  
   chessStartGame(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
@@ -242,7 +289,7 @@ export class ChessGameChannel extends ChatChannel {
           const clickVector = new Vector(coords.x, coords.y);
           this.logic.writeSignToField(currentUser.login, clickVector);
           const response = new ChessMoveResponse(
-            this.name, 
+            this.name,
             currentUser.login,
             this.logic.getField(),
             this.logic.getWinner(),
@@ -264,8 +311,16 @@ export class ChessGameChannel extends ChatChannel {
       if (currentUser.login) {
         console.log(params.messageText);
 
-        const responseDrawAgree = new ChessDrawAgreeResponse(this.name, params.messageText, currentUser.login);
-        const responseDraw = new ChessDrawResponse(this.name, params.messageText, currentUser.login);
+        const responseDrawAgree = new ChessDrawAgreeResponse(
+          this.name,
+          params.messageText,
+          currentUser.login
+        );
+        const responseDraw = new ChessDrawResponse(
+          this.name,
+          params.messageText,
+          currentUser.login
+        );
         const clients = this.clients.filter(
           (client) => client.userData.login !== currentUser.login
         );

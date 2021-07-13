@@ -30,6 +30,23 @@ export class ChannelJoinPlayerResponse {
   }
 }
 
+class ChannelPlayerListResponse implements IChatResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    playerList: Array<{ login: string; avatar: string }>;
+  };
+
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'playerList';
+    this.channelName = channelName;
+    this.params = {
+      playerList: [ ...playerList ]
+    };
+  }
+}
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
@@ -199,6 +216,12 @@ export class CrossGameChannel extends ChatChannel {
         });
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
+        this._sendForAllClients(
+          new ChannelPlayerListResponse(
+            this.name,
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          )
+        );
       }
     } catch (err) {
       connection.sendUTF(
@@ -228,6 +251,23 @@ export class CrossGameChannel extends ChatChannel {
           }
         })
       );
+    }
+  }
+
+  leaveCrossChannel(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    this.clients = this.clients.filter((it) => it.connection != connection);
+
+    if (this.players && this.players.length) {
+      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+
+      this._sendForAllClients(
+        new ChannelPlayerListResponse(
+          this.name,
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+        )
+      );
+      super.leaveUser(connection, params);
     }
   }
 
