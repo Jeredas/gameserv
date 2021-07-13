@@ -1,5 +1,6 @@
 import Vector from "../../utilities/vector";
 import Control from "../../utilities/control";
+import crossStyles from './cross.module.css';
 
 
 class Cell extends Control {
@@ -21,12 +22,12 @@ class Cell extends Control {
   }
 
   clickedCell(sign: string) {
-    this.node.classList.add('clicked');
+    this.node.classList.add(crossStyles.clicked);
     this.node.textContent = sign;
   }
 
   clearCell() {
-    this.node.classList.remove('clicked');
+    this.node.classList.remove(crossStyles.clicked);
     this.node.textContent = '';
   }
 }

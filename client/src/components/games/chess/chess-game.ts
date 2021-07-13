@@ -226,6 +226,7 @@ class ChessGame extends Control {
     this.updateGameField(false);
     this.removeAllowedMoves();
     this.removeRivalMoves();
+    this.chessBoard.removeKingCheck();
 
     if(data.king.check) {
       const kingInfo = data.king.check;
