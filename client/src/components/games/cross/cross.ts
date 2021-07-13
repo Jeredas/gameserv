@@ -95,7 +95,8 @@ class Cross extends Control {
       // this.model.chessStopGame('loss');
       this.onLossClick();
     };
-
+    window.onresize = () => {}
+    window.onresize(null);
     // this.model.onStopGame.add((data) => this.createModalDraw(data));
   }
 

@@ -10,12 +10,21 @@ class ButtonDefault extends Control {
     };
   }
 
-  buttonDisable(): void {
+  buttonDisable(veiwDisabled = ''): void {
     this.node.setAttribute('disabled', 'true');
+    console.log(veiwDisabled);
+    
+    if(veiwDisabled) {
+      this.node.classList.add('BUTTON',veiwDisabled);
+    }
+    
   }
 
-  buttonEnable(): void {
+  buttonEnable(veiwDisabled = ''): void {
     this.node.removeAttribute('disabled');
+    if(veiwDisabled) {
+    this.node.classList.remove(veiwDisabled);
+    }
   }
 
   setLangView(configLang: string):void {
