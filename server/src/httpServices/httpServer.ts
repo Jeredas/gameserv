@@ -1,3 +1,4 @@
+import { statService } from './statService';
 import http from 'http';
 import { authService } from './authService';
 import { router } from './httpRouter';
@@ -50,6 +51,9 @@ class Server {
   async start(port:number = 4040) {
     return authService.start(router).then(isAuthStarted=>{
       if (isAuthStarted){
+        statService.start(router).then(()=>{
+          console.log('stat Service started')
+        })
         http.createServer((req, res)=>this.processRequest(req, res)).listen(port);
         return true;
       } else {

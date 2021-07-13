@@ -13,6 +13,7 @@ export interface IGameRecord {
   winner: string;
   time: string;
   history:Array<IChessHistory>|Array<ICrossHistory>;
+  gameMode:string;
 }
 
 

@@ -1,6 +1,6 @@
 import { ChatChannel } from '../socketChannel';
 import Vector from '../../utils/vector';
-import { writeStatistic } from '../../httpServices/authService';
+import { writeStatistic } from '../../httpServices/statService';
 
 interface IChatResponse {
   type: string;

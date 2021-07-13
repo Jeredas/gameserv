@@ -1,4 +1,3 @@
-import { databaseService } from '../databaseService';
 import { Router } from './httpRouter';
 import DefaultResponse from './defaultResponse';
 import StatModel from '../dataModels/statisticModel';
@@ -28,9 +27,9 @@ class StatResponse {
   }
 }
 
-async function writeStatistic(params) {
+export async function writeStatistic(params) {
   try {
-    const statistic = await StatModel.buildStatistics(params.gameType,params.time,params.winner,params.history,params.player1,params.player2,params.date);
+    const statistic = await StatModel.buildStatistics(params);
     const response = new StatResponse(statistic)
     return new DefaultResponse(true,response);
   } catch(err) {
@@ -40,7 +39,7 @@ async function writeStatistic(params) {
 }
 async function getStatistic() {
   try {
-  const statistic = await databaseService.db.collection('games').find({}).toArray()
+  const statistic = await StatModel.getStatistics()
   return new DefaultResponse(true,statistic);
   } catch(err) {
     return new DefaultResponse(false,err);
