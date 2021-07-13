@@ -236,17 +236,25 @@ export class CrossGameChannel extends ChatChannel {
     this.clients = this.clients.filter((it) => it.connection != connection);
 
     if (this.players && this.players.length) {
+      let currentPlayer = currentClient.userData.login;
+      const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
+      let rivalClient = this._getUserByLogin(rivalPlayer);
       this.players = this.players.filter((it) => it.login != currentClient.userData.login);
-      console.log('PLAYERS', this.players);
-
+      if (rivalClient) {
+        currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
+        rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
+      }
       this._sendForAllClients(
         new ChannelPlayerListResponse(
           this.name,
           this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
         )
       );
-      super.leaveUser(connection, params);
+      this.history = this.logic.getFullHistory();
+      this.logic.clearData();
+      this.players = [];
     }
+    super.leaveUser(connection, params);
   }
 
   getPlayers(connection, params) {
