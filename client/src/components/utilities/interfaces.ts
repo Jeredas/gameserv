@@ -97,8 +97,10 @@ export interface IChessData {
   rotate: boolean;
   history: IChessHistory;
   king: {
-    check: IKingInfo;
-    mate: IKingInfo;
+    check: IKingInfo | null;
+    mate: boolean;
+    // check: IKingInfo;
+    // mate: IKingInfo;
   };
 }
 

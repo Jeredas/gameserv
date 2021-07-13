@@ -328,10 +328,8 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessMove.add((params) => {
         this.chessGame.onFigureMove(params);
       if (params.king.mate) {
-        const kingMate = params.king.mate;
-        console.log('KING MATE', kingMate);
-        
-        this.chessGame.showKingMate(kingMate)
+        console.log('KING MATE', params.king.mate);
+        this.chessGame.showKingMate(params.king.check)
       }
       
       // if (params.winner) {

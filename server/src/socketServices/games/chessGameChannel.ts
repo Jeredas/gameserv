@@ -112,8 +112,8 @@ class ChessMoveResponse {
     coords: string;
     history: IChessHistory;
     king: {
-      check: IKingInfo | null;
-      mate: IKingInfo | null;
+        check: IKingInfo | null;
+        mate: boolean;
     };
   };
 
@@ -124,8 +124,8 @@ class ChessMoveResponse {
     coords: string,
     history: IChessHistory | null,
     king: {
-      check: IKingInfo | null;
-      mate: IKingInfo | null;
+        check: IKingInfo | null;
+        mate: boolean;
     }
   ) {
     this.service = 'chat';
@@ -427,7 +427,7 @@ export class ChessGameChannel extends ChatChannel {
             //   coords: new CellCoord(4, 7),
             //   rival: [ new CellCoord(3, 6), new CellCoord(2, 5), new CellCoord(1, 4) ]
             // },
-            mate: null
+            mate: false
           };
           console.log('KING: ', king);
           const response = new ChessMoveResponse(
