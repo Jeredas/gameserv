@@ -215,8 +215,12 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
-  leaveChannel() {
-    this.send('leaveUser', {});
+  // leaveChannel() {
+  //   this.send('leaveUser', {});
+  // }
+
+  leavePlayer() {
+    this.send('leaveChessChannel', {});
   }
 
   async joinChannel() {
@@ -331,8 +335,13 @@ export class ChessGameChannelView extends MainView {
       this.mainViewMessages.addMessage(params);
     });
 
+    // this.mainViewUsers.onChannelLeave = () => {
+    //   this.model.leaveChannel();
+    //   this.onLeaveClick();
+    // };
+
     this.mainViewUsers.onChannelLeave = () => {
-      this.model.leaveChannel();
+      this.model.leavePlayer();
       this.onLeaveClick();
     };
 

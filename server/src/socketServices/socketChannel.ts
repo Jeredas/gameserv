@@ -81,7 +81,7 @@ class ChannelUserListResponse implements IChatResponse {
 class ChannelSendMessageResponse implements IChatResponse {
   public type: string;
   public service: string;
-  public channelName: string
+  public channelName: string;
   public params: {
     senderNick: string;
     messageText: string;
@@ -89,7 +89,7 @@ class ChannelSendMessageResponse implements IChatResponse {
   };
 
   constructor(channelName: string, senderNick: string, messageText: string, avatar = '') {
-    this.service = 'chat'; 
+    this.service = 'chat';
     this.type = 'message';
     this.channelName = channelName;
     this.params = { senderNick, messageText, avatar };
@@ -99,7 +99,7 @@ class ChannelSendMessageResponse implements IChatResponse {
 class ChannelJoinUserResponse implements IChatResponse {
   public type: string;
   public service: string;
-  public channelName: string
+  public channelName: string;
   public requestId: number;
   public params: {
     status: string;
@@ -114,23 +114,23 @@ class ChannelJoinUserResponse implements IChatResponse {
   }
 }
 
-class ChannelPlayerListResponse implements IChatResponse {
-  public type: string;
-  public service: string;
-  public channelName: string
-  public params: {
-    playerList: Array<{ login: string; avatar: string }>;
-  };
+// class ChannelPlayerListResponse implements IChatResponse {
+//   public type: string;
+//   public service: string;
+//   public channelName: string;
+//   public params: {
+//     playerList: Array<{ login: string; avatar: string }>;
+//   };
 
-  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
-    this.service = 'chat'; 
-    this.type = 'playerList';
-    this.channelName = channelName;
-    this.params = {
-      playerList: [ ...playerList ]
-    };
-  }
-}
+//   constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+//     this.service = 'chat';
+//     this.type = 'playerList';
+//     this.channelName = channelName;
+//     this.params = {
+//       playerList: [ ...playerList ]
+//     };
+//   }
+// }
 
 export class ChatChannel {
   public name: string;
@@ -146,21 +146,21 @@ export class ChatChannel {
     this.gameMode = params.gameMode;
   }
 
-  protected _sendForAllClients(response: IChatResponse){
+  protected _sendForAllClients(response: IChatResponse) {
     this.clients.forEach((client) => {
       client.send(response);
     });
   }
 
-  protected _hasUser(connection){
-    return this.clients.findIndex((client) => client.connection == connection) == -1 ? false : true; 
+  protected _hasUser(connection) {
+    return this.clients.findIndex((client) => client.connection == connection) == -1 ? false : true;
   }
 
-  protected _getUserByConnection(connection){
-    return this.clients.find(client => client.connection == connection); 
-  }  
+  protected _getUserByConnection(connection) {
+    return this.clients.find((client) => client.connection == connection);
+  }
 
-  protected _getUserByLogin(login:string){
+  protected _getUserByLogin(login: string) {
     return this.clients.find((client) => client.userData.login === login);
   }
 
@@ -173,48 +173,31 @@ export class ChatChannel {
         this.clients.push(newClient);
         newClient.send(new ChannelJoinUserResponse(this.name, 'ok', params.requestId));
         this._sendForAllClients(
-          new ChannelUserListResponse(this.name, 
+          new ChannelUserListResponse(
+            this.name,
             this.clients.map((it) => ({ userName: it.userData.login, avatar: it.userData.avatar }))
-          )
-        );
-        this._sendForAllClients(
-          new ChannelPlayerListResponse(this.name, 
-            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
           )
         );
       } else {
         throw new Error('err');
       }
     } catch (err) {
-      connection.sendUTF(JSON.stringify(new ChannelJoinUserResponse(this.name, 'error', params.requestId)));
+      connection.sendUTF(
+        JSON.stringify(new ChannelJoinUserResponse(this.name, 'error', params.requestId))
+      );
       //send respons for user
     }
   }
 
   leaveUser(connection, params) {
-    // const currentClient = this.clients.find((it) => it.connection == connection);
     this.clients = this.clients.filter((it) => it.connection != connection);
-    const currentClient = this._getUserByConnection(connection);
-    if (currentClient && currentClient.userData) {
-      if (this.players && this.players.length) {
-        this.players = this.players.filter((it) => it.login != currentClient.userData.login);
-      }
-    }
-    
     this.clients.forEach((it) => {
-      // this._sendForAllClients(new ChannelUserListResponse(this.clients.map(it => it.userData.login)));
       this._sendForAllClients(
-        new ChannelUserListResponse(this.name, 
+        new ChannelUserListResponse(
+          this.name,
           this.clients.map((it) => ({ userName: it.userData.login, avatar: it.userData.avatar }))
         )
       );
-      if (this.players && this.players.length) {
-        this._sendForAllClients(
-          new ChannelPlayerListResponse(this.name, 
-            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
-          )
-        );
-      }
     });
   }
 

@@ -35,6 +35,24 @@ export class ChannelJoinPlayerResponse {
   }
 }
 
+class ChannelPlayerListResponse implements IChatResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    playerList: Array<{ login: string; avatar: string }>;
+  };
+
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'playerList';
+    this.channelName = channelName;
+    this.params = {
+      playerList: [ ...playerList ]
+    };
+  }
+}
+
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
@@ -44,7 +62,11 @@ class ChannelSendPlayersResponse implements IChatResponse {
     players: Array<{ login: string; avatar: string }>;
   };
 
-  constructor(channelName: string, player: string, players: Array<{ login: string; avatar: string }>) {
+  constructor(
+    channelName: string,
+    player: string,
+    players: Array<{ login: string; avatar: string }>
+  ) {
     this.service = 'chat';
     this.type = 'getPlayers';
     this.channelName = channelName;
@@ -84,7 +106,13 @@ class ChessMoveResponse {
     history: IChessHistory;
   };
 
-  constructor(channelName: string, player: string, field: string, coords: string, history: IChessHistory | null) {
+  constructor(
+    channelName: string,
+    player: string,
+    field: string,
+    coords: string,
+    history: IChessHistory | null
+  ) {
     this.service = 'chat';
     this.type = 'chessMove';
     this.channelName = channelName;
@@ -235,6 +263,12 @@ export class ChessGameChannel extends ChatChannel {
         }
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
+        this._sendForAllClients(
+          new ChannelPlayerListResponse(
+            this.name,
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          )
+        );
       }
     } catch (err) {
       connection.sendUTF(
@@ -267,6 +301,23 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
+  leaveChessChannel(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    this.clients = this.clients.filter((it) => it.connection != connection);
+
+    if (this.players && this.players.length) {
+      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+
+      this._sendForAllClients(
+        new ChannelPlayerListResponse(
+          this.name,
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+        )
+      );
+      super.leaveUser(connection, params);
+    }
+  }
+
   chessStartGame(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
@@ -294,14 +345,20 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
-        if (this.players.filter(player => player.color == this.chessProcessor.getPlayerColor())[0].login ==
-        currentUser.login) {
+        if (
+          this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
+            .login == currentUser.login
+        ) {
           let coords = JSON.parse(params.messageText);
           const startCoord = new CellCoord(coords[0].x, coords[0].y);
           const targetCoord = new CellCoord(coords[1].x, coords[1].y);
           const figure = this.chessProcessor.getFigureStr(startCoord);
           const moveAllowed = this.chessProcessor.makeMove(startCoord, targetCoord);
-          console.log('MOVE: ', startCoord.toString() + '-' + targetCoord.toString(), moveAllowed ? '[OK]' : '[ERROR]');
+          console.log(
+            'MOVE: ',
+            startCoord.toString() + '-' + targetCoord.toString(),
+            moveAllowed ? '[OK]' : '[ERROR]'
+          );
           console.log('\tposition: ', this.chessProcessor.getField());
           let historyItem: IChessHistory | null;
           if (!moveAllowed) {
@@ -316,7 +373,7 @@ export class ChessGameChannel extends ChatChannel {
               time: historyLastEl.time - this.chessProcessor.getStartTime(),
               figName: figure,
               coords: moveCoords
-            }
+            };
           }
           const response = new ChessMoveResponse(
             this.name,
@@ -341,16 +398,18 @@ export class ChessGameChannel extends ChatChannel {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
-      if(this.players.filter(player => player.color == this.chessProcessor.getPlayerColor())[0].login ==
-      currentUser.login) {
+      if (
+        this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
+          .login == currentUser.login
+      ) {
         const coord = JSON.parse(params.messageText);
         const moves = this.chessProcessor.getMoves(new CellCoord(coord.x, coord.y));
         const allowed = new Array<Vector>();
         const log = Array<string>();
         for (let move of moves) {
           let target = move.getTargetCell();
-          allowed.push(new Vector(target.x, target.y))
-          log.push(move.toString())
+          allowed.push(new Vector(target.x, target.y));
+          log.push(move.toString());
         }
         console.log('GRAB: ', log.join(' '));
         const response = new ChessGrabResponse(this.name, allowed);

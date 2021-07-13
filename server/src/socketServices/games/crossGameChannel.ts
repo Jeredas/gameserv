@@ -51,6 +51,24 @@ class ChannelSendPlayersResponse implements IChatResponse {
   }
 }
 
+class ChannelPlayerListResponse implements IChatResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    playerList: Array<{ login: string; avatar: string }>;
+  };
+
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'playerList';
+    this.channelName = channelName;
+    this.params = {
+      playerList: [ ...playerList ]
+    };
+  }
+}
+
 class CrossStartResponse {
   public type: string;
   public service: string;
@@ -199,11 +217,35 @@ export class CrossGameChannel extends ChatChannel {
         });
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
+        this._sendForAllClients(
+          new ChannelPlayerListResponse(
+            this.name,
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          )
+        );
       }
     } catch (err) {
       connection.sendUTF(
         JSON.stringify(new ChannelJoinPlayerResponse(this.name, 'error', params.requestId))
       );
+    }
+  }
+
+  leaveCrossChannel(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    this.clients = this.clients.filter((it) => it.connection != connection);
+
+    if (this.players && this.players.length) {
+      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+      console.log('PLAYERS', this.players);
+
+      this._sendForAllClients(
+        new ChannelPlayerListResponse(
+          this.name,
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+        )
+      );
+      super.leaveUser(connection, params);
     }
   }
 
@@ -316,7 +358,7 @@ export class CrossGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
-      let rivalClient = this._getUserByLogin(rivalPlayer); 
+      let rivalClient = this._getUserByLogin(rivalPlayer);
 
       if (params.messageText === 'agree') {
         const response = new CrossRemoveResponse(this.name, 'draw');
