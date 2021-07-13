@@ -6,7 +6,7 @@ import { ChatChannelModel } from './chatChannelModel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
 import { IChatUser, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
-import ChessGame from '../components/games/chess/chess-game';
+import ChessGame, { kingInfoToVector } from '../components/games/chess/chess-game';
 import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
 import MainViewUsers from '../components/mainView/mainViewUsers/mainViewUsers';
@@ -215,9 +215,9 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
-  // leaveChannel() {
-  //   this.send('leaveUser', {});
-  // }
+  leaveChannel() {
+    this.send('leaveUser', {});
+  }
 
   leavePlayer() {
     this.send('leaveChessChannel', {});
@@ -292,6 +292,7 @@ export class ChessGameChannelView extends MainView {
 
     this.chessGame = new ChessGame(this.mainViewAction.node, chessMode, parentHeight);
 
+    this.model.getPlayers('');
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Join', res);
@@ -306,7 +307,7 @@ export class ChessGameChannelView extends MainView {
     };
 
     this.chessGame.onFigureDrop = (posStart: Vector, posDrop: Vector) => {
-      this.model.chessMove(JSON.stringify([posStart, posDrop]));
+      this.model.chessMove(JSON.stringify([ posStart, posDrop ]));
     };
 
     this.chessGame.onFigureGrab = (coords: Vector) => {
@@ -314,8 +315,10 @@ export class ChessGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      this.chessGame.setPlayer(params);
-      this.mainViewPlayers.setPlayers(params.players);
+      if (params.players.length) {
+        this.chessGame.setPlayer(params);
+        this.mainViewPlayers.setPlayers(params.players);
+      }
     });
 
     this.model.service.onChessStart.add((params) => {
@@ -323,7 +326,14 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessMove.add((params) => {
-      this.chessGame.onFigureMove(params);
+        this.chessGame.onFigureMove(params);
+      if (params.king.mate) {
+        const kingMate = kingInfoToVector(params.king.mate.coords, params.king.mate.rival);
+        console.log('KING MATE', kingMate);
+        
+        this.chessGame.showKingMate(kingMate)
+      }
+      
       // if (params.winner) {
       //   console.log(`Winner: ${params.winner}`);
       //   this.model.chessRemove('won');
@@ -399,7 +409,7 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessGrab.add((allowed) => {
       const allowedMoves = allowed.map((move) => new Vector(move.x, move.y));
       this.chessGame.showAllowedMoves(allowedMoves);
-    })
+    });
   }
 
   destroy() {

@@ -6,6 +6,7 @@ import { ChessProcessor } from '../../chess-lib/chess-processor';
 import { ChessColor } from '../../chess-lib/chess-color';
 import { Move } from '../../chess-lib/move';
 import { time } from 'console';
+import { ICellCoord } from '../../chess-lib/icell-coord';
 
 interface IChatResponse {
   type: string;
@@ -15,6 +16,12 @@ interface IChessHistory {
   coords: Array<Vector>;
   time: number;
   figName: string;
+}
+
+
+interface IKingInfo {
+    coords: ICellCoord;
+    rival: Array<ICellCoord>;
 }
 
 export class ChannelJoinPlayerResponse {
@@ -104,6 +111,10 @@ class ChessMoveResponse {
     field: string;
     coords: string;
     history: IChessHistory;
+    king: {
+      check: IKingInfo | null;
+      mate: IKingInfo | null;
+    };
   };
 
   constructor(
@@ -111,7 +122,11 @@ class ChessMoveResponse {
     player: string,
     field: string,
     coords: string,
-    history: IChessHistory | null
+    history: IChessHistory | null,
+    king: {
+      check: IKingInfo | null;
+      mate: IKingInfo | null;
+    }
   ) {
     this.service = 'chat';
     this.type = 'chessMove';
@@ -120,7 +135,8 @@ class ChessMoveResponse {
       player,
       field,
       coords,
-      history
+      history,
+      king
     };
   }
 }
@@ -263,12 +279,14 @@ export class ChessGameChannel extends ChatChannel {
         }
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
-        this._sendForAllClients(
-          new ChannelPlayerListResponse(
-            this.name,
-            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
-          )
-        );
+        if (this.players.length) {
+          this._sendForAllClients(
+            new ChannelPlayerListResponse(
+              this.name,
+              this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+            )
+          );
+        }
       }
     } catch (err) {
       connection.sendUTF(
@@ -375,6 +393,20 @@ export class ChessGameChannel extends ChatChannel {
               coords: moveCoords
             };
           }
+          const king1 = this.chessProcessor.getKingPos();
+          console.log('KING', king1);
+          const king = {
+            // check: {
+            //   coords: new CellCoord(4, 0),
+            //   rival: [ new CellCoord(3, 1), new CellCoord(2, 2), new CellCoord(1, 3) ]
+            // },
+            check: null,
+            mate: {
+              coords: new CellCoord(4, 7),
+              rival: [ new CellCoord(3, 6), new CellCoord(2, 5), new CellCoord(1, 4) ]
+            },
+            // mate: null
+          };
           const response = new ChessMoveResponse(
             this.name,
             currentUser.login,
@@ -382,7 +414,8 @@ export class ChessGameChannel extends ChatChannel {
             // this.logic.getWinner(),
             // this.logic.getHistory()
             params.messageText,
-            historyItem
+            historyItem,
+            king
           );
           // this.clients.forEach((it) => it.connection.sendUTF(JSON.stringify(response)));
           this.sendForAllClients(response);

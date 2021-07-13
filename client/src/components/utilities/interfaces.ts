@@ -43,8 +43,7 @@ export interface IUserChatMessage {
 }
 export interface IJoinedPlayer {
   player: string;
-  players: Array<{ login: string, avatar: string }>;
-
+  players: Array<{ login: string; avatar: string }>;
 }
 export interface ICrossHistory {
   sign: string;
@@ -85,6 +84,11 @@ export interface IChessHistory {
   figName: string;
 }
 
+export interface IKingInfo {
+  coords: Vector;
+  rival: Array<Vector>;
+}
+
 export interface IChessData {
   coords: Array<Vector>;
   player: string;
@@ -92,11 +96,14 @@ export interface IChessData {
   winner: string;
   rotate: boolean;
   history: IChessHistory;
-  king: Vector;
+  king: {
+    check: IKingInfo;
+    mate: IKingInfo;
+  };
 }
 
 export interface IChannelInfo {
-  clients: [],
-  name: string,
-  type: string
+  clients: [];
+  name: string;
+  type: string;
 }

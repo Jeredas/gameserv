@@ -4,6 +4,7 @@ import Figure from './chess-figure';
 import ChessCell from './chess-cell';
 import chessStyles from './chess-game.module.css';
 import { chessModeConfig } from './config-chess';
+import { IKingInfo } from 'src/components/utilities/interfaces';
 
 class ChessField extends Control {
   private dragableItems: Control;
@@ -216,8 +217,22 @@ class ChessField extends Control {
     });
   }
 
-  removeAlloweMoves(): void {
+  removeAllowedMoves(): void {
     this.cells.forEach((cell) => cell.removeAllowedMove());
+  }
+
+  showRivalMoves(coords: Array<Vector>): void {
+    coords.forEach((coord) => {
+      this.cells.forEach((cell) => {
+        if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+          cell.setRivalMove();
+        }
+      });
+    });
+  }
+
+  removeRivalMoves(): void {
+    this.cells.forEach((cell) => cell.removeRivalMove());
   }
 
   clearData(fen: Array<string>): void {
@@ -231,13 +246,46 @@ class ChessField extends Control {
     this.chessMode = chessMode;
   }
 
-  showKingCheck(coords: Vector): void {
-    if (coords) {
-      this.cells.forEach((cell) => cell.removeKingCell());
+  showKingCheck(kingInfo: IKingInfo): void {
+    if (kingInfo.coords) {
+      // this.cells.forEach((cell) => cell.removeKingCell());
       const kingCell = this.cells.find(
-        (cell) => cell.getCellCoord().x === coords.x && cell.getCellCoord().y === coords.y
+        (cell) =>
+          cell.getCellCoord().x === kingInfo.coords.x && cell.getCellCoord().y === kingInfo.coords.y
       );
       kingCell.setKingCell();
+    }
+
+    if (kingInfo.rival) {
+      kingInfo.rival.forEach((coord) => {
+        this.cells.forEach((cell) => {
+          if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+            cell.setRivalMove();
+          }
+        });
+      });
+    }
+  }
+
+  showKingMate(kingInfo: IKingInfo): void {
+    
+    if (kingInfo.coords) {
+      // this.cells.forEach((cell) => cell.removeKingCell());
+      const kingCell = this.cells.find(
+        (cell) =>
+          cell.getCellCoord().x === kingInfo.coords.x && cell.getCellCoord().y === kingInfo.coords.y
+      );
+      kingCell.setKingCell();
+    }
+
+    if (kingInfo.rival) {
+      kingInfo.rival.forEach((coord) => {
+        this.cells.forEach((cell) => {
+          if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+            cell.setMateMove();
+          }
+        });
+      });
     }
   }
 
