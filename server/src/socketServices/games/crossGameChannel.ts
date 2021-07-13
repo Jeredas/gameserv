@@ -1,5 +1,6 @@
 import { ChatChannel } from '../socketChannel';
 import Vector from '../../utils/vector';
+import { writeStatistic } from '../../httpServices/authService';
 
 interface IChatResponse {
   type: string;
@@ -43,7 +44,7 @@ class ChannelPlayerListResponse implements IChatResponse {
     this.type = 'playerList';
     this.channelName = channelName;
     this.params = {
-      playerList: [ ...playerList ]
+      playerList: [...playerList]
     };
   }
 }
@@ -187,6 +188,16 @@ export class CrossGameChannel extends ChatChannel {
   logic: CrossGameLogic;
   players: Array<{ login: string; avatar: string }>;
   history: Array<ICrossHistory>;
+  recordData: {
+    history: ICrossHistory[];
+    player1: { login: string; avatar: string; };
+    player2: { login: string; avatar: string; };
+    date: string;
+    time: string;
+    winner: string;
+    gameType: string;
+    gameMode: string;
+  };
 
   constructor(name: string, type: string, params: any) {
     super(name, type, params);
@@ -194,6 +205,7 @@ export class CrossGameChannel extends ChatChannel {
     this.logic = new CrossGameLogic();
     this.players = [];
     this.history = [];
+    this.recordData = null;
   }
 
   sendForAllClients(response: IChatResponse) {
@@ -331,7 +343,7 @@ export class CrossGameChannel extends ChatChannel {
         if (params.messageText === 'loss') {
           currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
-          this.history = this.logic.getFullHistory();
+          writeStatistic(this.getRecordData());
           this.logic.clearData();
           this.players = [];
         } else {
@@ -367,6 +379,7 @@ export class CrossGameChannel extends ChatChannel {
         const response = new CrossRemoveResponse(this.name, 'draw');
         currentClient.send(response);
         rivalClient.send(response);
+        
       } else if (params.messageText === 'disagree') {
         if (currentPlayer === this.logic.getCurrentPlayer()) {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
@@ -375,6 +388,7 @@ export class CrossGameChannel extends ChatChannel {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
         }
+        
       } else if (this.logic.getWinner()) {
         if (currentPlayer === this.logic.getWinner()) {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
@@ -383,11 +397,14 @@ export class CrossGameChannel extends ChatChannel {
           currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
         }
+        console.log('write from crossRemove')
+        writeStatistic(this.getRecordData());
       }
-      this.history = this.logic.getFullHistory();
+    }
+      
+      
       this.logic.clearData();
       this.players = [];
-    }
   }
 
   crossWinnerResponse(connection, params) {
@@ -409,10 +426,25 @@ export class CrossGameChannel extends ChatChannel {
           it.connection.sendUTF(JSON.stringify(new CrossNoMovesResponse(this.name)))
         );
       }
-    }
-    this.history = this.logic.getFullHistory();
+    console.log('write from winnerResponse')
+    writeStatistic(this.getRecordData());
     this.logic.clearData();
     this.players = [];
+    }
+    
+  }
+  getRecordData(){
+    let date = new Date();
+    return this.recordData = {
+      history: this.logic.getFullHistory(),
+      player1: this.players[0],
+      player2: this.players[1],
+      date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
+      time: `${this.logic.getFullHistory()[this.logic.getFullHistory().length - 1].time}`,
+      winner: this.logic.getWinner(),
+      gameType: 'CROSS',
+      gameMode: this.gameMode
+    }
   }
 }
 
@@ -421,7 +453,7 @@ export class CrossGameLogic {
   private field: Array<Array<string>> = [];
   private players: Array<string> = [];
   private currentPlayerIndex: number = 0;
-  private signs: Array<string> = [ 'X', 'O' ];
+  private signs: Array<string> = ['X', 'O'];
   private winner: string = '';
   private currentSign: string = this.signs[0];
   private gameMode: string = 'network';
@@ -431,7 +463,7 @@ export class CrossGameLogic {
   private noMoves = false;
 
   constructor() {
-    this.field = [ [ '', '', '' ], [ '', '', '' ], [ '', '', '' ] ];
+    this.field = [['', '', ''], ['', '', ''], ['', '', '']];
   }
   getPlayers(): Array<string> {
     return this.players;
@@ -486,10 +518,10 @@ export class CrossGameLogic {
     let countDiagSec = 1;
 
     const { x: fromX, y: fromY } = coords;
-    const moveHor = [ { x: -1, y: 0 }, { x: 1, y: 0 } ];
-    const moveVer = [ { x: 0, y: 1 }, { x: 0, y: -1 } ];
-    const moveDiagPrim = [ { x: -1, y: -1 }, { x: 1, y: 1 } ];
-    const moveDiagSec = [ { x: -1, y: 1 }, { x: 1, y: -1 } ];
+    const moveHor = [{ x: -1, y: 0 }, { x: 1, y: 0 }];
+    const moveVer = [{ x: 0, y: 1 }, { x: 0, y: -1 }];
+    const moveDiagPrim = [{ x: -1, y: -1 }, { x: 1, y: 1 }];
+    const moveDiagSec = [{ x: -1, y: 1 }, { x: 1, y: -1 }];
 
     moveHor.forEach((move) => {
       let toX = fromX;
@@ -553,7 +585,7 @@ export class CrossGameLogic {
   }
 
   clearData(): void {
-    this.field = [ [ '', '', '' ], [ '', '', '' ], [ '', '', '' ] ];
+    this.field = [['', '', ''], ['', '', ''], ['', '', '']];
     this.players = [];
     this.currentPlayerIndex = 0;
     this.winner = '';
@@ -590,6 +622,7 @@ export class CrossGameLogic {
   getNoMove(): boolean {
     return this.noMoves;
   }
+ 
 }
 
 function getTimeString(time: number): string {
