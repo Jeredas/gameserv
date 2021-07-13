@@ -127,7 +127,7 @@ export class CrossGameChannelService implements ISocketService {
               player: params.player
             });
           }
-        ],
+        ]
       ]).get(message.type);
 
       if (processFunction) {
@@ -221,9 +221,9 @@ export class CrossGameChannelModel extends ChatChannelModel {
     });
   }
 
-  // leaveChannel() {
-  //   this.send('leaveUser', {});
-  // }
+  leaveChannel() {
+    this.send('leaveUser', {});
+  }
 
   leavePlayer() {
     this.send('leaveCrossChannel', {});
@@ -293,7 +293,7 @@ export class CrossGameChannelView extends MainView {
 
     this.crossGame = new Cross(this.mainViewAction.node);
     this.model.getPlayers('');
-    
+
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Enter the game', res);
@@ -312,8 +312,10 @@ export class CrossGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      this.crossGame.setPlayer(params);
-      this.mainViewPlayers.setPlayers(params.players);
+      if (params.players.length) {
+        this.crossGame.setPlayer(params);
+        this.mainViewPlayers.setPlayers(params.players);
+      }
     });
 
     this.model.service.onCrossStart.add((params) => {
