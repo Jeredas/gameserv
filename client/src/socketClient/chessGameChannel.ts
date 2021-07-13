@@ -35,7 +35,7 @@ export class ChessGameChannelService implements ISocketService {
 
   messageHandler(rawMessage: string) {
     const message = JSON.parse(rawMessage);
-    if (message.service === 'chat'  && message.channelName === this.channelName) {
+    if (message.service === 'chat' && message.channelName === this.channelName) {
       this.onAny.emit(message);
       const processFunction = new Map<string, ((params: any) => void)>([
         [
@@ -103,9 +103,7 @@ export class ChessGameChannelService implements ISocketService {
         [
           'userList',
           (params) => {
-            this.onUserList.emit(
-              params.userList
-            );
+            this.onUserList.emit(params.userList);
           }
         ],
         [
@@ -210,9 +208,9 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
-  // leaveChannel() {
-  //   this.send('leaveUser', {});
-  // }
+  leaveChannel() {
+    this.send('leaveUser', {});
+  }
 
   leavePlayer() {
     this.send('leaveChessChannel', {});
@@ -282,7 +280,7 @@ export class ChessGameChannelView extends MainView {
     this.chessGame = new ChessGame(this.mainViewAction.node, chessMode, parentHeight);
 
     this.model.getPlayers('');
-    
+
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Join', res);
@@ -301,8 +299,10 @@ export class ChessGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      this.chessGame.setPlayer(params);
-      this.mainViewPlayers.setPlayers(params.players);
+      if (params.players.length) {
+        this.chessGame.setPlayer(params);
+        this.mainViewPlayers.setPlayers(params.players);
+      }
     });
 
     this.model.service.onChessStart.add((params) => {
