@@ -244,14 +244,24 @@ export class ChessGameChannel extends ChatChannel {
     this.clients = this.clients.filter((it) => it.connection != connection);
 
     if (this.players && this.players.length) {
+      let currentPlayer = currentClient.userData.login;
+      const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+      let rivalClient = this._getUserByLogin(rivalPlayer);
       this.players = this.players.filter((it) => it.login != currentClient.userData.login);
-
+      if (rivalClient) {
+        currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+        rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+      }
       this._sendForAllClients(
         new ChannelPlayerListResponse(
           this.name,
           this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
         )
       );
+      // this.history = this.logic.getFullHistory();
+      // this.logic.clearData();
+      // this.chessProcessor.clearData();
+      this.players = [];
     }
     super.leaveUser(connection, params);
   }
