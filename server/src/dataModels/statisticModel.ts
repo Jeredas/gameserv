@@ -9,37 +9,40 @@ export default class StatModel {
   winner: string
   time: string
   history: []
+  gameMode:string
 
-  constructor(userDto) {
-    if (!userDto) {
+  constructor(gameDto) {
+    if (!gameDto) {
       throw new Error("User dto invalid.");
     }
-    this.gameType = userDto.gameType;
-    this.time = userDto.time;
-    this.winner = userDto.winner;
-    this.history = userDto.history;
-    this.date = userDto.date;
-    this.player1 = userDto.player1;
-    this.player2 = userDto.player2
+    this.gameType = gameDto.gameType;
+    this.time = gameDto.time;
+    this.winner = gameDto.winner;
+    this.history = gameDto.history;
+    this.date = gameDto.date;
+    this.player1 = gameDto.player1;
+    this.player2 = gameDto.player2;
+    this.gameMode = gameDto.gameMode
   }
 
-  static async buildStatistics(gameType: string, time: string, winner: string, history: [] | string, player1: string, player2: string, date: string): Promise<StatModel> {
+  static async buildStatistics(params:StatModel): Promise<StatModel> {
     var gameDto = {
-      gameType: gameType,
-      time: time,
-      winner: winner,
-      history: history,
-      date: date,
-      player1: player1,
-      player2: player2
+      gameType: params.gameType,
+      time: params.time,
+      winner: params.winner,
+      history: params.history,
+      date: params.date,
+      player1: params.player1,
+      player2: params.player2,
+      gameMode:params.gameMode
     };
 
     await databaseService.db.collection(collectionName).insertOne(gameDto);
     return new StatModel(gameDto);
   }
 
-  static buildByGameName(gameName: string) {
-    const statistic = databaseService.db.collection(collectionName).find()
+  static async getStatistics() {
+    const statistic : Array<StatModel> = await databaseService.db.collection(collectionName).find().toArray()
     return statistic
   }
 

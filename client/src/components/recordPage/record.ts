@@ -35,6 +35,9 @@ class Record extends Control {
     const recordWinner = new Control(this.node, 'div', recordStyles.record_winner);
     recordWinner.node.textContent = record.winner;
 
+    const gameMode = new Control(this.node, 'div', recordStyles.record_winner);
+    gameMode.node.textContent = record.gameMode
+
     const recordTime = new Control(this.node, 'div', recordStyles.record_time);
     recordTime.node.textContent = record.time;
 

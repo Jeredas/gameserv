@@ -102,33 +102,6 @@ async function passwordValidation(params) {
     return new DefaultResponse(false)
   }
 }
-export async function writeStatistic(params) {
-  try {
-    // const statistic = await databaseService.db.collection('games').insertOne({
-    //   gameType:params.gameType,
-    //   date:params.date,
-    //   player1: params.player1,
-    //   player2: params.player2,
-    //   winner:params.winner,
-    //   time:params.time,
-    //   history:params.history
-    // })
-    const statistic = await StatModel.buildStatistics(params.gameType,params.time,params.winner,params.history,params.player1,params.player2,params.date);
-    return new DefaultResponse(true,statistic);
-  } catch(err) {
-    return new DefaultResponse(false,err)
-  }
-  
-}
-async function getStatistic() {
-  try {
-  const statistic = await databaseService.db.collection('games').find({}).toArray()
-  return new DefaultResponse(true,statistic);
-  } catch(err) {
-    return new DefaultResponse(false,err);
-  }
-  
-}
 
 class AuthService {
   private router: Router;
@@ -150,8 +123,6 @@ class AuthService {
     this.addEndpoint('authValidation', authValidation);
     this.addEndpoint('passwordValidation', passwordValidation);
     this.addEndpoint('authBySession', authBySession);
-    this.addEndpoint('writeStatistic', writeStatistic);
-    this.addEndpoint('getStatistic', getStatistic);
     return true;
   }
 
