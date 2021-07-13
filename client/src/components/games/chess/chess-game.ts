@@ -129,6 +129,7 @@ class ChessGame extends Control {
       this.chessBoard.changeHeight(parentHeight);
       this.history.changeHeight(parentHeight);
     };
+    window.onresize(null);
   }
 
   updateGameField(rotate: boolean): void {

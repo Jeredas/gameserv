@@ -79,6 +79,7 @@ class ChatPage extends Control {
             this.chatMain.remove(params.channelName);
             channel.destroy();
           };
+          window.onresize(null);
         }
       });
     }

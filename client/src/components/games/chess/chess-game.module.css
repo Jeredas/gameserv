@@ -17,8 +17,9 @@
   flex-wrap: wrap;
   margin: 0 auto;
   height: var(--size);
-  /* --size: 480px; */
-  transition: .5s transform ease;
+  transition-property: transform;
+  transition-duration: .5s;
+  transition-timing-function: ease;
 }
 
 .chess_board_view {
@@ -69,7 +70,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: .2s all ease;
+  transition-property: background-color;
+  transition-duration: .2s;
+  transition-timing-function: ease;
 }
 
 .chess_cell_hover {
@@ -175,7 +178,9 @@
   border-radius: 5px;
   width: 100%;
   cursor: pointer;
-  transition: .2s all ease;
+  transition-property: background-color, color;
+  transition-duration: .2s;
+  transition-timing-function: ease;
 }
 
 .chess_button.disabled {
