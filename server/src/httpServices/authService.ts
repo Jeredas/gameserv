@@ -123,7 +123,6 @@ export async function writeStatistic(params) {
 async function getStatistic() {
   try {
   const statistic = await databaseService.db.collection('games').find({}).toArray()
-  console.log(statistic)
   return new DefaultResponse(true,statistic);
   } catch(err) {
     return new DefaultResponse(false,err);

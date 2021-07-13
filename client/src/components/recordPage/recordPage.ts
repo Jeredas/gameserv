@@ -1,3 +1,4 @@
+import { IChessHistory, ICrossHistory, IPublicUserInfo } from './../utilities/interfaces';
 import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
@@ -7,11 +8,11 @@ import recordStyles from './recordPage.module.css';
 export interface IGameRecord {
   gameType:string;
   date: string;
-  player1: string;
-  player2: string;
+  player1: IPublicUserInfo;
+  player2: IPublicUserInfo;
   winner: string;
   time: string;
-  history:[];
+  history:Array<IChessHistory>|Array<ICrossHistory>;
 }
 
 

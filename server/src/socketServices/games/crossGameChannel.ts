@@ -205,6 +205,7 @@ export class CrossGameChannel extends ChatChannel {
     this.logic = new CrossGameLogic();
     this.players = [];
     this.history = [];
+    this.recordData = null;
   }
 
   sendForAllClients(response: IChatResponse) {
@@ -339,17 +340,8 @@ export class CrossGameChannel extends ChatChannel {
             currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
             rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
           }
-          this.recordData = {
-            history: this.logic.getFullHistory(),
-            player1: this.players[0],
-            player2: this.players[1],
-            date: `data`,
-            time: `${this.history[-1].time}`,
-            winner: this.logic.getWinner(),
-            gameType: 'CROSS',
-            gameMode: this.gameMode
-          }
-          writeStatistic(this.recordData);
+          console.log('write from crossStop')
+          writeStatistic(this.getRecordData());
           this.logic.clearData();
           this.players = [];
         } else {
@@ -385,6 +377,7 @@ export class CrossGameChannel extends ChatChannel {
         const response = new CrossRemoveResponse(this.name, 'draw');
         currentClient.send(response);
         rivalClient.send(response);
+        
       } else if (params.messageText === 'disagree') {
         if (currentPlayer === this.logic.getCurrentPlayer()) {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
@@ -393,6 +386,7 @@ export class CrossGameChannel extends ChatChannel {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
         }
+        
       } else if (this.logic.getWinner()) {
         if (currentPlayer === this.logic.getWinner()) {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
@@ -401,12 +395,14 @@ export class CrossGameChannel extends ChatChannel {
           currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
         }
+        console.log('write from crossRemove')
+        writeStatistic(this.getRecordData());
       }
-      this.history = this.logic.getFullHistory();
-     
+    }
+      
+      
       this.logic.clearData();
       this.players = [];
-    }
   }
 
   crossWinnerResponse(connection, params) {
@@ -428,10 +424,25 @@ export class CrossGameChannel extends ChatChannel {
           it.connection.sendUTF(JSON.stringify(new CrossNoMovesResponse(this.name)))
         );
       }
-    }
-    this.history = this.logic.getFullHistory();
+    console.log('write from winnerResponse')
+    writeStatistic(this.getRecordData());
     this.logic.clearData();
     this.players = [];
+    }
+    
+  }
+  getRecordData(){
+    let date = new Date();
+    return this.recordData = {
+      history: this.logic.getFullHistory(),
+      player1: this.players[0],
+      player2: this.players[1],
+      date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
+      time: `${this.logic.getFullHistory()[this.logic.getFullHistory().length - 1].time}`,
+      winner: this.logic.getWinner(),
+      gameType: 'CROSS',
+      gameMode: this.gameMode
+    }
   }
 }
 
@@ -609,6 +620,7 @@ export class CrossGameLogic {
   getNoMove(): boolean {
     return this.noMoves;
   }
+ 
 }
 
 function getTimeString(time: number): string {
