@@ -33,6 +33,7 @@ export class CrossGameChannelService implements ISocketService {
   public onUserList: Signal<Array<IChatUser>> = new Signal();
   public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
   private channelName: string;
+  public onCrossNoMoves: Signal<{ method: string; player: string }> = new Signal();
 
   constructor(channelName: string) {
     this.channelName = channelName;
@@ -117,7 +118,16 @@ export class CrossGameChannelService implements ISocketService {
               params.playerList
             );
           }
-        ]
+        ],
+        [
+          'crossNoMoves',
+          (params) => {
+            this.onCrossNoMoves.emit({
+              method: params.method,
+              player: params.player
+            });
+          }
+        ],
       ]).get(message.type);
 
       if (processFunction) {
@@ -211,8 +221,12 @@ export class CrossGameChannelModel extends ChatChannelModel {
     });
   }
 
-  leaveChannel() {
-    this.send('leaveUser', {});
+  // leaveChannel() {
+  //   this.send('leaveUser', {});
+  // }
+
+  leavePlayer() {
+    this.send('leaveCrossChannel', {});
   }
 
   async joinChannel() {
@@ -278,7 +292,8 @@ export class CrossGameChannelView extends MainView {
     this.mainViewUsers = new MainViewUsers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
-
+    this.model.getPlayers('');
+    
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Enter the game', res);
@@ -288,8 +303,8 @@ export class CrossGameChannelView extends MainView {
       });
     };
 
-    this.crossGame.onStartClick = () => {
-      this.model.crossStartGame('');
+    this.crossGame.onStartClick = (player: string) => {
+      this.model.crossStartGame(player);
     };
 
     this.crossGame.onCellClick = (coords: Vector) => {
@@ -319,7 +334,7 @@ export class CrossGameChannelView extends MainView {
     });
 
     this.mainViewUsers.onChannelLeave = () => {
-      this.model.leaveChannel();
+      this.model.leavePlayer();
       this.onLeaveClick();
     };
 
@@ -359,10 +374,12 @@ export class CrossGameChannelView extends MainView {
     this.model.service.onCrossStop.add((params) => {
       this.crossGame.createModalDraw(params);
     });
+
     this.model.service.onCrossRemove.add((params) => {
       this.crossGame.createModalGameOver(params);
     });
     this.crossGame.onGameOverClick = () => {
+      this.mainViewPlayers.setPlayers([]);
       this.crossGame.clearData();
     };
 
@@ -372,6 +389,9 @@ export class CrossGameChannelView extends MainView {
 
     this.model.service.onPlayerList.add((params) => {
       this.mainViewPlayers.setPlayers(params);
+    });
+    this.model.service.onCrossNoMoves.add((params) => {
+      this.crossGame.createModalGameOver(params);
     });
   }
 

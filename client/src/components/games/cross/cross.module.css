@@ -26,7 +26,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: .2s all ease;
+  transition-property: background-color;
+  transition-duration: .2s ease;
+  transition-timing-function: ease;
 }
 
 .cross_cell:hover {
@@ -92,7 +94,7 @@
   border-radius: 5px;
   width: 100%;
   cursor: pointer;
-  transition: .2s all ease;
+  /* transition: .2s all ease; */
 }
 
 .player_active {

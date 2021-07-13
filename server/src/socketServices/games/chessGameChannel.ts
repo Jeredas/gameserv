@@ -5,38 +5,65 @@ interface IChatResponse {
   type: string;
 }
 
-export interface IChessHistory {
-  coords: Array<Vector>;
+interface IChessHistory {
+  sign: string;
+  move: Vector;
   time: string;
-  figName: string;
 }
 
 export class ChannelJoinPlayerResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public requestId: number;
   public params: {
     status: string;
   };
 
-  constructor(status: string, requestId: number) {
+  constructor(channelName: string, status: string, requestId: number) {
     this.service = 'chat';
     this.type = 'joined';
+    this.channelName = channelName;
     this.requestId = requestId;
     this.params = { status };
+  }
+}
+
+class ChannelPlayerListResponse implements IChatResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    playerList: Array<{ login: string; avatar: string }>;
+  };
+
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'playerList';
+    this.channelName = channelName;
+    this.params = {
+      playerList: [ ...playerList ]
+    };
   }
 }
 
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     player: string;
     players: Array<{ login: string; avatar: string }>;
   };
 
-  constructor(player: string, players: Array<{ login: string; avatar: string }>) {
-    (this.service = 'chat'), (this.type = 'getPlayers');
+  constructor(
+    channelName: string,
+    player: string,
+    players: Array<{ login: string; avatar: string }>
+  ) {
+    this.service = 'chat';
+    this.type = 'getPlayers';
+    this.channelName = channelName;
     this.params = { player, players };
   }
 }
@@ -44,12 +71,15 @@ class ChannelSendPlayersResponse implements IChatResponse {
 class ChessStartResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     time: number;
   };
 
-  constructor(time: number) {
-    (this.service = 'chat'), (this.type = 'crossStart');
+  constructor(channelName: string, time: number) {
+    this.service = 'chat';
+    this.type = 'chessStart';
+    this.channelName = channelName;
     this.params = { time };
   }
 }
@@ -57,16 +87,24 @@ class ChessStartResponse {
 class ChessMoveResponse {
   public type: string;
   public service: string;
-
+  public channelName: string;
   public params: {
     player: string;
     field: Array<Array<string>>;
     winner: string;
-    history: string;
+    history: IChessHistory;
   };
 
-  constructor(player: string, field: Array<Array<string>>, winner: string, history: string) {
-    (this.service = 'chat'), (this.type = 'chessMove');
+  constructor(
+    channelName: string,
+    player: string,
+    field: Array<Array<string>>,
+    winner: string,
+    history: IChessHistory
+  ) {
+    this.service = 'chat';
+    this.type = 'chessMove';
+    this.channelName = channelName;
     this.params = {
       player,
       field,
@@ -79,6 +117,7 @@ class ChessMoveResponse {
 class ChessDrawResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   time: number;
   public params: {
     stop: string;
@@ -86,8 +125,10 @@ class ChessDrawResponse {
     method: string;
   };
 
-  constructor(stop: string, player: string) {
-    (this.service = 'chat'), (this.type = 'chessStop');
+  constructor(channelName: string, stop: string, player: string) {
+    this.service = 'chat';
+    this.type = 'chessStop';
+    this.channelName = channelName;
     this.params = { stop, player, method: 'drawNetwork' };
   }
 }
@@ -95,14 +136,17 @@ class ChessDrawResponse {
 class ChessDrawAgreeResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     stop: string;
     player: string;
     method: string;
   };
 
-  constructor(stop: string, player: string) {
-    (this.service = 'chat'), (this.type = 'chessStop');
+  constructor(channelName: string, stop: string, player: string) {
+    this.service = 'chat';
+    this.type = 'chessStop';
+    this.channelName = channelName;
     this.params = { stop, player, method: 'drawAgreeNetwork' };
   }
 }
@@ -110,21 +154,24 @@ class ChessDrawAgreeResponse {
 class ChessRemoveResponse {
   public type: string;
   public service: string;
+  public channelName: string;
   public params: {
     method: string;
     player: string;
   };
 
-  constructor(method: string, player = '') {
-    (this.service = 'chat'), (this.type = 'chessRemove');
+  constructor(channelName: string, method: string, player = '') {
+    this.service = 'chat';
+    this.type = 'chessRemove';
+    this.channelName = channelName;
     this.params = { method, player };
   }
 }
 
 export class ChessGameChannel extends ChatChannel {
   logic: ChessGameLogic;
-  history: Array<string>;
-  gameMode: string;
+  players: Array<{ login: string; avatar: string }>;
+  history: Array<IChessHistory>;
 
   constructor(name: string, type: string, params: any) {
     super(name, type, params);
@@ -132,7 +179,6 @@ export class ChessGameChannel extends ChatChannel {
     this.logic = new ChessGameLogic();
     this.players = [];
     this.history = [];
-    this.gameMode = params.gameMode;
   }
 
   sendForAllClients(response: IChatResponse) {
@@ -143,40 +189,40 @@ export class ChessGameChannel extends ChatChannel {
 
   async joinPlayer(connection: any, params: any) {
     try {
-      const currentClient = this.clients.find((it) => it.connection == connection);
-      if (this.gameMode === 'network') {
-        if (
-          this.players.length < 2 &&
-          !this.players.find((player) => currentClient.userData.login === player.login)
-        ) {
-          this.logic.setPlayers(currentClient.userData.login);
-          this.players.push({
-            login: currentClient.userData.login,
-            avatar: currentClient.userData.avatar
-          });
-          const response = new ChannelJoinPlayerResponse('ok', params.requestId);
-          currentClient.send(response);
-        }
-      } else {
-        if (this.players.length < 1) {
-          this.logic.setPlayers(currentClient.userData.login);
-          this.players.push({
-            login: currentClient.userData.login,
-            avatar: currentClient.userData.avatar
-          });
-          const response = new ChannelJoinPlayerResponse('ok', params.requestId);
-          currentClient.send(response);
-        }
+      const currentClient = this._getUserByConnection(connection);
+      if (
+        this.players.length < 2 &&
+        !this.players.find((player) => currentClient.userData.login === player.login)
+      ) {
+        this.logic.setPlayers(currentClient.userData.login);
+        this.players.push({
+          login: currentClient.userData.login,
+          avatar: currentClient.userData.avatar
+        });
+        const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
+        currentClient.send(response);
+        this._sendForAllClients(
+          new ChannelPlayerListResponse(
+            this.name,
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          )
+        );
       }
     } catch (err) {
-      connection.sendUTF(JSON.stringify(new ChannelJoinPlayerResponse('error', params.requestId)));
+      connection.sendUTF(
+        JSON.stringify(new ChannelJoinPlayerResponse(this.name, 'error', params.requestId))
+      );
     }
   }
 
   getPlayers(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
-      const response = new ChannelSendPlayersResponse(currentClient.userData.login, this.players);
+      const response = new ChannelSendPlayersResponse(
+        this.name,
+        currentClient.userData.login,
+        this.players
+      );
       this.sendForAllClients(response);
     } else {
       connection.sendUTF(
@@ -193,14 +239,31 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
+  leaveChessChannel(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    this.clients = this.clients.filter((it) => it.connection != connection);
+
+    if (this.players && this.players.length) {
+      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+
+      this._sendForAllClients(
+        new ChannelPlayerListResponse(
+          this.name,
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+        )
+      );
+      super.leaveUser(connection, params);
+    }
+  }
+  
   chessStartGame(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient && currentClient.userData) {
       const time = Date.now();
-      const response = new ChessStartResponse(time);
+      const response = new ChessStartResponse(this.name, time);
       this.logic.startGame(time);
       this.history = [];
-      console.log('START CROSS', response);
+      console.log('START CHESS', response);
 
       this.sendForAllClients(response);
       // } else {
@@ -217,7 +280,7 @@ export class ChessGameChannel extends ChatChannel {
   }
 
   chessMove(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
@@ -226,6 +289,7 @@ export class ChessGameChannel extends ChatChannel {
           const clickVector = new Vector(coords.x, coords.y);
           this.logic.writeSignToField(currentUser.login, clickVector);
           const response = new ChessMoveResponse(
+            this.name,
             currentUser.login,
             this.logic.getField(),
             this.logic.getWinner(),
@@ -241,78 +305,64 @@ export class ChessGameChannel extends ChatChannel {
   }
 
   chessStop(connection, params) {
-    const currentClient = this.clients.find((it) => it.connection == connection);
+    const currentClient = this._getUserByConnection(connection); //this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
-        const responseDrawAgree = JSON.stringify(
-          new ChessDrawAgreeResponse(params.messageText, currentUser.login)
+        console.log(params.messageText);
+
+        const responseDrawAgree = new ChessDrawAgreeResponse(
+          this.name,
+          params.messageText,
+          currentUser.login
         );
-        const responseDraw = JSON.stringify(
-          new ChessDrawResponse(params.messageText, currentUser.login)
+        const responseDraw = new ChessDrawResponse(
+          this.name,
+          params.messageText,
+          currentUser.login
         );
         const clients = this.clients.filter(
           (client) => client.userData.login !== currentUser.login
         );
-        clients.forEach((it) => it.connection.sendUTF(responseDrawAgree));
-        currentClient.connection.sendUTF(responseDraw);
+        clients.forEach((it) => it.send(responseDrawAgree));
+        currentClient.send(responseDraw);
       }
     }
   }
 
   chessRemove(connection, params) {
-    let currentClient = this.clients.find((it) => it.connection == connection);
+    let currentClient = this._getUserByConnection(connection); //this.clients.find((it) => it.connection == connection);
 
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
-      let rivalClient = this.clients.find((client) => client.userData.login === rivalPlayer);
+      let rivalClient = this._getUserByLogin(rivalPlayer); //clients.find((client) => client.userData.login === rivalPlayer);
 
       if (params.messageText === 'agree') {
-        const response = JSON.stringify(new ChessRemoveResponse('draw'));
-        currentClient.connection.sendUTF(response);
-        rivalClient.connection.sendUTF(response);
+        const response = new ChessRemoveResponse(this.name, 'draw');
+        currentClient.send(response);
+        rivalClient.send(response);
       } else if (params.messageText === 'disagree') {
         if (currentPlayer === this.logic.getCurrentPlayer()) {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('won', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('lost', currentPlayer))
-          );
+          currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
         } else {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('won', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('lost', currentPlayer))
-          );
+          currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
         }
       } else if (this.logic.getWinner()) {
         if (currentPlayer === this.logic.getWinner()) {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('won', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('lost', currentPlayer))
-          );
+          currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
         } else {
-          currentClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('lost', rivalPlayer))
-          );
-          rivalClient.connection.sendUTF(
-            JSON.stringify(new ChessRemoveResponse('won', currentPlayer))
-          );
+          currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+          rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
         }
       }
       this.history = this.logic.getFullHistory();
       this.logic.clearData();
       this.players = [];
     }
-  }
-
-  takePlayerOffGame(login): void {
-    this.players = this.players.filter((player) => player.login !== login);
   }
 }
 
@@ -325,6 +375,7 @@ export class ChessGameLogic {
   private winner: string = '';
   private currentSign: string = this.signs[0];
   private gameMode: string = 'network';
+  private history: Array<IChessHistory> = [];
   private startTime: number = 0;
 
   constructor() {
@@ -353,6 +404,11 @@ export class ChessGameLogic {
           this.currentSign = this.signs[this.currentPlayerIndex];
           this.setCurrentPlayer();
           const time = getTimeString(Math.floor((Date.now() - this.startTime) / 1000));
+          this.history.push({
+            sign: this.currentSign,
+            move: coords,
+            time: time
+          });
         }
       }
     }
@@ -444,6 +500,7 @@ export class ChessGameLogic {
     this.players = [];
     this.currentPlayerIndex = 0;
     this.winner = '';
+    this.history = [];
     this.startTime = 0;
   }
 
@@ -459,16 +516,16 @@ export class ChessGameLogic {
     return this.gameMode;
   }
 
-  getHistory(): string {
-    return 'history';
+  getHistory(): IChessHistory {
+    return this.history[this.history.length - 1];
   }
 
   startGame(time: number): void {
     this.startTime = time;
   }
 
-  getFullHistory(): Array<string> {
-    return [ 'hustory' ];
+  getFullHistory(): Array<IChessHistory> {
+    return this.history;
   }
 }
 

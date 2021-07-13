@@ -210,8 +210,12 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
-  leaveChannel() {
-    this.send('leaveUser', {});
+  // leaveChannel() {
+  //   this.send('leaveUser', {});
+  // }
+
+  leavePlayer() {
+    this.send('leaveChessChannel', {});
   }
 
   async joinChannel() {
@@ -277,6 +281,8 @@ export class ChessGameChannelView extends MainView {
 
     this.chessGame = new ChessGame(this.mainViewAction.node, chessMode, parentHeight);
 
+    this.model.getPlayers('');
+    
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Join', res);
@@ -316,7 +322,7 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.mainViewUsers.onChannelLeave = () => {
-      this.model.leaveChannel();
+      this.model.leavePlayer();
       this.onLeaveClick();
     };
 

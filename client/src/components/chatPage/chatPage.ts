@@ -23,9 +23,9 @@ class ChatPage extends Control {
 
   chatUsers: ChatUsers;
 
-  channels : Array<IChannelInfo>
+  channels: Array<IChannelInfo>;
 
-  public onJoinChannel: () => void = () => { };
+  public onJoinChannel: () => void = () => {};
   private model: LobbyModel;
   private socket: SocketClient;
 
@@ -34,9 +34,9 @@ class ChatPage extends Control {
     this.node.style.backgroundImage = `url(${chatImage})`;
     this.model = model;
     this.socket = socket;
-    this.channelBlock = new ChatChannels(this.node,model);
     this.chatMain = new PaginatedContainer(this.node, chatStyles.chat_main);
-    this.channelBlock.addChannels(this.model.channels.getData())
+    this.channelBlock = new ChatChannels(this.node, model);
+    this.channelBlock.addChannels(this.model.channels.getData());
     this.channelBlock.onJoinChannel.add((channelName) => {
       this.joinChannel(channelName);
     });
@@ -45,10 +45,10 @@ class ChatPage extends Control {
       this.createChannel();
     };
 
-    this.model.channels.onUpdate.add((channels)=>{
-      console.log(channels)
-      this.channelBlock.addChannels(channels.to)
-    })
+    this.model.channels.onUpdate.add((channels) => {
+      console.log(channels);
+      this.channelBlock.addChannels(channels.to);
+    });
   }
 
   joinChannel(chanName?: string) {
@@ -69,17 +69,19 @@ class ChatPage extends Control {
   joinUserToChannel(params: any) {
     if (params.status === 'ok') {
       const channelOfChoice = channelConfig.get(params.channelType);
-
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          let channel = new channelOfChoice.view(null, channelModel, params.chessMode);
+          console.log('Chat height', this.node.clientHeight);
+          
+          let channel = new channelOfChoice.view(null, channelModel, params.gameMode);
           this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
             this.channelBlock.removeActiveChannels();
             this.chatMain.remove(params.channelName);
             channel.destroy();
           };
+          window.onresize(null)
         }
       });
     }
@@ -93,7 +95,11 @@ class ChatPage extends Control {
           this.model.createNewChannel(newChannel).then((res: any) => {
             if (res.status === 'ok') {
               const channelIcon = channelConfig.get(newChannel.channelType).icon;
-              this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
+              this.channelBlock.addChannel(
+                newChannel.channelName,
+                newChannel.channelType,
+                channelIcon
+              );
             }
           });
         });
@@ -103,15 +109,19 @@ class ChatPage extends Control {
           this.model.createNewChannel(newChannel).then((res: any) => {
             if (res.status === 'ok') {
               const channelIcon = channelConfig.get(newChannel.channelType).icon;
-              this.channelBlock.addChannel(newChannel.channelName, newChannel.channelType, channelIcon);
+              this.channelBlock.addChannel(
+                newChannel.channelName,
+                newChannel.channelType,
+                channelIcon
+              );
             }
           });
         });
       }
-    })
+    });
   }
   channelList(): void {
-    this.model.channelList()
+    this.model.channelList();
   }
   hide(): void {
     this.node.classList.add(chatStyles.default_hidden);
