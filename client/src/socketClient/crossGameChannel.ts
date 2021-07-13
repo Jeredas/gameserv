@@ -221,8 +221,12 @@ export class CrossGameChannelModel extends ChatChannelModel {
     });
   }
 
-  leaveChannel() {
-    this.send('leaveUser', {});
+  // leaveChannel() {
+  //   this.send('leaveUser', {});
+  // }
+
+  leavePlayer() {
+    this.send('leaveCrossChannel', {});
   }
 
   async joinChannel() {
@@ -288,7 +292,8 @@ export class CrossGameChannelView extends MainView {
     this.mainViewUsers = new MainViewUsers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
-
+    this.model.getPlayers('');
+    
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Enter the game', res);
@@ -329,7 +334,7 @@ export class CrossGameChannelView extends MainView {
     });
 
     this.mainViewUsers.onChannelLeave = () => {
-      this.model.leaveChannel();
+      this.model.leavePlayer();
       this.onLeaveClick();
     };
 
