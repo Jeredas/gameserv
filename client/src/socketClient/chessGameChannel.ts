@@ -6,7 +6,7 @@ import { ChatChannelModel } from './chatChannelModel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
 import { IChatUser, IJoinedPlayer, IUserChatMessage } from '../components/utilities/interfaces';
-import ChessGame, { kingInfoToVector } from '../components/games/chess/chess-game';
+import ChessGame from '../components/games/chess/chess-game';
 import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
 import MainViewUsers from '../components/mainView/mainViewUsers/mainViewUsers';
@@ -328,7 +328,7 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessMove.add((params) => {
         this.chessGame.onFigureMove(params);
       if (params.king.mate) {
-        const kingMate = kingInfoToVector(params.king.mate.coords, params.king.mate.rival);
+        const kingMate = params.king.mate;
         console.log('KING MATE', kingMate);
         
         this.chessGame.showKingMate(kingMate)

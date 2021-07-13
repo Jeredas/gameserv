@@ -94,4 +94,7 @@ export class ChessProcessor implements IChessProcessor {
   getFigureStr(coord: ICellCoord): string {
     return this.field.getFigure(coord).toString();
   }
+  getKingRivals(): Set<string> {
+    return this.field.getKingRivals();
+  }
 }

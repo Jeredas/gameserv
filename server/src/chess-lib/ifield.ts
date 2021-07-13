@@ -25,6 +25,7 @@ export interface IField {
   toFEN(): string;
   getKingCoord(): ICellCoord;
   getAttackedCells(): Set<string>;
+  getKingRivals(): Set<string>;
   // static fromFEN(fen: string): IField;
   // static getStartField(): IField;
 

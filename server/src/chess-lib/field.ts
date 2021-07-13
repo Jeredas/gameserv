@@ -99,6 +99,27 @@ export class Field implements IField {
     }
     return result;
   }
+  getKingRivals(): Set<string> {
+    const result = new Set<string>();
+    const kingPosStr = this.getKingCoord().toString();
+    const oppositeField = new Field(  this.position,
+                                      this.playerColor == ChessColor.white ? ChessColor.black : ChessColor.white,
+                                      this.castlingFlags,
+                                      this.pawnTresspassing,
+                                      this.fiftyRuleCount,
+                                      this.moveNumber);
+    for (let figure of oppositeField.position.getAllCoordFigures()) {
+      if (figure[1].color === oppositeField.playerColor) {
+        const figureMoves = oppositeField.getAllowedMoves(CellCoord.fromString(figure[0]), false);
+        for (let figureMove of figureMoves) {
+          if (figureMove.getTargetCell().toString() == kingPosStr) {
+            result.add(figureMove.startCell.toString());
+          }
+        }
+      }
+    }
+    return result;
+  }
   isFreeCell(coord: ICellCoord): boolean {
     return !this.position.hasFigure(coord);
   }

@@ -20,8 +20,8 @@ interface IChessHistory {
 
 
 interface IKingInfo {
-    coords: ICellCoord;
-    rival: Array<ICellCoord>;
+    coords: Vector;
+    rival: Array<Vector>;
 }
 
 export class ChannelJoinPlayerResponse {
@@ -393,20 +393,33 @@ export class ChessGameChannel extends ChatChannel {
               coords: moveCoords
             };
           }
-          const king1 = this.chessProcessor.getKingPos();
-          console.log('KING', king1);
+          const kingPos = this.chessProcessor.getKingPos();
+          const kingRivals = this.chessProcessor.getKingRivals();
+          let checkModel: {coords: Vector, rival: Array<Vector>} | null ;
+          if (kingRivals.size !== 0) {
+            const rivals = new Array<Vector>();
+            for(let rival of kingRivals) {
+              const rivalCoord = CellCoord.fromString(rival);
+              rivals.push(new Vector(rivalCoord.x, rivalCoord.y));
+            }
+            checkModel = {
+              coords: new Vector(kingPos.x, kingPos.y),
+              rival: rivals
+            }
+          } else { checkModel = null; }
           const king = {
             // check: {
             //   coords: new CellCoord(4, 0),
             //   rival: [ new CellCoord(3, 1), new CellCoord(2, 2), new CellCoord(1, 3) ]
             // },
-            check: null,
-            mate: {
-              coords: new CellCoord(4, 7),
-              rival: [ new CellCoord(3, 6), new CellCoord(2, 5), new CellCoord(1, 4) ]
-            },
-            // mate: null
+            check: checkModel,
+            // mate: {
+            //   coords: new CellCoord(4, 7),
+            //   rival: [ new CellCoord(3, 6), new CellCoord(2, 5), new CellCoord(1, 4) ]
+            // },
+            mate: null
           };
+          console.log('KING: ', king);
           const response = new ChessMoveResponse(
             this.name,
             currentUser.login,

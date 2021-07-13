@@ -42,4 +42,5 @@ export interface IChessProcessor {
   getStartTime(): number;
   getPlayerColor(): ChessColor;
   getFigureStr(coord: ICellCoord): string;
+  getKingRivals(): Set<string>;
 }

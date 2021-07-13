@@ -228,7 +228,7 @@ class ChessGame extends Control {
     this.removeRivalMoves();
 
     if(data.king.check) {
-      const kingInfo = kingInfoToVector(data.king.check.coords, data.king.check.rival);
+      const kingInfo = data.king.check;
       this.chessBoard.showKingCheck(kingInfo);
     }
 
