@@ -58,7 +58,7 @@ export class ChessProcessor implements IChessProcessor {
   }
   clearData(): void {
     this.field = Field.getStartField();
-    // this.players = new Map<ChessColor, string>();
+    this.historyItems = new HistoryItems();
   }
   getField(): string {
     return this.field.toFEN();
