@@ -16,6 +16,8 @@ class InputWrapper extends Control {
 
   private timer: NodeJS.Timeout;
 
+  public onValueEnter: (input: string) => void = () => {};
+
   constructor(parentNode: HTMLElement, caption: string, onValidate: (param: string) => Promise<string | null>, placeHolder = '', id = 'input', type = '') {
     super(parentNode, 'div', popupStyle.input_wrapper);
     this.name = caption;
@@ -34,6 +36,7 @@ class InputWrapper extends Control {
           this.setError(await this.onValidate(this.getValue()));
         }
       }, 2000);
+      this.onValueEnter(this.getValue());
     };
   }
 
