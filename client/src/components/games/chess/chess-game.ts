@@ -147,11 +147,10 @@ class ChessGame extends Control {
     this.players = [];
     this.playerOne.node.textContent = 'Player1';
     this.playerTwo.node.textContent = 'Player2';
-    // this.chessBoard.clearData();
     this.chessMode = '';
     this.timer.clear();
-    this.initBoard();
-    // this.destroy();
+    this.history.clearHistory();
+    this.chessBoard.clearData(fromFen(fen));
   }
 
   setPlayer(params: IJoinedPlayer): void {
@@ -260,11 +259,13 @@ class ChessGame extends Control {
   }
 
   createModalGameOver(params: { method: string; player: string }): void {
+    this.timer.stop();
     this.modalPopup && this.modalPopup.destroy();
     this.modalGameOver = new ModalGameOver(this.node, params, this.players);
     this.modalGameOver.onGameOverClick = () => {
       this.onGameOverClick();
       this.destroyModalGameOver();
+      
     };
   }
 

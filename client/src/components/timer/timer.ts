@@ -1,4 +1,4 @@
-import Control from "../utilities/control";
+import Control from '../utilities/control';
 import timerStyles from './timer.module.css';
 
 class Timer extends Control {
@@ -29,10 +29,10 @@ class Timer extends Control {
   clear() {
     if (this.counter) {
       window.clearInterval(this.counter);
-      this.counter = 0;
-      this.node.textContent = '00:00';
-      this.startTime += 11000;
     }
+    this.counter = 0;
+    this.node.textContent = '00:00';
+    this.startTime = 0;
   }
 
   countDown() {

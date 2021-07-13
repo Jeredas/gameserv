@@ -392,9 +392,11 @@ export class ChessGameChannelView extends MainView {
       this.chessGame.createModalDraw(params);
     });
     this.model.service.onChessRemove.add((params) => {
+
       this.chessGame.createModalGameOver(params);
     });
     this.chessGame.onGameOverClick = () => {
+      this.mainViewPlayers.setPlayers([]);
       this.chessGame.clearData();
     };
 

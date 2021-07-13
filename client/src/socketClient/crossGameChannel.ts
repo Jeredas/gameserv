@@ -127,7 +127,7 @@ export class CrossGameChannelService implements ISocketService {
               player: params.player
             });
           }
-        ],
+        ]
       ]).get(message.type);
 
       if (processFunction) {
@@ -312,8 +312,10 @@ export class CrossGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      this.crossGame.setPlayer(params);
-      this.mainViewPlayers.setPlayers(params.players);
+      if (params.players.length) {
+        this.crossGame.setPlayer(params);
+        this.mainViewPlayers.setPlayers(params.players);
+      }
     });
 
     this.model.service.onCrossStart.add((params) => {

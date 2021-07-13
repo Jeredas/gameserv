@@ -50,6 +50,11 @@ class ChessHistoryBlock extends Control {
   changeHeight(size: number): void {
     this.node.style.setProperty('--size', `${size}px`);
   }
+
+  clearHistory() {
+    this.historyWrapper.destroy();
+    this.historyWrapper = new Control(this.node, 'div');
+  }
 }
 
 export default ChessHistoryBlock;
