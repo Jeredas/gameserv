@@ -102,7 +102,7 @@ async function passwordValidation(params) {
     return new DefaultResponse(false)
   }
 }
-async function writeStatistic(params) {
+export async function writeStatistic(params) {
   try {
     // const statistic = await databaseService.db.collection('games').insertOne({
     //   gameType:params.gameType,
