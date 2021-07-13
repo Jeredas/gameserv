@@ -252,8 +252,8 @@ export class ChessGameChannel extends ChatChannel {
           this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
         )
       );
-      super.leaveUser(connection, params);
     }
+    super.leaveUser(connection, params);
   }
   
   chessStartGame(connection, params) {

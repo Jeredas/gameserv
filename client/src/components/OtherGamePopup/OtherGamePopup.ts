@@ -43,7 +43,11 @@ class OtherGamePopup extends GenericPopup<IChannelData> {
 
     this.createBtn.buttonDisable(popupStyles.settings_button_disabled);
     this.channelName.onValueEnter = (value: string) => {
-      if(value) this.createBtn.buttonEnable(popupStyles.settings_button_disabled);
+      if(value) {
+        this.createBtn.buttonEnable(popupStyles.settings_button_disabled);
+      } else {
+        this.createBtn.buttonDisable(popupStyles.settings_button_disabled);
+      }
     }
 
     this.createBtn.onClick = () => {
