@@ -118,6 +118,18 @@ export class Field implements IField {
   isCheck(): boolean {
     return this.getKingRivals().size > 0;
   }
+  isMate(): boolean {
+    if (!this.isCheck()) {
+      return false;
+    }
+    for (let figure of this.position.getAllCoordFigures()) {
+      const figureMoves = this.getAllowedMoves(CellCoord.fromString(figure[0]));
+      if (figureMoves.size !== 0) {
+        return false;
+      }
+    }
+    return true;
+  }
   isFreeCell(coord: ICellCoord): boolean {
     return !this.position.hasFigure(coord);
   }

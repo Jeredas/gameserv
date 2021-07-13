@@ -43,4 +43,5 @@ export interface IChessProcessor {
   getPlayerColor(): ChessColor;
   getFigureStr(coord: ICellCoord): string;
   getKingRivals(): Set<string>;
+  isMate(): boolean;
 }

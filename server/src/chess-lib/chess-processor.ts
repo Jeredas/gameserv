@@ -97,4 +97,7 @@ export class ChessProcessor implements IChessProcessor {
   getKingRivals(): Set<string> {
     return this.field.getKingRivals();
   }
+  isMate(): boolean {
+    return this.field.isMate();
+  }
 }

@@ -27,6 +27,7 @@ export interface IField {
   getAttackedCells(): Set<string>;
   getKingRivals(): Set<string>;
   isCheck(): boolean;
+  isMate(): boolean;
   // static fromFEN(fen: string): IField;
   // static getStartField(): IField;
 

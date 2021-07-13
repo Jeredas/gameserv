@@ -7,6 +7,7 @@ import { ChessColor } from '../../chess-lib/chess-color';
 import { Move } from '../../chess-lib/move';
 import { time } from 'console';
 import { ICellCoord } from '../../chess-lib/icell-coord';
+import { Field } from '../../chess-lib/field';
 
 interface IChatResponse {
   type: string;
@@ -406,6 +407,7 @@ export class ChessGameChannel extends ChatChannel {
           const kingPos = this.chessProcessor.getKingPos();
           const kingRivals = this.chessProcessor.getKingRivals();
           let checkModel: {coords: Vector, rival: Array<Vector>} | null ;
+          let isMate: boolean;
           if (kingRivals.size !== 0) {
             const rivals = new Array<Vector>();
             for(let rival of kingRivals) {
@@ -416,18 +418,21 @@ export class ChessGameChannel extends ChatChannel {
               coords: new Vector(kingPos.x, kingPos.y),
               rival: rivals
             }
-          } else { checkModel = null; }
+            isMate = this.chessProcessor.isMate();
+            if (isMate) {
+              console.log('!!!MATE!!! Winner is ', (this.chessProcessor.getPlayerColor() == ChessColor.white) ? 'black' : 'white');
+            }
+          } else { 
+            checkModel = null;
+            isMate = false;
+          }
           const king = {
             // check: {
             //   coords: new CellCoord(4, 0),
             //   rival: [ new CellCoord(3, 1), new CellCoord(2, 2), new CellCoord(1, 3) ]
             // },
             check: checkModel,
-            // mate: {
-            //   coords: new CellCoord(4, 7),
-            //   rival: [ new CellCoord(3, 6), new CellCoord(2, 5), new CellCoord(1, 4) ]
-            // },
-            mate: false
+            mate: isMate
           };
           console.log('KING: ', king);
           const response = new ChessMoveResponse(
