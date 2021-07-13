@@ -221,9 +221,9 @@ export class CrossGameChannelModel extends ChatChannelModel {
     });
   }
 
-  // leaveChannel() {
-  //   this.send('leaveUser', {});
-  // }
+  leaveChannel() {
+    this.send('leaveUser', {});
+  }
 
   leavePlayer() {
     this.send('leaveCrossChannel', {});
