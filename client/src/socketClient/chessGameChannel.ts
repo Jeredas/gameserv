@@ -360,7 +360,7 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessStart.add((params) => {
-      this.mainViewPlayers.enableRecommend();
+      this.mainViewPlayers.showRecommend();
       this.chessGame.startGame(params);
     });
 
