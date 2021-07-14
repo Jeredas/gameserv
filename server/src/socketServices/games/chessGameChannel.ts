@@ -48,14 +48,16 @@ class ChannelPlayerListResponse implements IChatResponse {
   public channelName: string;
   public params: {
     playerList: Array<{ login: string; avatar: string }>;
+    renew: boolean
   };
 
-  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>, renew) {
     this.service = 'chat';
     this.type = 'playerList';
     this.channelName = channelName;
     this.params = {
-      playerList: [ ...playerList ]
+      playerList: [ ...playerList ],
+      renew
     };
   }
 }
@@ -326,7 +328,8 @@ export class ChessGameChannel extends ChatChannel {
           this._sendForAllClients(
             new ChannelPlayerListResponse(
               this.name,
-              this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+              this.players.map((it) => ({ login: it.login, avatar: it.avatar })),
+              false
             )
           );
         }
@@ -370,19 +373,23 @@ export class ChessGameChannel extends ChatChannel {
 
     if (this.players && this.players.length) {
       let currentPlayer = currentClient.userData.login;
-      const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-      let rivalClient = this._getUserByLogin(rivalPlayer);
-      this.players = this.players.filter((it) => it.login != currentClient.userData.login);
-      if (rivalClient) {
-        currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-        rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+      if (this.gameMode === 'network') {
+        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+        let rivalClient = this._getUserByLogin(rivalPlayer);
+        this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+        if (rivalClient) {
+          currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+          rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+        }
       }
       this._sendForAllClients(
         new ChannelPlayerListResponse(
           this.name,
-          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar })),
+          true
         )
       );
+
       this.chessProcessor.clearData();
       this.players = [];
     }

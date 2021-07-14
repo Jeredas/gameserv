@@ -2,6 +2,7 @@ import Control from '../../utilities/control';
 import MainViewPlayer from '../mainViewPlayer/mainViewPlayer';
 import mainViewPlayers from '../mainView.module.css';
 import CrossButton from '../../games/cross/button/cross-button';
+import { IChannelPlayer } from '../../utilities/interfaces';
 
 class MainViewPlayers extends Control {
   private playersBlock: Control;
@@ -41,7 +42,7 @@ class MainViewPlayers extends Control {
     this.playerHeader.node.textContent = 'Players: ';
   }
 
-  setPlayers(players: Array<{ login: string; avatar: string }>): void {
+  setPlayers(players: Array<IChannelPlayer>): void {
     this.deletePlayers();
     players.forEach((player) => {
       const chatPlayer = new MainViewPlayer(this.playersBlock.node, player.avatar, player.login);

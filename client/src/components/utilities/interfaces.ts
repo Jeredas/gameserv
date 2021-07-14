@@ -41,9 +41,14 @@ export interface IUserChatMessage {
   message: string;
   time: string;
 }
+
+export interface IChannelPlayer {
+  login: string;
+  avatar: string;
+}
 export interface IJoinedPlayer {
   player: string;
-  players: Array<{ login: string; avatar: string }>;
+  players: Array<IChannelPlayer>;
 }
 export interface ICrossHistory {
   sign: string;

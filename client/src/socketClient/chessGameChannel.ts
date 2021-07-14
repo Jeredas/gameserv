@@ -1,4 +1,9 @@
-import { IChessStart, IChessData, IChessStop } from './../components/utilities/interfaces';
+import {
+  IChessStart,
+  IChessData,
+  IChessStop,
+  IChannelPlayer
+} from './../components/utilities/interfaces';
 import { ISocketService } from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
@@ -26,7 +31,7 @@ export class ChessGameChannelService implements ISocketService {
   public onChessStop: Signal<IChessStop> = new Signal();
   public onChessRemove: Signal<{ method: string; player: string }> = new Signal();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
-  public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
+  public onPlayerList: Signal<{ playerList: Array<IChannelPlayer>; renew: boolean }> = new Signal();
   public onChessGrab: Signal<Array<Vector>> = new Signal();
   public onChessRecommend: Signal<Array<Vector> | null> = new Signal();
   public onChessMate: Signal<{ method: string; player: string }> = new Signal();
@@ -133,10 +138,10 @@ export class ChessGameChannelService implements ISocketService {
         [
           'playerList',
           (params) => {
-            this.onPlayerList.emit(
-              // params.userList.map((user: string) => ({avatar: '', userName: user}))
-              params.playerList
-            );
+            this.onPlayerList.emit({
+              playerList: params.playerList,
+              renew: params.renew
+            });
           }
         ]
       ]).get(message.type);
@@ -347,7 +352,7 @@ export class ChessGameChannelView extends MainView {
 
     this.model.service.onJoinedPlayer.add((params) => {
       console.log(params.players);
-      
+
       if (params.players.length) {
         this.chessGame.setPlayer(params);
         this.mainViewPlayers.setPlayers(params.players);
@@ -438,7 +443,11 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onPlayerList.add((params) => {
-      this.mainViewPlayers.setPlayers(params);
+      this.mainViewPlayers.setPlayers(params.playerList);
+      if(params.renew) {
+        this.chessGame.clearData();
+        this.mainViewPlayers.setPlayers([]);
+      }
     });
 
     this.model.service.onChessGrab.add((allowed) => {
