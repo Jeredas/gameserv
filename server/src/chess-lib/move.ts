@@ -69,7 +69,7 @@ export class Move implements IMove {
   makeMove(field: IField, changePlayer = true): IField {
     const resultPosition: IPosition = field.getPosition();
     const targetCell = this.getTargetCell();
-    const figure = field.getFigure(this.startCell);
+    let figure = field.getFigure(this.startCell);
     if (figure) {
       if (!field.isFreeCell(targetCell)) {
         resultPosition.deleteFigure(targetCell);
@@ -77,6 +77,12 @@ export class Move implements IMove {
       if (field.pawnTresspassing !== null && figure.toString().toLowerCase() == new Pawn(ChessColor.black).toString() && field.pawnTresspassing.equal(targetCell)) {
         resultPosition.deleteFigure(new CellCoord(targetCell.x, targetCell.y + (field.playerColor == ChessColor.white ? 1 : -1)));
       }
+      if (  figure instanceof Pawn && 
+            ((figure.color == ChessColor.white && targetCell.y == 0) ||
+            (figure.color == ChessColor.black && targetCell.y == COMMON.BOARD_SIZE - 1))) {
+              const pawnTransform = (figure.color == ChessColor.white) ? 'Q' : 'q';
+              figure = COMMON.FIGURE_FROM_CHAR.get(pawnTransform);
+            }
       resultPosition.addFigure(targetCell, figure);
       resultPosition.deleteFigure(this.startCell);
       let pawnTresspassing: ICellCoord | null = null;
