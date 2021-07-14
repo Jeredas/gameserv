@@ -41,14 +41,22 @@ class OtherGamePopup extends GenericPopup<IChannelData> {
     this.createBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, langConfig.createButtonText);
     this.cancelBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, langConfig.cancelButtonText);
 
-    this.createBtn.onClick = () => {
+    this.createBtn.buttonDisable(popupStyles.settings_button_disabled);
+    this.channelName.onValueEnter = (value: string) => {
+      if(value) {
+        this.createBtn.buttonEnable(popupStyles.settings_button_disabled);
+      } else {
+        this.createBtn.buttonDisable(popupStyles.settings_button_disabled);
+      }
+    }
 
-      const newChannel = {
-        channelName: this.channelName.getValue(),
-        channelType: 'OnlyChatChannel',
-        gameMode: 'network'
-      };
-      this.onSelect(newChannel);
+    this.createBtn.onClick = () => {
+        const newChannel = {
+          channelName: this.channelName.getValue(),
+          channelType: 'OnlyChatChannel',
+          gameMode: 'network'
+        };
+        this.onSelect(newChannel);
     }
 
     this.cancelBtn.onClick = () => {

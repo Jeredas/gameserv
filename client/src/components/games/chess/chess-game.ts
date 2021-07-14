@@ -40,7 +40,7 @@ class ChessGame extends Control {
 
   private btnDraw: ChessButton;
 
-  public onDrawClick: () => void = () => {};
+  public onDrawClick: (method: string) => void = () => {};
 
   private btnLoss: ChessButton;
 
@@ -68,6 +68,7 @@ class ChessGame extends Control {
   private modalPopup: ModalDraw;
   private modalGameOver: ModalGameOver;
   public onGameOverClick: () => void = () => {};
+  field: string;
 
   constructor(
     parentNode: HTMLElement,
@@ -86,11 +87,14 @@ class ChessGame extends Control {
     const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
     this.playerOne = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player1');
     this.playerOne.node.classList.add(chessStyles.player_active);
+    this.field = fen;
 
     this.timer = new Timer(chessHead.node);
 
     this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
+    console.log(this.node.getBoundingClientRect().height);
+    
     this.history = new ChessHistoryBlock(this.chessBody.node, parentHeight);
 
     this.chessBoard = new ChessField(this.chessBody.node, configFigures, parentHeight);
@@ -105,6 +109,7 @@ class ChessGame extends Control {
     this.btnDraw = new ChessButton(chessControls.node, 'Draw');
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
+      this.onDrawClick('draw');
       // this.model.chessStopGame('draw');
     };
     this.btnLoss = new ChessButton(chessControls.node, 'Loss');
@@ -150,6 +155,10 @@ class ChessGame extends Control {
     this.chessMode = '';
     this.timer.clear();
     this.history.clearHistory();
+    this.removeAllowedMoves()
+    this.removeRivalMoves();
+    this.chessBoard.removeKingCheck();
+    this.chessBoard.removeMateMoves();
     this.chessBoard.clearData(fromFen(fen));
   }
 
@@ -178,7 +187,9 @@ class ChessGame extends Control {
 
   createModalDraw(data: IChessStop): void {
     console.log(data.player, this.host);
-
+    if(data.method === 'disagree') {
+      this.createModalGameOver({method: data.method, player: data.player})
+    }
     this.modalPopup = new ModalDraw(this.node, data.stop, data.player, this.players, data.method);
     this.modalPopup.onModalDrawClick = (response: string) => {
       this.onModalDrawClick(response);
@@ -210,9 +221,24 @@ class ChessGame extends Control {
   }
 
   onFigureMove(data: IChessData): void {
-    this.host = data.player;
+
+    if(this.field !== data.field) {
+      this.host = this.players.find(player => data.player !== player);
+      if (this.chessMode === chessModeConfig.network) {
+        if (this.playerOne.node.textContent !== data.player) {
+          this.playerOne.node.classList.add(chessStyles.player_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_active);
+        } else {
+          this.playerOne.node.classList.remove(chessStyles.player_active);
+          this.playerTwo.node.classList.add(chessStyles.player_active);
+        }
+      }
+      this.field = data.field;  
+    }
+    
     const newField = fromFen(data.field);
 
+    console.log(`Host: ${this.host}, player: ${data.player}`);
     this.setHistoryMove(data.history);
 
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);
@@ -232,18 +258,11 @@ class ChessGame extends Control {
       this.chessBoard.showKingCheck(kingInfo);
     }
 
-    if (this.chessMode === chessModeConfig.network) {
-      if (this.playerOne.node.textContent !== data.player) {
-        this.playerOne.node.classList.add(chessStyles.player_active);
-        this.playerTwo.node.classList.remove(chessStyles.player_active);
-      } else {
-        this.playerOne.node.classList.remove(chessStyles.player_active);
-        this.playerTwo.node.classList.add(chessStyles.player_active);
-      }
-    }
+    
   }
 
   startGame(data: IChessStart) {
+    this.field = data.field;
     this.chessBoard.setChessMode(this.chessMode);
     this.chessBoard.clearData(fromFen(data.field));
     // this.chessBoard.createFieldCells(fromFen(data.field));

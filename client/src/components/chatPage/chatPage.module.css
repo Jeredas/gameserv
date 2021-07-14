@@ -118,9 +118,9 @@
     width: 100%;
   }
   .chat_channels {
-    height: 150px;
+    height: 115px;
     width: 100%;
-    flex-shrink: 1;
+    /* flex-shrink: 1; */
     overflow-y: auto;
     overflow-x: hidden;
     flex-direction: row;
@@ -166,5 +166,19 @@
 
   .chat_button_create {
     width: 150px;
+  }
+
+  .chat_main {
+    flex-wrap: wrap;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .chat_channels_list {
+    height: 50px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 5px;
+    overflow-y: scroll;
   }
 }

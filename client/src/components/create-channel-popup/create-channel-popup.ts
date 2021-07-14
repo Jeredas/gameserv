@@ -64,6 +64,8 @@ class CreateChannelPopup extends GenericPopup<IChannelData> {
       this.gameModes.push(radio);
     });
     const wrapperBtns = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_btns);
+
+
     this.createButton = new ButtonDefault(
       wrapperBtns.node,
       popupStyles.settings_button,
@@ -78,6 +80,16 @@ class CreateChannelPopup extends GenericPopup<IChannelData> {
     this.cancelButton.onClick = () => {
       this.destroy();
     };
+
+    this.createButton.buttonDisable(popupStyles.settings_button_disabled);
+    this.channelName.onValueEnter = (value: string) => {
+      if(value) {
+        this.createButton.buttonEnable(popupStyles.settings_button_disabled);
+      } else {
+        this.createButton.buttonDisable(popupStyles.settings_button_disabled);
+      }
+    }
+
 
     this.createButton.onClick = () => {
       // const channelType = this.channelTypes

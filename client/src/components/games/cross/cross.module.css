@@ -114,3 +114,9 @@
   background-repeat: no-repeat;
   /* background-image: url('../../assets/whiteBishop.svg'); */
 }
+
+@media screen and (max-width: 370px) {
+  .cross_cells {
+    max-width: 240px;
+  }
+}

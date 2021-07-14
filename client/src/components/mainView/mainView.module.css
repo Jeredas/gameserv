@@ -1,7 +1,8 @@
 .chat_wrapper {
   display: flex;
   color: #bbb;
-  height: 100%;
+  /* height: 100%; */
+  height: 100vmin;
 }
 
 .chat_messages {

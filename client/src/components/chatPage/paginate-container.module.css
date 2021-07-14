@@ -24,3 +24,14 @@
 .wrapper_common_pag {
   margin-top: 10px;
 }
+
+@media screen and (max-width: 870px) {
+  .paginate_wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .paginate_button {
+    margin-left: 5px;
+  }
+}

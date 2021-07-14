@@ -14,7 +14,9 @@ const app_host = process.env.app_host || '127.0.0.1';
 //const {databaseService} = require('./dbService');
 
 import {router} from './httpServices/httpRouter';
+import { statService } from './httpServices/statService';
 authService.start(router);
+statService.start(router);
 function paramsParser(paramsString:string):any {
   let params = {};
   paramsString.split(/[&]+/).forEach((it) => {

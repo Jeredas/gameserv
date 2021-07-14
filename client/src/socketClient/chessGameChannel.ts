@@ -28,6 +28,7 @@ export class ChessGameChannelService implements ISocketService {
   public onUserList: Signal<Array<IChatUser>> = new Signal();
   public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
   public onChessGrab: Signal<Array<Vector>> = new Signal();
+  public onChessMate: Signal<{ method: string; player: string }> = new Signal();
   private channelName: string;
 
   constructor(channelName: string) {
@@ -102,6 +103,15 @@ export class ChessGameChannelService implements ISocketService {
           'chessRemove',
           (params) => {
             this.onChessRemove.emit({
+              method: params.method,
+              player: params.player
+            });
+          }
+        ],
+        [
+          'chessMate',
+          (params) => {
+            this.onChessMate.emit({
               method: params.method,
               player: params.player
             });
@@ -273,6 +283,12 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
+  chessMate(message: string) {
+    this.send('chessMate', {
+      messageText: message
+    });
+  }
+
   destroy() {
     this.service.remove();
   }
@@ -329,14 +345,9 @@ export class ChessGameChannelView extends MainView {
         this.chessGame.onFigureMove(params);
       if (params.king.mate) {
         console.log('KING MATE', params.king.mate);
-        this.chessGame.showKingMate(params.king.check)
+        this.chessGame.showKingMate(params.king.check);
+        this.model.chessMate('mate');
       }
-      
-      // if (params.winner) {
-      //   console.log(`Winner: ${params.winner}`);
-      //   this.model.chessRemove('won');
-      //   this.chessGame.timer.stop();
-      // }
     });
 
     this.model.service.onMessage.add((params) => {
@@ -390,9 +401,15 @@ export class ChessGameChannelView extends MainView {
       this.chessGame.createModalDraw(params);
     });
     this.model.service.onChessRemove.add((params) => {
-
       this.chessGame.createModalGameOver(params);
     });
+
+    this.model.service.onChessMate.add((params) => {
+      console.log('server on Mate');
+      
+      this.chessGame.createModalGameOver(params);
+    });
+
     this.chessGame.onGameOverClick = () => {
       this.mainViewPlayers.setPlayers([]);
       this.chessGame.clearData();
