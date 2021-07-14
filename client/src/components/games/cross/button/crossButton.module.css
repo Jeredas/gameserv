@@ -14,3 +14,9 @@
   background-color: #3a3a3a;
   color: #a5a5a5;
 }
+
+@media screen and (max-width: 380px) {
+  .cross_button {
+    font-size: 14px;
+  }
+}
