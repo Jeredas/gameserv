@@ -14,6 +14,8 @@ class MainViewPlayers extends Control {
   private btnLeave: CrossButton;
   public onGameEnter: () => void = () => {};
   public onChannelLeave: () => void = () => {};
+  private btnRecommend: CrossButton;
+  public onMoveRecommended: () => void = () => {};
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewPlayers.chat_players);
@@ -21,8 +23,14 @@ class MainViewPlayers extends Control {
     this.playersBlock = new Control(this.node, 'div', mainViewPlayers.chat_category);
 
     this.btnEnter = new CrossButton(this.controlBlock.node, 'Enter the game');
+    this.btnRecommend = new CrossButton(this.controlBlock.node, 'Recommend');
+    this.btnRecommend.buttonDisable();
     this.btnEnter.onClick = () => {
       this.onGameEnter();
+    };
+
+    this.btnRecommend.onClick = () => {
+      this.onMoveRecommended();
     };
 
     this.playerHeader = new Control(
@@ -58,6 +66,10 @@ class MainViewPlayers extends Control {
 
   getPlayersLength(): number {
     return this.players.length;
+  }
+
+  enableRecommend(): void {
+    this.btnRecommend.buttonEnable();
   }
 }
 

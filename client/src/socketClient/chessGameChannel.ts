@@ -28,6 +28,7 @@ export class ChessGameChannelService implements ISocketService {
   public onUserList: Signal<Array<IChatUser>> = new Signal();
   public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
   public onChessGrab: Signal<Array<Vector>> = new Signal();
+  public onChessRecommend: Signal<Array<Vector> | null> = new Signal();
   public onChessMate: Signal<{ method: string; player: string }> = new Signal();
   private channelName: string;
 
@@ -115,6 +116,12 @@ export class ChessGameChannelService implements ISocketService {
               method: params.method,
               player: params.player
             });
+          }
+        ],
+        [
+          'chessRecommend',
+          (params) => {
+            this.onChessRecommend.emit(params.recommended);
           }
         ],
         [
@@ -289,6 +296,12 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
+  moveRecommend(message: string) {
+    this.send('moveRecommend', {
+      messageText: message
+    });
+  }
+
   destroy() {
     this.service.remove();
   }
@@ -318,6 +331,10 @@ export class ChessGameChannelView extends MainView {
       });
     };
 
+    this.mainViewPlayers.onMoveRecommended = () => {
+      this.model.moveRecommend('');
+    };
+
     this.chessGame.onStartClick = (player: string) => {
       this.model.chessStartGame(player);
     };
@@ -338,11 +355,12 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessStart.add((params) => {
+      this.mainViewPlayers.enableRecommend();
       this.chessGame.startGame(params);
     });
 
     this.model.service.onChessMove.add((params) => {
-        this.chessGame.onFigureMove(params);
+      this.chessGame.onFigureMove(params);
       if (params.king.mate) {
         console.log('KING MATE', params.king.mate);
         this.chessGame.showKingMate(params.king.check);
@@ -406,7 +424,7 @@ export class ChessGameChannelView extends MainView {
 
     this.model.service.onChessMate.add((params) => {
       console.log('server on Mate');
-      
+
       this.chessGame.createModalGameOver(params);
     });
 
@@ -426,6 +444,13 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessGrab.add((allowed) => {
       const allowedMoves = allowed.map((move) => new Vector(move.x, move.y));
       this.chessGame.showAllowedMoves(allowedMoves);
+    });
+
+    this.model.service.onChessRecommend.add((recommended) => {
+      if (recommended) {
+        const recommendedMoves = recommended.map((move) => new Vector(move.x, move.y));
+        this.chessGame.showRecommendedMoves(recommendedMoves);
+      }
     });
   }
 

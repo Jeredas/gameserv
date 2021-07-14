@@ -158,6 +158,24 @@ class ChessGrabResponse {
     };
   }
 }
+
+class ChessRecommendedResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    recommended: Array<Vector> | null;
+  };
+
+  constructor(channelName: string, recommended: Array<Vector>) {
+    this.service = 'chat';
+    this.type = 'chessRecommend';
+    this.channelName = channelName;
+    this.params = {
+      recommended
+    };
+  }
+}
 class ChessDrawResponse {
   public type: string;
   public service: string;
@@ -500,9 +518,26 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
+  moveRecommend(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    if (currentClient) {
+      let currentUser = currentClient.userData;
+      if (
+        this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
+          .login == currentUser.login
+      ) {
+        const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
+        // const recommended = null;
+        console.log('MOVE RECOMMEND');
+        const response = new ChessRecommendedResponse(this.name, recommended);
+        currentClient.send(response);
+      }
+    }
+  }
+
   chessStop(connection, params) {
-    console.log('GAME MODE', this.gameMode );
-    
+    console.log('GAME MODE', this.gameMode);
+
     const currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
@@ -539,7 +574,7 @@ export class ChessGameChannel extends ChatChannel {
         } else if (this.gameMode === 'oneScreen') {
           console.log('CHESS STOP + ', this.gameMode);
           console.log('GAME STOP', params.messageText);
-          
+
           const rivalPlayer = 'Player2';
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));

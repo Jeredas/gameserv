@@ -243,6 +243,21 @@ class ChessField extends Control {
     this.cells.forEach((cell) => cell.removeMateMove());
   }
 
+  showRecommendedMoves(coords: Array<Vector>): void {
+    coords.forEach((coord) => {
+      this.cells.forEach((cell) => {
+        if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+          cell.setRecommendedMove();
+        }
+      });
+    });
+  }
+
+  removeRecommendedMoves(): void {
+    this.cells.forEach((cell) => cell.removeRecommendedMove());
+  }
+
+
   clearData(fen: Array<string>): void {
     this.dragableItems && this.dragableItems.destroy();
     this.dragableField.destroy();
@@ -276,7 +291,6 @@ class ChessField extends Control {
   }
 
   showKingMate(kingInfo: IKingInfo): void {
-    
     if (kingInfo.coords) {
       // this.cells.forEach((cell) => cell.removeKingCell());
       const kingCell = this.cells.find(

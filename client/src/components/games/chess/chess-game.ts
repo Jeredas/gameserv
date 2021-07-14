@@ -221,6 +221,14 @@ class ChessGame extends Control {
     this.chessBoard.removeRivalMoves();
   }
 
+  showRecommendedMoves(coords: Array<Vector>): void {
+    this.chessBoard.showRecommendedMoves(coords);
+  }
+
+  removeRecommendedMoves(): void {
+    this.chessBoard.removeRecommendedMoves();
+  }
+
   onFigureMove(data: IChessData): void {
 
     if(this.field !== data.field) {
@@ -253,6 +261,7 @@ class ChessGame extends Control {
     this.removeAllowedMoves();
     this.removeRivalMoves();
     this.chessBoard.removeKingCheck();
+    this.removeRecommendedMoves();
 
     if(data.king.check) {
       const kingInfo = data.king.check;
