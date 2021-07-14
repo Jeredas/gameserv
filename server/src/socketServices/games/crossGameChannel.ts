@@ -1,5 +1,6 @@
 import { ChatChannel } from '../socketChannel';
 import Vector from '../../utils/vector';
+import { writeStatistic } from '../../httpServices/statService';
 
 interface IChatResponse {
   type: string;
@@ -30,6 +31,23 @@ export class ChannelJoinPlayerResponse {
   }
 }
 
+class ChannelPlayerListResponse implements IChatResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    playerList: Array<{ login: string; avatar: string }>;
+  };
+
+  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
+    this.service = 'chat';
+    this.type = 'playerList';
+    this.channelName = channelName;
+    this.params = {
+      playerList: [...playerList]
+    };
+  }
+}
 class ChannelSendPlayersResponse implements IChatResponse {
   public type: string;
   public service: string;
@@ -48,24 +66,6 @@ class ChannelSendPlayersResponse implements IChatResponse {
     this.type = 'getPlayers';
     this.channelName = channelName;
     this.params = { player, players };
-  }
-}
-
-class ChannelPlayerListResponse implements IChatResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    playerList: Array<{ login: string; avatar: string }>;
-  };
-
-  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>) {
-    this.service = 'chat';
-    this.type = 'playerList';
-    this.channelName = channelName;
-    this.params = {
-      playerList: [ ...playerList ]
-    };
   }
 }
 
@@ -188,6 +188,16 @@ export class CrossGameChannel extends ChatChannel {
   logic: CrossGameLogic;
   players: Array<{ login: string; avatar: string }>;
   history: Array<ICrossHistory>;
+  recordData: {
+    history: ICrossHistory[];
+    player1: { login: string; avatar: string; };
+    player2: { login: string; avatar: string; };
+    date: string;
+    time: string;
+    winner: string;
+    gameType: string;
+    gameMode: string;
+  };
 
   constructor(name: string, type: string, params: any) {
     super(name, type, params);
@@ -195,6 +205,7 @@ export class CrossGameChannel extends ChatChannel {
     this.logic = new CrossGameLogic();
     this.players = [];
     this.history = [];
+    this.recordData = null;
   }
 
   sendForAllClients(response: IChatResponse) {
@@ -231,6 +242,30 @@ export class CrossGameChannel extends ChatChannel {
     }
   }
 
+  getPlayers(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    if (currentClient && currentClient.userData) {
+      const response = new ChannelSendPlayersResponse(
+        this.name,
+        currentClient.userData.login,
+        this.players
+      );
+      this.sendForAllClients(response);
+    } else {
+      connection.sendUTF(
+        JSON.stringify({
+          service: 'chat',
+          type: 'sendStatus',
+          params: {
+            requestId: params.requestId,
+            status: 'error',
+            description: 'not joined'
+          }
+        })
+      );
+    }
+  }
+
   leaveCrossChannel(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     this.clients = this.clients.filter((it) => it.connection != connection);
@@ -257,38 +292,16 @@ export class CrossGameChannel extends ChatChannel {
     super.leaveUser(connection, params);
   }
 
-  getPlayers(connection, params) {
-    const currentClient = this._getUserByConnection(connection);
-    if (currentClient && currentClient.userData) {
-      const response = new ChannelSendPlayersResponse(
-        this.name,
-        currentClient.userData.login,
-        this.players
-      );
-      this.sendForAllClients(response);
-    } else {
-      connection.sendUTF(
-        JSON.stringify({
-          service: 'chat',
-          type: 'sendStatus',
-          params: {
-            requestId: params.requestId,
-            status: 'error',
-            description: 'not joined'
-          }
-        })
-      );
-    }
-  }
-
   crossStartGame(connection, params) {
     const currentClient = this._getUserByConnection(connection);
-    if (currentClient && currentClient.userData) {
-      const time = Date.now();
-      const response = new CrossStartResponse(this.name, time);
-      this.logic.startGame(time);
-      this.history = [];
-      this.sendForAllClients(response);
+    if (currentClient.userData.login === params.messageText) {
+      if (currentClient && currentClient.userData) {
+        const time = Date.now();
+        const response = new CrossStartResponse(this.name, time);
+        this.logic.startGame(time);
+        this.history = [];
+        this.sendForAllClients(response);
+      }
     }
   }
 
@@ -327,16 +340,10 @@ export class CrossGameChannel extends ChatChannel {
         let currentPlayer = currentClient.userData.login;
         const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
         let rivalClient = this._getUserByLogin(rivalPlayer);
-        //clients.find((client) => client.userData.login
         if (params.messageText === 'loss') {
-          if (currentPlayer === this.logic.getCurrentPlayer()) {
-            currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
-            rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
-          } else {
-            currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
-            rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
-          }
-          this.history = this.logic.getFullHistory();
+          currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
+          rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
+          writeStatistic(this.getRecordData());
           this.logic.clearData();
           this.players = [];
         } else {
@@ -372,6 +379,7 @@ export class CrossGameChannel extends ChatChannel {
         const response = new CrossRemoveResponse(this.name, 'draw');
         currentClient.send(response);
         rivalClient.send(response);
+        
       } else if (params.messageText === 'disagree') {
         if (currentPlayer === this.logic.getCurrentPlayer()) {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
@@ -380,6 +388,7 @@ export class CrossGameChannel extends ChatChannel {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
         }
+        
       } else if (this.logic.getWinner()) {
         if (currentPlayer === this.logic.getWinner()) {
           currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
@@ -388,11 +397,14 @@ export class CrossGameChannel extends ChatChannel {
           currentClient.send(new CrossRemoveResponse(this.name, 'lost', rivalPlayer));
           rivalClient.send(new CrossRemoveResponse(this.name, 'won', currentPlayer));
         }
+        console.log('write from crossRemove')
+        writeStatistic(this.getRecordData());
       }
-      this.history = this.logic.getFullHistory();
+    }
+      
+      
       this.logic.clearData();
       this.players = [];
-    }
   }
 
   crossWinnerResponse(connection, params) {
@@ -414,10 +426,25 @@ export class CrossGameChannel extends ChatChannel {
           it.connection.sendUTF(JSON.stringify(new CrossNoMovesResponse(this.name)))
         );
       }
-    }
-    this.history = this.logic.getFullHistory();
+    console.log('write from winnerResponse')
+    writeStatistic(this.getRecordData());
     this.logic.clearData();
     this.players = [];
+    }
+    
+  }
+  getRecordData(){
+    let date = new Date();
+    return this.recordData = {
+      history: this.logic.getFullHistory(),
+      player1: this.players[0],
+      player2: this.players[1],
+      date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
+      time: `${this.logic.getFullHistory()[this.logic.getFullHistory().length - 1].time}`,
+      winner: this.logic.getWinner(),
+      gameType: 'CROSS',
+      gameMode: this.gameMode
+    }
   }
 }
 
@@ -426,7 +453,7 @@ export class CrossGameLogic {
   private field: Array<Array<string>> = [];
   private players: Array<string> = [];
   private currentPlayerIndex: number = 0;
-  private signs: Array<string> = [ 'X', 'O' ];
+  private signs: Array<string> = ['X', 'O'];
   private winner: string = '';
   private currentSign: string = this.signs[0];
   private gameMode: string = 'network';
@@ -436,7 +463,7 @@ export class CrossGameLogic {
   private noMoves = false;
 
   constructor() {
-    this.field = [ [ '', '', '' ], [ '', '', '' ], [ '', '', '' ] ];
+    this.field = [['', '', ''], ['', '', ''], ['', '', '']];
   }
   getPlayers(): Array<string> {
     return this.players;
@@ -491,10 +518,10 @@ export class CrossGameLogic {
     let countDiagSec = 1;
 
     const { x: fromX, y: fromY } = coords;
-    const moveHor = [ { x: -1, y: 0 }, { x: 1, y: 0 } ];
-    const moveVer = [ { x: 0, y: 1 }, { x: 0, y: -1 } ];
-    const moveDiagPrim = [ { x: -1, y: -1 }, { x: 1, y: 1 } ];
-    const moveDiagSec = [ { x: -1, y: 1 }, { x: 1, y: -1 } ];
+    const moveHor = [{ x: -1, y: 0 }, { x: 1, y: 0 }];
+    const moveVer = [{ x: 0, y: 1 }, { x: 0, y: -1 }];
+    const moveDiagPrim = [{ x: -1, y: -1 }, { x: 1, y: 1 }];
+    const moveDiagSec = [{ x: -1, y: 1 }, { x: 1, y: -1 }];
 
     moveHor.forEach((move) => {
       let toX = fromX;
@@ -558,7 +585,7 @@ export class CrossGameLogic {
   }
 
   clearData(): void {
-    this.field = [ [ '', '', '' ], [ '', '', '' ], [ '', '', '' ] ];
+    this.field = [['', '', ''], ['', '', ''], ['', '', '']];
     this.players = [];
     this.currentPlayerIndex = 0;
     this.winner = '';
@@ -595,6 +622,7 @@ export class CrossGameLogic {
   getNoMove(): boolean {
     return this.noMoves;
   }
+ 
 }
 
 function getTimeString(time: number): string {

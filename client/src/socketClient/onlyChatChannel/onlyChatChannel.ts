@@ -176,7 +176,7 @@ export class OnlyChatChannelView extends MainView {
     });
 
     this.mainViewUsers.onChannelLeave = () => {
-      this.model.leaveChannel();
+      //this.model.leaveChannel();
       this.onLeaveClick();
     };
 

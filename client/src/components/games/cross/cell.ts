@@ -2,7 +2,6 @@ import Vector from "../../utilities/vector";
 import Control from "../../utilities/control";
 import crossStyles from './cross.module.css';
 
-
 class Cell extends Control {
   public onCellClick: (coords: Vector) => void = () => {};
 

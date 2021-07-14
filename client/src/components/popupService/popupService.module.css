@@ -96,12 +96,20 @@
   /* width: 80%; */
   width: 130px;
   align-self: center;
-  background: linear-gradient(308deg, rgb(254 74 51) 0%, rgb(220 104 119) 70%);
+  background: linear-gradient(308deg, rgb(254, 74, 51) 0%, rgb(220, 104, 119) 70%);
   color: #fafafa;
   padding: 10px;
   font-size: 18px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  transition-property: background;
+  transition-duration: .2s;
+  transition-timing-function: ease;
   /* padding: 10%; */
   /* width: 90%; */
+}
+
+.settings_button_disabled {
+  background: linear-gradient(308deg, rgba(254, 75, 51, 0.603) 0%, rgba(220, 104, 120, 0.603) 70%);
 }
 
 .choice_icon_wrapper {

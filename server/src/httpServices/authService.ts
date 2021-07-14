@@ -2,11 +2,10 @@
 import { loginValidation, passValidation, regValidation } from '../utils/regValidation';
 import { databaseService } from '../databaseService';
 import { Router } from './httpRouter';
-
 import DefaultResponse from './defaultResponse';
 import UserModel from '../dataModels/userModel';
 import SessionModel from '../dataModels/sessionModel';
-
+import StatModel from '../dataModels/statisticModel';
 class AuthResponse {
   session: string;
   userData: {login:string,avatar:string};

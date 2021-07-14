@@ -292,6 +292,7 @@ export class CrossGameChannelView extends MainView {
     this.mainViewUsers = new MainViewUsers(this.node);
 
     this.crossGame = new Cross(this.mainViewAction.node);
+    this.model.getPlayers('');
 
     this.model.getPlayers('');
     this.mainViewPlayers.onGameEnter = () => {
@@ -303,8 +304,8 @@ export class CrossGameChannelView extends MainView {
       });
     };
 
-    this.crossGame.onStartClick = () => {
-      this.model.crossStartGame('');
+    this.crossGame.onStartClick = (player: string) => {
+      this.model.crossStartGame(player);
     };
 
     this.crossGame.onCellClick = (coords: Vector) => {

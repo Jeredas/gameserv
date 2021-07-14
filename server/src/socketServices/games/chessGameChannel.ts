@@ -346,7 +346,6 @@ export class ChessGameChannel extends ChatChannel {
     }
     super.leaveUser(connection, params);
   }
-
   chessStartGame(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
