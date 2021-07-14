@@ -68,6 +68,7 @@ class ChessGame extends Control {
   private modalPopup: ModalDraw;
   private modalGameOver: ModalGameOver;
   public onGameOverClick: () => void = () => {};
+  field: string;
 
   constructor(
     parentNode: HTMLElement,
@@ -86,6 +87,7 @@ class ChessGame extends Control {
     const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
     this.playerOne = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player1');
     this.playerOne.node.classList.add(chessStyles.player_active);
+    this.field = fen;
 
     this.timer = new Timer(chessHead.node);
 
@@ -215,9 +217,24 @@ class ChessGame extends Control {
   }
 
   onFigureMove(data: IChessData): void {
-    this.host = data.player;
+
+    if(this.field !== data.field) {
+      this.host = this.players.find(player => data.player !== player);
+      if (this.chessMode === chessModeConfig.network) {
+        if (this.playerOne.node.textContent !== data.player) {
+          this.playerOne.node.classList.add(chessStyles.player_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_active);
+        } else {
+          this.playerOne.node.classList.remove(chessStyles.player_active);
+          this.playerTwo.node.classList.add(chessStyles.player_active);
+        }
+      }
+      this.field = data.field;  
+    }
+    
     const newField = fromFen(data.field);
 
+    console.log(`Host: ${this.host}, player: ${data.player}`);
     this.setHistoryMove(data.history);
 
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);
@@ -237,18 +254,11 @@ class ChessGame extends Control {
       this.chessBoard.showKingCheck(kingInfo);
     }
 
-    if (this.chessMode === chessModeConfig.network) {
-      if (this.playerOne.node.textContent !== data.player) {
-        this.playerOne.node.classList.add(chessStyles.player_active);
-        this.playerTwo.node.classList.remove(chessStyles.player_active);
-      } else {
-        this.playerOne.node.classList.remove(chessStyles.player_active);
-        this.playerTwo.node.classList.add(chessStyles.player_active);
-      }
-    }
+    
   }
 
   startGame(data: IChessStart) {
+    this.field = data.field;
     this.chessBoard.setChessMode(this.chessMode);
     this.chessBoard.clearData(fromFen(data.field));
     // this.chessBoard.createFieldCells(fromFen(data.field));

@@ -338,8 +338,6 @@ export class ChessGameChannel extends ChatChannel {
           this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
         )
       );
-      // this.history = this.logic.getFullHistory();
-      // this.logic.clearData();
       this.chessProcessor.clearData();
       this.players = [];
     }
@@ -351,14 +349,11 @@ export class ChessGameChannel extends ChatChannel {
       let currentUser = currentClient.userData;
       if (currentUser.login === params.messageText) {
         this.chessProcessor.startGame();
-
-        const time = Date.now();
         const response = new ChessStartResponse(
           this.name,
           this.chessProcessor.getStartTime(),
           this.chessProcessor.getField()
         );
-
         console.log('START', response);
 
         this.history = [];
@@ -428,10 +423,6 @@ export class ChessGameChannel extends ChatChannel {
             isMate = false;
           }
           const king = {
-            // check: {
-            //   coords: new CellCoord(4, 0),
-            //   rival: [ new CellCoord(3, 1), new CellCoord(2, 2), new CellCoord(1, 3) ]
-            // },
             check: checkModel,
             mate: isMate
           };
@@ -440,17 +431,11 @@ export class ChessGameChannel extends ChatChannel {
             this.name,
             currentUser.login,
             this.chessProcessor.getField(),
-            // this.logic.getWinner(),
-            // this.logic.getHistory()
             params.messageText,
             historyItem,
             king
           );
-          // this.clients.forEach((it) => it.connection.sendUTF(JSON.stringify(response)));
           this.sendForAllClients(response);
-          // if (this.logic.getWinner()) {
-          //   this.logic.clearData();
-          // }
         }
       }
     }
@@ -483,23 +468,6 @@ export class ChessGameChannel extends ChatChannel {
 
   chessStop(connection, params) {
     const currentClient = this.clients.find((it) => it.connection == connection);
-    // if (currentClient) {
-    //   let currentUser = currentClient.userData;
-    //   if (currentUser.login) {
-    //     const responseDrawAgree = JSON.stringify(
-    //       new ChessDrawAgreeResponse(this.name, params.messageText, currentUser.login)
-    //     );
-    //     const responseDraw = JSON.stringify(
-    //       new ChessDrawResponse(this.name, params.messageText, currentUser.login)
-    //     );
-    //     const clients = this.clients.filter(
-    //       (client) => client.userData.login !== currentUser.login
-    //     );
-    //     clients.forEach((it) => it.connection.sendUTF(responseDrawAgree));
-    //     currentClient.connection.sendUTF(responseDraw);
-    //   }
-    // }
-
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
