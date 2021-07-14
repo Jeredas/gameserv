@@ -195,6 +195,23 @@ class ChessDrawAgreeResponse {
   }
 }
 
+class ChessDrawSingleResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    stop: string;
+    player: string;
+    method: string;
+  };
+
+  constructor(channelName: string, stop: string, player: string) {
+    this.service = 'chat';
+    this.type = 'chessStop';
+    this.channelName = channelName;
+    this.params = { stop, player, method: 'drawSingle' };
+  }
+}
 class ChessRemoveResponse {
   public type: string;
   public service: string;
@@ -484,6 +501,8 @@ export class ChessGameChannel extends ChatChannel {
   }
 
   chessStop(connection, params) {
+    console.log('GAME MODE', this.gameMode );
+    
     const currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
@@ -491,40 +510,49 @@ export class ChessGameChannel extends ChatChannel {
         let currentPlayer = currentClient.userData.login;
         console.log('current player on STOP', currentPlayer);
 
-        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-        let rivalClient = this._getUserByLogin(rivalPlayer);
-        if (params.messageText === 'loss') {
-          console.log('CHESS LOSS');
-
-          currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-          rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
-          this.chessProcessor.clearData();
-          this.players = [];
-          // } else if (params.messageText === 'mate') {
-          //   console.log('CHESS Mate');
-
-          //   currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-          //   rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
-          //   this.chessProcessor.clearData();
-          //   this.players = [];
-        } else {
-          console.log('CHESS AGREE');
-          const responseDrawAgree = new ChessDrawAgreeResponse(
-            this.name,
-            params.messageText,
-            currentUser.login
-          );
-          console.log('CHESS DISAGREE');
-          const responseDraw = new ChessDrawResponse(
-            this.name,
-            params.messageText,
-            currentUser.login
-          );
-          const clients = this.clients.filter(
-            (client) => client.userData.login !== currentUser.login
-          );
-          clients.forEach((it) => it.send(responseDrawAgree));
-          currentClient.send(responseDraw);
+        if (this.gameMode === 'network') {
+          console.log('CHESS STOP + ', this.gameMode);
+          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+          let rivalClient = this._getUserByLogin(rivalPlayer);
+          if (params.messageText === 'loss') {
+            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+            rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+            this.chessProcessor.clearData();
+            this.players = [];
+          } else {
+            const responseDrawAgree = new ChessDrawAgreeResponse(
+              this.name,
+              params.messageText,
+              currentUser.login
+            );
+            const responseDraw = new ChessDrawResponse(
+              this.name,
+              params.messageText,
+              currentUser.login
+            );
+            const clients = this.clients.filter(
+              (client) => client.userData.login !== currentUser.login
+            );
+            clients.forEach((it) => it.send(responseDrawAgree));
+            currentClient.send(responseDraw);
+          }
+        } else if (this.gameMode === 'oneScreen') {
+          console.log('CHESS STOP + ', this.gameMode);
+          console.log('GAME STOP', params.messageText);
+          
+          const rivalPlayer = 'Player2';
+          if (params.messageText === 'loss') {
+            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+            this.chessProcessor.clearData();
+            this.players = [];
+          } else {
+            const responseDrawAgree = new ChessDrawSingleResponse(
+              this.name,
+              params.messageText,
+              currentUser.login
+            );
+            currentClient.send(responseDrawAgree);
+          }
         }
       }
     }
@@ -552,17 +580,25 @@ export class ChessGameChannel extends ChatChannel {
     let currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
-      const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-      let rivalClient = this._getUserByLogin(rivalPlayer);
+      if (this.gameMode === 'network') {
+        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+        let rivalClient = this._getUserByLogin(rivalPlayer);
 
-      if (params.messageText === 'agree') {
+        if (params.messageText === 'agree') {
+          const response = new ChessRemoveResponse(this.name, 'draw');
+          currentClient.send(response);
+          rivalClient.send(response);
+        } else if (params.messageText === 'disagree') {
+          currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
+          rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
+        }
+      }
+      if (this.gameMode === 'oneScreen') {
+        const rivalPlayer = 'Player2';
         const response = new ChessRemoveResponse(this.name, 'draw');
         currentClient.send(response);
-        rivalClient.send(response);
-      } else if (params.messageText === 'disagree') {
-        currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
-        rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
       }
+
       this.chessProcessor.clearData();
       this.players = [];
     }

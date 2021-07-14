@@ -115,6 +115,7 @@ class ChessGame extends Control {
     this.btnLoss = new ChessButton(chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
+      this.onDrawClick('loss');
       // this.model.chessStopGame('loss');
     };
 
