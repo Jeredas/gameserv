@@ -239,6 +239,9 @@ class ChessField extends Control {
     this.cells.forEach((cell) => cell.removeKingCell());
   }
 
+  removeMateMoves(): void {
+    this.cells.forEach((cell) => cell.removeMateMove());
+  }
 
   clearData(fen: Array<string>): void {
     this.dragableItems && this.dragableItems.destroy();

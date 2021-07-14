@@ -212,6 +212,23 @@ class ChessRemoveResponse {
   }
 }
 
+class ChessMateResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    method: string;
+    player: string;
+  };
+
+  constructor(channelName: string, method: string, player = '') {
+    this.service = 'chat';
+    this.type = 'chessMate';
+    this.channelName = channelName;
+    this.params = { method, player };
+  }
+}
+
 interface IPlayerData {
   login: string;
   avatar: string;
@@ -472,6 +489,8 @@ export class ChessGameChannel extends ChatChannel {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
         let currentPlayer = currentClient.userData.login;
+        console.log('current player on STOP', currentPlayer);
+
         const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
         let rivalClient = this._getUserByLogin(rivalPlayer);
         if (params.messageText === 'loss') {
@@ -481,6 +500,13 @@ export class ChessGameChannel extends ChatChannel {
           rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
           this.chessProcessor.clearData();
           this.players = [];
+          // } else if (params.messageText === 'mate') {
+          //   console.log('CHESS Mate');
+
+          //   currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+          //   rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+          //   this.chessProcessor.clearData();
+          //   this.players = [];
         } else {
           console.log('CHESS AGREE');
           const responseDrawAgree = new ChessDrawAgreeResponse(
@@ -504,6 +530,24 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
+  chessMate(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    if (currentClient) {
+      let currentPlayer = currentClient.userData.login;
+      if (currentPlayer) {
+        if (this.players.length) {
+          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+          let rivalClient = this._getUserByLogin(rivalPlayer);
+
+          currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+          rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+          this.chessProcessor.clearData();
+          this.players = [];
+        }
+      }
+    }
+  }
+
   chessRemove(connection, params) {
     let currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
@@ -516,25 +560,8 @@ export class ChessGameChannel extends ChatChannel {
         currentClient.send(response);
         rivalClient.send(response);
       } else if (params.messageText === 'disagree') {
-        // if (currentPlayer === this.logic.getCurrentPlayer()) {
         currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
         rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
-        // } else {
-        //   currentClient.send(new CrossRemoveResponse(this.name, 'won', rivalPlayer));
-        //   rivalClient.send(new CrossRemoveResponse(this.name, 'lost', currentPlayer));
-        // }
-
-        // } else if (this.logic.getWinner()) {
-        //   if (currentPlayer === this.logic.getWinner()) {
-        //     currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
-        //     rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
-        //   } else {
-        //     currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-        //     rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
-        //   }
-        //   // console.log('write from crossRemove')
-        //   // writeStatistic(this.getRecordData());
-        // }
       }
       this.chessProcessor.clearData();
       this.players = [];

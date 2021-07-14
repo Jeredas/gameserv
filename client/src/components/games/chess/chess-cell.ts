@@ -58,6 +58,10 @@ class ChessCell extends Control {
   setMateMove(): void {
     this.node.classList.add(chessStyles.king_rival_mate);
   }
+
+  removeMateMove(): void {
+    this.node.classList.remove(chessStyles.king_rival_mate);
+  }
 }
 
 export default ChessCell;

@@ -155,6 +155,10 @@ class ChessGame extends Control {
     this.chessMode = '';
     this.timer.clear();
     this.history.clearHistory();
+    this.removeAllowedMoves()
+    this.removeRivalMoves();
+    this.chessBoard.removeKingCheck();
+    this.chessBoard.removeMateMoves();
     this.chessBoard.clearData(fromFen(fen));
   }
 
