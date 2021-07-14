@@ -20,9 +20,9 @@ class Cross extends Control {
 
   history: HistoryBlock;
 
-  private playerOne: Control;
+  public playerOne: Control;
 
-  private playerTwo: Control;
+  public playerTwo: Control;
 
   private players: Array<string> = [];
 
@@ -30,15 +30,15 @@ class Cross extends Control {
 
   private crossCells: Control;
 
-  private btnStart: CrossButton;
+  public btnStart: CrossButton;
 
   public onStartClick: (player: string) => void = () => {};
 
-  private btnDraw: CrossButton;
+  public btnDraw: CrossButton;
 
   public onDrawClick: () => void = () => {};
 
-  private btnLoss: CrossButton;
+  public btnLoss: CrossButton;
 
   public onLossClick: () => void = () => {};
 

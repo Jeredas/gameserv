@@ -1,13 +1,17 @@
+import { popupService } from './../popupService/popupService';
+import { Replay } from './replay';
 import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 import { IGameRecord } from './recordPage';
 import recordStyles from './recordPage.module.css';
+import { IChessHistory, ICrossHistory } from '../utilities/interfaces';
 
 class Record extends Control {
   chessRecordBlock: Control;
   model: RecordModel = new RecordModel();
-
+  replay : Replay 
+  history:Array<IChessHistory>|Array<ICrossHistory>;
   constructor(parentNode: HTMLElement, record: IGameRecord) {
     super(parentNode, 'div', recordStyles.record_line);
     const gameType = new Control(this.node, 'div', recordStyles.record_date);
@@ -43,7 +47,11 @@ class Record extends Control {
 
     const brnWatch = new ButtonDefault(this.node, recordStyles.record_button, 'Watch');
     brnWatch.onClick = () => {
-      console.log('watch replay')
+      popupService.showPopup(Replay,{history:record.history,gameType:record.gameType,player1:record.player1,player2:record.player2}).then((res)=>{
+        if(res == 'close'){
+          console.log('resplay closed')
+        }
+        })
     }
   }
 }

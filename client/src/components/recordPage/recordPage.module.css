@@ -100,3 +100,23 @@
   width: 100%;
   margin: 5px;
 }
+.record_replayScreen {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  
+}
+
+.record_closeButton {
+    position: absolute;
+    background-image: url("../../assets//select-game-popup/close.png");
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    right: 0;
+    top: 0;
+    border: none;
+    background-color: transparent;
+
+}
