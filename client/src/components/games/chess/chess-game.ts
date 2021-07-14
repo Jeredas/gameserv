@@ -40,7 +40,7 @@ class ChessGame extends Control {
 
   private btnDraw: ChessButton;
 
-  public onDrawClick: () => void = () => {};
+  public onDrawClick: (method: string) => void = () => {};
 
   private btnLoss: ChessButton;
 
@@ -107,6 +107,7 @@ class ChessGame extends Control {
     this.btnDraw = new ChessButton(chessControls.node, 'Draw');
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
+      this.onDrawClick('draw');
       // this.model.chessStopGame('draw');
     };
     this.btnLoss = new ChessButton(chessControls.node, 'Loss');
@@ -180,7 +181,9 @@ class ChessGame extends Control {
 
   createModalDraw(data: IChessStop): void {
     console.log(data.player, this.host);
-
+    if(data.method === 'disagree') {
+      this.createModalGameOver({method: data.method, player: data.player})
+    }
     this.modalPopup = new ModalDraw(this.node, data.stop, data.player, this.players, data.method);
     this.modalPopup.onModalDrawClick = (response: string) => {
       this.onModalDrawClick(response);
