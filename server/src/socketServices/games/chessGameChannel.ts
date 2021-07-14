@@ -319,15 +319,6 @@ export class ChessGameChannel extends ChatChannel {
               color: ChessColor.black
             });
           }
-        } else {
-          if (this.players.length < 1) {
-            // this.logic.setPlayers(currentClient.userData.login);
-            this.players.push({
-              login: currentClient.userData.login,
-              avatar: currentClient.userData.avatar,
-              color: this.players.length == 0 ? ChessColor.white : ChessColor.black
-            });
-          }
         }
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
@@ -355,6 +346,8 @@ export class ChessGameChannel extends ChatChannel {
         currentClient.userData.login,
         this.players
       );
+      console.log('JOIN Players', this.players.length);
+
       this.sendForAllClients(response);
     } else {
       connection.sendUTF(
@@ -572,25 +565,20 @@ export class ChessGameChannel extends ChatChannel {
             currentClient.send(responseDraw);
           }
         } else if (this.gameMode === 'oneScreen') {
-          console.log('CHESS STOP + ', this.gameMode);
-          console.log('GAME STOP', params.messageText);
+          console.log('single message', params.messageText);
 
           const rivalPlayer = 'Player2';
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-            this.chessProcessor.clearData();
-            this.players = [];
-          } else {
-            const responseDrawAgree = new ChessDrawSingleResponse(
-              this.name,
-              params.messageText,
-              currentUser.login
-            );
-            currentClient.send(responseDrawAgree);
+          } else if (params.messageText === 'draw') {
+            currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
           }
+          this.chessProcessor.clearData();
+          this.players = [];
         }
       }
     }
+    // this.sendForAllClients(response);
   }
 
   chessMate(connection, params) {
@@ -627,15 +615,15 @@ export class ChessGameChannel extends ChatChannel {
           currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
         }
-      }
-      if (this.gameMode === 'oneScreen') {
-        const rivalPlayer = 'Player2';
-        const response = new ChessRemoveResponse(this.name, 'draw');
-        currentClient.send(response);
+        this.chessProcessor.clearData();
+        this.players = [];
       }
 
-      this.chessProcessor.clearData();
-      this.players = [];
+      // if (this.gameMode === 'oneScreen') {
+      //   const rivalPlayer = 'Player2';
+      //   const response = new ChessRemoveResponse(this.name, 'draw');
+      //   currentClient.send(response);
+      // }
     }
   }
 

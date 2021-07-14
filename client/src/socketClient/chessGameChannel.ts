@@ -249,8 +249,6 @@ export class ChessGameChannelModel extends ChatChannelModel {
 
   async joinPlayer() {
     const joinResponse = await this.sendAwaiting('joinPlayer', {});
-    console.log('status JOIN PLAYER', joinResponse);
-
     return joinResponse.params.status == 'ok';
   }
 
@@ -348,6 +346,8 @@ export class ChessGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
+      console.log(params.players);
+      
       if (params.players.length) {
         this.chessGame.setPlayer(params);
         this.mainViewPlayers.setPlayers(params.players);
@@ -403,12 +403,12 @@ export class ChessGameChannelView extends MainView {
     this.mainViewInput.onEnter = (message) => {
       this.model.sendMessage(message);
     };
-    this.chessGame.onDrawClick = () => {
-      this.model.chessStop('draw');
+    this.chessGame.onDrawClick = (method: string) => {
+      this.model.chessStop(method);
     };
 
-    this.chessGame.onLossClick = () => {
-      this.model.chessStop('loss');
+    this.chessGame.onLossClick = (method: string) => {
+      this.model.chessStop(method);
     };
 
     this.chessGame.onModalDrawClick = (response: string) => {

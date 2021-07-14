@@ -44,7 +44,7 @@ class ChessGame extends Control {
 
   private btnLoss: ChessButton;
 
-  public onLossClick: () => void = () => {};
+  public onLossClick: (method: string) => void = () => {};
 
   public onFigureDrop: (posStart: Vector, posDrop: Vector) => void = () => {};
 
@@ -64,24 +64,15 @@ class ChessGame extends Control {
 
   private chessBody: Control;
 
-  private parent: Control;
   private modalPopup: ModalDraw;
   private modalGameOver: ModalGameOver;
   public onGameOverClick: () => void = () => {};
   field: string;
+  private singleModePlayerIndex: number;
 
-  constructor(
-    parentNode: HTMLElement,
-    // chessModel: ChessModel,
-    chessMode: string,
-    parentHeight: number
-    // parent: Control
-  ) {
+  constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
-
-    // this.parent = parent;
     this.node.classList.add('game_action_size');
-    // this.model = chessModel;
     this.chessMode = chessMode;
     const chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
     const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
@@ -94,7 +85,7 @@ class ChessGame extends Control {
     this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
     console.log(this.node.getBoundingClientRect().height);
-    
+
     this.history = new ChessHistoryBlock(this.chessBody.node, parentHeight);
 
     this.chessBoard = new ChessField(this.chessBody.node, configFigures, parentHeight);
@@ -115,7 +106,7 @@ class ChessGame extends Control {
     this.btnLoss = new ChessButton(chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
-      this.onDrawClick('loss');
+      this.onLossClick('loss');
       // this.model.chessStopGame('loss');
     };
 
@@ -156,11 +147,12 @@ class ChessGame extends Control {
     this.chessMode = '';
     this.timer.clear();
     this.history.clearHistory();
-    this.removeAllowedMoves()
+    this.removeAllowedMoves();
     this.removeRivalMoves();
     this.chessBoard.removeKingCheck();
     this.chessBoard.removeMateMoves();
     this.chessBoard.clearData(fromFen(fen));
+    this.singleModePlayerIndex = 0;
   }
 
   setPlayer(params: IJoinedPlayer): void {
@@ -169,6 +161,10 @@ class ChessGame extends Control {
     this.players.push(player1);
 
     if (this.chessMode !== chessModeConfig.network) {
+      this.singleModePlayerIndex = 0;
+      const player2 = params.players[1].login;
+      this.playerTwo.node.textContent = player2;
+      this.players.push(player2);
       this.host = player1;
       this.btnStart.buttonEnable();
     } else if (params.players[1]) {
@@ -188,8 +184,8 @@ class ChessGame extends Control {
 
   createModalDraw(data: IChessStop): void {
     console.log(data.player, this.host);
-    if(data.method === 'disagree') {
-      this.createModalGameOver({method: data.method, player: data.player})
+    if (data.method === 'disagree') {
+      this.createModalGameOver({ method: data.method, player: data.player });
     }
     this.modalPopup = new ModalDraw(this.node, data.stop, data.player, this.players, data.method);
     this.modalPopup.onModalDrawClick = (response: string) => {
@@ -210,7 +206,7 @@ class ChessGame extends Control {
   }
 
   showKingMate(kingInfo: IKingInfo): void {
-    this.chessBoard.showKingMate(kingInfo)
+    this.chessBoard.showKingMate(kingInfo);
   }
 
   removeAllowedMoves(): void {
@@ -230,9 +226,8 @@ class ChessGame extends Control {
   }
 
   onFigureMove(data: IChessData): void {
-
-    if(this.field !== data.field) {
-      this.host = this.players.find(player => data.player !== player);
+    if (this.field !== data.field) {
+      this.host = this.players.find((player) => data.player !== player);
       if (this.chessMode === chessModeConfig.network) {
         if (this.playerOne.node.textContent !== data.player) {
           this.playerOne.node.classList.add(chessStyles.player_active);
@@ -241,10 +236,19 @@ class ChessGame extends Control {
           this.playerOne.node.classList.remove(chessStyles.player_active);
           this.playerTwo.node.classList.add(chessStyles.player_active);
         }
+      } else {
+        if (this.singleModePlayerIndex === 0) {
+          this.playerOne.node.classList.remove(chessStyles.player_active);
+          this.playerTwo.node.classList.add(chessStyles.player_active);
+        } else if (this.singleModePlayerIndex === 1) {
+          this.playerOne.node.classList.add(chessStyles.player_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_active);
+        }
+        this.singleModePlayerIndex = this.singleModePlayerIndex === 1 ? 0 : 1;
       }
-      this.field = data.field;  
+      this.field = data.field;
     }
-    
+
     const newField = fromFen(data.field);
 
     console.log(`Host: ${this.host}, player: ${data.player}`);
@@ -263,12 +267,10 @@ class ChessGame extends Control {
     this.chessBoard.removeKingCheck();
     this.removeRecommendedMoves();
 
-    if(data.king.check) {
+    if (data.king.check) {
       const kingInfo = data.king.check;
       this.chessBoard.showKingCheck(kingInfo);
     }
-
-    
   }
 
   startGame(data: IChessStart) {
@@ -294,7 +296,6 @@ class ChessGame extends Control {
     this.modalGameOver.onGameOverClick = () => {
       this.onGameOverClick();
       this.destroyModalGameOver();
-      
     };
   }
 
