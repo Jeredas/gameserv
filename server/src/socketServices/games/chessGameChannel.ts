@@ -321,6 +321,21 @@ export class ChessGameChannel extends ChatChannel {
               color: ChessColor.black
             });
           }
+        } else if (this.gameMode === 'bot') {
+          if (this.players.length < 1) {
+            this.players.push({
+              login: currentClient.userData.login,
+              avatar: currentClient.userData.avatar,
+              color: ChessColor.white
+            });
+            this.players.push({
+              login: 'AI',
+              avatar: currentClient.userData.avatar,
+              color: ChessColor.black
+            });
+          }
+        } else {
+          throw new Error('ChessGameChanel.joinPlayer(): Illegal game mode');
         }
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
@@ -414,14 +429,14 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
-  chessMove(connection, params) {
+  chessMove(connection, params, bot = false) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
         if (
-          this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
-            .login == currentUser.login
+          (this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
+            .login == currentUser.login) || bot
         ) {
           let coords = JSON.parse(params.messageText);
           const startCoord = new CellCoord(coords[0].x, coords[0].y);
@@ -488,6 +503,81 @@ export class ChessGameChannel extends ChatChannel {
             king
           );
           this.sendForAllClients(response);
+          if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate) {
+            const botMove = this.chessProcessor.getRecommendMove();
+            if (botMove !== null) {
+              const startBotCoord = botMove.startCell;
+              const targetBotCoord = botMove.getTargetCell();
+              const resultMove = new Array<Vector>();
+              resultMove.push(new Vector(startBotCoord.x, startBotCoord.y));
+              resultMove.push(new Vector(targetBotCoord.x, targetBotCoord.y))
+              params.messageText = JSON.stringify(resultMove);
+              this.chessMove(connection, params, true);
+            }
+            // const botFigure = this.chessProcessor.getFigureStr(startBotCoord);
+            // const moveBotAllowed = this.chessProcessor.makeMove(startBotCoord, targetBotCoord);
+            // console.log(
+            //   'MOVE: ',
+            //   startBotCoord.toString() + '-' + targetBotCoord.toString(),
+            //   moveBotAllowed ? '[OK]' : '[ERROR]'
+            // );
+            // console.log('\tposition: ', this.chessProcessor.getField());
+            // let historyBotItem: IChessHistory | null;
+            // if (!moveBotAllowed) {
+            //   historyBotItem = null;
+            // } else {
+            //   const history = this.chessProcessor.getHistory();
+            //   const historyLastEl = history[history.length - 1];
+            //   const moveCoords = new Array<Vector>();
+            //   moveCoords.push(new Vector(startCoord.x, startCoord.y));
+            //   moveCoords.push(new Vector(targetCoord.x, targetCoord.y));
+            //   historyBotItem = {
+            //     time: historyLastEl.time - this.chessProcessor.getStartTime(),
+            //     figName: botFigure,
+            //     coords: moveCoords
+            //   };
+            // }
+            // const kingBotPos = this.chessProcessor.getKingPos();
+            // const kingBotRivals = this.chessProcessor.getKingRivals();
+            // let checkBotModel: { coords: Vector; rival: Array<Vector> } | null;
+            // let isBotMate: boolean;
+            // if (kingBotRivals.size !== 0) {
+            //   const rivals = new Array<Vector>();
+            //   for (let rival of kingBotRivals) {
+            //     const rivalCoord = CellCoord.fromString(rival);
+            //     rivals.push(new Vector(rivalCoord.x, rivalCoord.y));
+            //   }
+            //   checkBotModel = {
+            //     coords: new Vector(kingBotPos.x, kingBotPos.y),
+            //     rival: rivals
+            //   };
+            //   isBotMate = this.chessProcessor.isMate();
+            //   if (isBotMate) {
+            //     console.log(
+            //       '!!!MATE!!! Winner is ',
+            //       this.chessProcessor.getPlayerColor() == ChessColor.white ? 'black' : 'white'
+            //     );
+            //   }
+            // } else {
+            //   checkBotModel = null;
+            //   isBotMate = false;
+            // }
+            // const botKing = {
+            //   check: checkModel,
+            //   mate: isBotMate
+            // };
+            // console.log('KING: ', botKing);
+            // const response = new ChessMoveResponse(
+            //   this.name,
+            //   'AI',
+            //   this.chessProcessor.getField(),
+            //   params.messageText,
+            //   historyBotItem,
+            //   botKing
+            // );
+            // this.sendForAllClients(response);
+            // console.log(params);
+          }
         }
       }
     }
