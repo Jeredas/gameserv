@@ -526,9 +526,15 @@ export class ChessGameChannel extends ChatChannel {
         this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
           .login == currentUser.login
       ) {
-        const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
-        // const recommended = null;
-        console.log('MOVE RECOMMEND');
+        // const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
+        const recommended = new Array<Vector>();
+        const move = this.chessProcessor.getRecommendMove();
+        console.log('MOVE RECOMMEND: ', move !== null ? move.toString() : 'none')
+        if (move !== null) {
+          const targetCell = move.getTargetCell();
+          recommended.push(new Vector(move.startCell.x, move.startCell.y));
+          recommended.push(new Vector(targetCell.x, targetCell.y));
+        }
         const response = new ChessRecommendedResponse(this.name, recommended);
         currentClient.send(response);
       }
