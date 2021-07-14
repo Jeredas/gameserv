@@ -33,7 +33,7 @@ class ModalDraw extends Control {
     this.messageHead = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
     this.messageBody = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
 
-    if (method === 'drawSingleGame') {
+    if (method === 'drawSingle') {
       messageDraw = 'You have claimed a draw. Nobody won, nobody lost';
       this.btnOk = new ChessButton(this.modalMessage.node, 'OK');
       this.btnOk.onClick = () => {
