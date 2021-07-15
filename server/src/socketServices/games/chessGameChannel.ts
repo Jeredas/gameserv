@@ -48,7 +48,7 @@ class ChannelPlayerListResponse implements IChatResponse {
   public channelName: string;
   public params: {
     playerList: Array<{ login: string; avatar: string }>;
-    renew: boolean
+    renew: boolean;
   };
 
   constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>, renew) {
@@ -437,8 +437,9 @@ export class ChessGameChannel extends ChatChannel {
       let currentUser = currentClient.userData;
       if (currentUser) {
         if (
-          (this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
-            .login == currentUser.login) || bot
+          this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
+            .login == currentUser.login ||
+          bot
         ) {
           let coords = JSON.parse(params.messageText);
           const startCoord = new CellCoord(coords[0].x, coords[0].y);
@@ -519,7 +520,7 @@ export class ChessGameChannel extends ChatChannel {
               const targetBotCoord = botMove.getTargetCell();
               const resultMove = new Array<Vector>();
               resultMove.push(new Vector(startBotCoord.x, startBotCoord.y));
-              resultMove.push(new Vector(targetBotCoord.x, targetBotCoord.y))
+              resultMove.push(new Vector(targetBotCoord.x, targetBotCoord.y));
               params.messageText = JSON.stringify(resultMove);
               this.chessMove(connection, params, true);
             }
@@ -565,7 +566,7 @@ export class ChessGameChannel extends ChatChannel {
         // const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
         const recommended = new Array<Vector>();
         const move = this.chessProcessor.getRecommendMove();
-        console.log('MOVE RECOMMEND: ', move !== null ? move.toString() : 'none')
+        console.log('MOVE RECOMMEND: ', move !== null ? move.toString() : 'none');
         if (move !== null) {
           const targetCell = move.getTargetCell();
           recommended.push(new Vector(move.startCell.x, move.startCell.y));
@@ -635,14 +636,30 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       if (currentPlayer) {
+        console.log('length', this.players.length);
         if (this.players.length) {
-          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-          let rivalClient = this._getUserByLogin(rivalPlayer);
+          if (this.gameMode === 'network') {
+            const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+            let rivalClient = this._getUserByLogin(rivalPlayer);
 
-          currentClient?.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-          rivalClient?.send(new ChessMateResponse(this.name, 'won', currentPlayer));
-          this.chessProcessor.clearData();
-          this.players = [];
+            currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+            rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+            this.chessProcessor.clearData();
+            this.players = [];
+          } else {
+            let rivalPlayer = 'Player2';
+            if (this.gameMode === 'bot') {
+              rivalPlayer = this.players[1].login;
+            }
+            const playerCurrent = this.chessProcessor.getPlayerColor();
+            if (playerCurrent === 1) {
+              currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+            } else {
+              currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
+            }
+            this.chessProcessor.clearData();
+            this.players = [];
+          }
         }
       }
     }
