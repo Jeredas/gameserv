@@ -104,8 +104,7 @@ export interface IChessData {
   king: {
     check: IKingInfo | null;
     mate: boolean;
-    // check: IKingInfo;
-    // mate: IKingInfo;
+    staleMate: boolean;
   };
 }
 

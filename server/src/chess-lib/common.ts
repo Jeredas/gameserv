@@ -18,8 +18,8 @@ export class COMMON {
   static NOVEMDECIMAL_BASE = 19;
   static BOARD_SIZE = 8;
   static DEFAULT_LOCALE = LOCALES.EN;
-  static START_POSITION_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-  // static START_POSITION_FEN = '7B/Q7/8/p1Pk3p/P2P3P/4R2N/1P3PP1/3RKB2 w - - 8 41';
+  // static START_POSITION_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  static START_POSITION_FEN = '7B/Q7/8/p1Pk3p/P2P3P/4R2N/1P3PP1/3RKB2 w - - 8 41';
 
   static SHORT_WHITE_CASTLING = 1;
   static LONG_WHITE_CASTLING = 2;

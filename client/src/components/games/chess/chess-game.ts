@@ -151,7 +151,7 @@ class ChessGame extends Control {
     this.players = [];
     this.playerOne.node.textContent = 'Player1';
     this.playerTwo.node.textContent = 'Player2';
-    this.chessMode = '';
+    // this.chessMode = '';
     this.timer.clear();
     this.history.clearHistory();
     this.removeAllowedMoves();
@@ -167,8 +167,12 @@ class ChessGame extends Control {
     const player1 = params.players[0].login;
     this.playerOne.node.textContent = player1;
     this.players.push(player1);
+    console.log('chess players', params.players);
+    
 
     if (this.chessMode !== chessModeConfig.network) {
+      console.log('gameMode', this.chessMode);
+      
       this.singleModePlayerIndex = 0;
       const player2 = params.players[1].login;
       this.playerTwo.node.textContent = player2;
