@@ -160,6 +160,7 @@ class ChessGame extends Control {
     this.chessBoard.removeMateMoves();
     this.chessBoard.clearData(fromFen(fen));
     this.singleModePlayerIndex = 0;
+    this.chessBoard.setDragable(false);
   }
 
   setPlayer(params: IJoinedPlayer): void {

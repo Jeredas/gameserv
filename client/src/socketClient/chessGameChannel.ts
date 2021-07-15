@@ -436,6 +436,7 @@ export class ChessGameChannelView extends MainView {
     this.chessGame.onGameOverClick = () => {
       this.mainViewPlayers.setPlayers([]);
       this.chessGame.clearData();
+      this.mainViewPlayers.hideRecommend();
     };
 
     this.model.service.onUserList.add((params) => {
