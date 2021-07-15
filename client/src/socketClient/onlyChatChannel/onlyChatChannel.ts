@@ -192,6 +192,9 @@ export class OnlyChatChannelView extends MainView {
 
   }
 
+  resizeView() {
+  }
+
   destroy() {
     this.node.remove();
   }

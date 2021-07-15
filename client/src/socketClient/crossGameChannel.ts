@@ -398,6 +398,8 @@ export class CrossGameChannelView extends MainView {
     });
   }
 
+  resizeView() {}
+
   destroy() {
     this.node.remove();
   }

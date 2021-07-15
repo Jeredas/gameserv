@@ -36,7 +36,6 @@ export class LobbyService implements ISocketService{
             this.onChannelType.emit(params);
           }],
           ['channelList', (params) => {
-            console.log(params)
             this.onChannelList.emit(params.channelList);
           }]
         ]
@@ -49,12 +48,10 @@ export class LobbyService implements ISocketService{
   }
 
   closeHandler(){
-    console.log('close');
     this.onClose.emit({});
   }
 
   openHandler(){
-    console.log('open');
     this.onOpen.emit({});
   }
 
@@ -94,14 +91,9 @@ export class LobbyModel{
 
   constructor(socketClient:SocketClient){
     this.channels = new State([]);
-    //this.socketClient = socketClient;
     this.service = new LobbyService();
     socketClient.addService(this.service);
-    /*this.service.onCreated.add(params=>{
-      console.log(params);
-    })*/
     this.service.onChannelList.add((param)=>{
-      console.log(param)
       this.channels.setData(param)
     })
     if(socketClient.socket){
@@ -214,9 +206,6 @@ export class LobbyView extends Control{
     const createChannelButton = new Control(this.node, 'div', '', 'create');
 
     joinChannelButton.node.onclick = ()=>{
-     /* this.model.joinChannel('dgh').then(res=>{
-        console.log(res);
-      });*/
       this.onJoinClick?.();
     }
 
@@ -228,16 +217,10 @@ export class LobbyView extends Control{
 
     model.service.onClose.add(()=>{
       connectionIndicator.node.textContent = 'disconnected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
     });
 
     model.service.onOpen.add(()=>{
       connectionIndicator.node.textContent = 'connected';
-      //connectionIndicator.node.onclick = ()=>{
-      //  model.socketClient.reconnent();
-      //}
     })
   }
 }

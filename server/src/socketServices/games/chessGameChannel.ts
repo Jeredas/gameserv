@@ -219,21 +219,19 @@ class ChessDrawAgreeResponse {
   }
 }
 
-class ChessDrawSingleResponse {
+class ChessRenewResponse {
   public type: string;
   public service: string;
   public channelName: string;
   public params: {
-    stop: string;
-    player: string;
     method: string;
   };
 
-  constructor(channelName: string, stop: string, player: string) {
+  constructor(channelName: string) {
     this.service = 'chat';
-    this.type = 'chessStop';
+    this.type = 'chessRenew';
     this.channelName = channelName;
-    this.params = { stop, player, method: 'drawSingle' };
+    this.params = { method: 'renew' };
   }
 }
 class ChessRemoveResponse {
@@ -628,8 +626,6 @@ export class ChessGameChannel extends ChatChannel {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
         let currentPlayer = currentClient.userData.login;
-        console.log('current player on STOP', currentPlayer);
-
         if (this.gameMode === 'network') {
           console.log('CHESS STOP + ', this.gameMode);
           const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
@@ -641,6 +637,7 @@ export class ChessGameChannel extends ChatChannel {
             this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
+            this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             const responseDrawAgree = new ChessDrawAgreeResponse(
               this.name,
@@ -658,9 +655,7 @@ export class ChessGameChannel extends ChatChannel {
             clients.forEach((it) => it.send(responseDrawAgree));
             currentClient.send(responseDraw);
           }
-        } else if (this.gameMode === 'oneScreen') {
-          console.log('single message', params.messageText);
-
+        } else  {
           const rivalPlayer = 'Player2';
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
@@ -671,10 +666,10 @@ export class ChessGameChannel extends ChatChannel {
           this.field = [];
           this.chessProcessor.clearData();
           this.players = [];
+          this.sendForAllClients(new ChessRenewResponse(this.name));
         }
       }
     }
-    // this.sendForAllClients(response);
   }
 
   chessMate(connection, params) {
@@ -692,6 +687,7 @@ export class ChessGameChannel extends ChatChannel {
             this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
+            this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             let rivalPlayer = 'Player2';
             if (this.gameMode === 'bot') {
@@ -707,6 +703,7 @@ export class ChessGameChannel extends ChatChannel {
             this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
+            this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
       }
@@ -729,6 +726,7 @@ export class ChessGameChannel extends ChatChannel {
 
             this.chessProcessor.clearData();
             this.players = [];
+            this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             const playerCurrent = this.chessProcessor.getPlayerColor();
             currentClient.send(response);
@@ -736,6 +734,7 @@ export class ChessGameChannel extends ChatChannel {
             this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
+            this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
       }
@@ -762,13 +761,8 @@ export class ChessGameChannel extends ChatChannel {
         this.field = [];
         this.chessProcessor.clearData();
         this.players = [];
+        this.sendForAllClients(new ChessRenewResponse(this.name));
       }
-
-      // if (this.gameMode === 'oneScreen') {
-      //   const rivalPlayer = 'Player2';
-      //   const response = new ChessRemoveResponse(this.name, 'draw');
-      //   currentClient.send(response);
-      // }
     }
   }
 

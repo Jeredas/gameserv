@@ -10,11 +10,14 @@ import SettingsChannel from '../create-channel-popup/create-channel-popup';
 import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
-import { channelConfig } from '../utilities/config';
+import { channelConfig, channelModel } from '../utilities/config';
 import chatImage from '../../assets/bg-chat.jpg';
 import { GameSelectPopup } from '../game-select-popup/game-select-popup';
 import OtherGamePopup from '../OtherGamePopup/OtherGamePopup';
 import PaginatedContainer from './paginate-container';
+import { OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
+import { CrossGameChannelView } from 'src/socketClient/crossGameChannel';
+import { ChessGameChannelView } from 'src/socketClient/chessGameChannel';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -28,6 +31,10 @@ class ChatPage extends Control {
   public onJoinChannel: () => void = () => {};
   private model: LobbyModel;
   private socket: SocketClient;
+  private joinedChannels: Array<{ 
+    channel: OnlyChatChannelView | CrossGameChannelView | ChessGameChannelView,
+    channelName: string
+  }> = [];
 
   constructor(parentNode: HTMLElement, model: LobbyModel, socket: SocketClient) {
     super(parentNode, 'div', chatStyles.chat_wrapper);
@@ -46,7 +53,6 @@ class ChatPage extends Control {
     };
 
     this.model.channels.onUpdate.add((channels) => {
-      console.log(channels);
       this.channelBlock.addChannels(channels.to);
     });
   }
@@ -54,7 +60,6 @@ class ChatPage extends Control {
   joinChannel(chanName?: string) {
     if (chanName == '') {
       popupService.showPopup(JoinChannelPopup).then((channelName: string) => {
-        console.log(channelName);
         const q = this.model
           .getChannelInfo(channelName)
           .then((params) => this.joinUserToChannel(params));
@@ -72,18 +77,21 @@ class ChatPage extends Control {
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          console.log('Chat height', this.node.clientHeight);
-          
           let channel = new channelOfChoice.view(null, channelModel, params.gameMode, this.node.clientHeight);
           this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
-            this.channelBlock.removeActiveChannels();
             this.chatMain.remove(params.channelName);
             channel.destroy();
           };
-          window.onresize(null);
+          this.joinedChannels.push(
+            {
+            channel: channel,
+            channelName: params.channelName
+          });
+          channel.resizeView();
         }
       });
+      // window.onresize(null);
     }
   }
 
@@ -129,6 +137,16 @@ class ChatPage extends Control {
 
   show(): void {
     this.node.classList.remove(chatStyles.default_hidden);
+  }
+
+  userDisconnect() {
+    console.log('LEAVE');
+    this.joinedChannels.forEach((channel) => {
+      console.log('LEAVE and channel name', channel.channelName);
+      
+      this.chatMain.remove(channel.channelName);
+      channel.channel.destroy();
+    })
   }
 }
 

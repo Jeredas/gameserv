@@ -36,6 +36,7 @@ export class ChessGameChannelService implements ISocketService {
   public onChessRecommend: Signal<Array<Vector> | null> = new Signal();
   public onChessMate: Signal<{ method: string; player: string }> = new Signal();
   public onChessStaleMate: Signal<string> = new Signal();
+  public onChessRenew: Signal<string> = new Signal();
   private channelName: string;
 
   constructor(channelName: string) {
@@ -134,6 +135,12 @@ export class ChessGameChannelService implements ISocketService {
           'chessRecommend',
           (params) => {
             this.onChessRecommend.emit(params.recommended);
+          }
+        ],
+        [
+          'chessRenew',
+          (params) => {
+            this.onChessRenew.emit(params.method);
           }
         ],
         [
@@ -364,8 +371,6 @@ export class ChessGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      console.log(params.players);
-
       if (params.players.length) {
         this.chessGame.setPlayer(params);
         this.mainViewPlayers.setPlayers(params.players);
@@ -384,9 +389,9 @@ export class ChessGameChannelView extends MainView {
         this.chessGame.showKingMate(params.king.check);
         this.model.chessMate('mate');
       }
-      if(params.king.staleMate) {
+      if (params.king.staleMate) {
         console.log('!! StaleMate', params.king.staleMate);
-        
+
         this.model.chessStaleMate('chessStaleMate');
       }
     });
@@ -463,7 +468,7 @@ export class ChessGameChannelView extends MainView {
 
     this.model.service.onPlayerList.add((params) => {
       this.mainViewPlayers.setPlayers(params.playerList);
-      if(params.renew) {
+      if (params.renew) {
         this.chessGame.clearData();
         this.mainViewPlayers.setPlayers([]);
       }
@@ -486,10 +491,21 @@ export class ChessGameChannelView extends MainView {
       const data = {
         method: params,
         player: ''
-      }
+      };
       this.chessGame.createModalGameOver(data);
     });
 
+    this.model.service.onChessRenew.add((renew) => {
+      if (renew) {
+        this.mainViewPlayers.setPlayers([]);
+        this.chessGame.clearData();
+        this.mainViewPlayers.hideRecommend();
+      }
+    });
+  }
+
+  resizeView() {
+    this.chessGame.resizeView();
   }
 
   destroy() {

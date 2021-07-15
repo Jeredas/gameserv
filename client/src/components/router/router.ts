@@ -11,7 +11,6 @@ export class Router {
 
   processHash() {
     const hash = window.location.hash.slice(1);
-    console.log(hash);
     const isSuccess = this.activateRouteByName(hash);
     if(!isSuccess) {
       this.selectPage(this.defaultRoute);
