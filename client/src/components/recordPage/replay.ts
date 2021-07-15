@@ -25,17 +25,18 @@ export class Replay extends GenericPopup<string> {
         super(parentNode);
         this.params = params;
         this.speed = 1;
-        this.startButton  = new ButtonDefault(this.popupWrapper.node,recordStyles.record_button,'replay');
+        this.popupWrapper.node.classList.add(recordStyles.replay_popup);
         this.speedSelection = new InputWrapper(this.popupWrapper.node,
             'Enter replay speed value',
             ()=>null,'Value from 1 to 10','number');
+            this.startButton  = new ButtonDefault(this.popupWrapper.node,recordStyles.record_button,'Replay');
         (this.speedSelection.field.node as HTMLInputElement).pattern = "^\d+$"
         this.speedSelection.field.node.oninput = () => {
             this.speed = Number(this.speedSelection.getValue());
         }
         this.startButton.onClick = () => {
             this.start()
-        }        
+        }
         this.replaySrceen = new Control(this.popupWrapper.node, 'div', recordStyles.record_replayScreen);
         this.replaySrceen.node.style.width = '500px';
         this.replaySrceen.node.style.height = '500px';

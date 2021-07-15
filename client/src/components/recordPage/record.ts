@@ -21,14 +21,15 @@ class Record extends Control {
     
     const recordPlayers = new Control(this.node, 'div', recordStyles.record_players);
 
-    const player1container = new Control(recordPlayers.node, 'div', recordStyles.record_playerContainer);
+    const wrapperPlayers = new Control(recordPlayers.node, 'div', recordStyles.wrapper_players);
+    const player1container = new Control(wrapperPlayers.node, 'div', recordStyles.record_playerContainer);
     const player1Avatar = new Control(player1container.node,'div', recordStyles.record_avatar);
     player1Avatar.node.style.backgroundImage = `url(${record.player1.avatar})`;
     const player1Name = new Control(player1container.node,'div', recordStyles.record_playerNames);
     player1Name.node.textContent = `${record.player1.login}`
     const vs =  new Control(player1container.node,'div', recordStyles.record_playerNames);
     vs.node.textContent = 'vs';
-    const player2container = new Control(recordPlayers.node, 'div', recordStyles.record_playerContainer);
+    const player2container = new Control(wrapperPlayers.node, 'div', recordStyles.record_playerContainer);
     const player2Avatar = new Control(player2container.node,'div', recordStyles.record_avatar)
     player2Avatar.node.style.backgroundImage = `url(${record.player2.avatar})`;
     const player2Name = new Control(player2container.node,'div', recordStyles.record_playerNames)

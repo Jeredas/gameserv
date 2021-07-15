@@ -18,7 +18,7 @@ export interface IGameRecord {
 }
 
 
-const tableHeader = ['Date', 'Players', 'Winner', 'Time', ''];
+const tableHeader = ['Game','Date', 'Players', 'Winner', 'Game mode', 'Time/Watch Replay'];
 
 class RecordPage extends Control {
   private chessRecordBlock: Control;
@@ -44,7 +44,7 @@ class RecordPage extends Control {
       recordStyles.record_table_header
     );
     tableHeader.forEach((item) => {
-      const headerItem = new Control(chessTableTitle.node, 'div');
+      const headerItem = new Control(chessTableTitle.node, 'div', recordStyles.table_item_header);
       headerItem.node.textContent = item;
     })
 
@@ -61,12 +61,17 @@ class RecordPage extends Control {
           recordStyles.record_table_header
         );
         tableHeader.forEach((item) => {
-          const headerItem = new Control(chessTableTitle.node, 'div');
+          const headerItem = new Control(chessTableTitle.node, 'div', recordStyles.table_item_header);
           headerItem.node.textContent = item;
         })
         const stats = await records;
-        stats.forEach((game) => {
-          new Record(this.chessRecordBlock.node,game)
+        stats.forEach((game, index) => {
+          if (index % 2 !== 0) {
+            const recordOdd = new Record(this.chessRecordBlock.node,game);
+            recordOdd.node.classList.add(recordStyles.odd_record);
+          } else {
+            new Record(this.chessRecordBlock.node,game);
+          }
         })
   }
 
