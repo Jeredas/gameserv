@@ -1,20 +1,26 @@
 .paginate_wrapper {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .paginate_button {
-  padding: 5px 20px;
+  padding: 5px 10px;
+  width: 90px;
   margin-bottom: 8px;
   border-radius: 5px;
   background-color: rgba(231, 105, 73, 0.55);
   color: #fff;
   border: none;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .title_paginate {
   font-size: 12px;
   text-align: center;
+  margin-bottom: 5px;
 }
 
 .default_hidden {
@@ -34,4 +40,11 @@
   .paginate_button {
     margin-left: 5px;
   }
+
+  .title_paginate {
+    text-align: start;
+    margin-bottom: 5px;
+    margin-left: 5px;
+  }
+
 }

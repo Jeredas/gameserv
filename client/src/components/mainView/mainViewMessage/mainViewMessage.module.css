@@ -1,5 +1,6 @@
 .chat_messages {
-  height: 30%;
+  /* height: 30%; */
+  height: 100%;
   width: 100%;
   padding: 10px;
   background-color: #555;
@@ -49,4 +50,8 @@
 
 .message_body {
   
+}
+
+@media screen and (max-width: 870px) {
+
 }
