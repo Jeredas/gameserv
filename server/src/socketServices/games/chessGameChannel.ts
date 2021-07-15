@@ -628,9 +628,7 @@ export class ChessGameChannel extends ChatChannel {
             clients.forEach((it) => it.send(responseDrawAgree));
             currentClient.send(responseDraw);
           }
-        } else if (this.gameMode === 'oneScreen') {
-          console.log('single message', params.messageText);
-
+        } else  {
           const rivalPlayer = 'Player2';
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));

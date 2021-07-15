@@ -319,6 +319,10 @@ class ChessGame extends Control {
   chessBoardClear(fen: string): void {
     this.chessBoard.clearData(fromFen(fen));
   }
+
+  stopTimer():void {
+    this.timer.stop();
+  }
 }
 
 export default ChessGame;
