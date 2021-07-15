@@ -47,7 +47,7 @@ class Record extends Control {
 
     const brnWatch = new ButtonDefault(this.node, recordStyles.record_button, 'Watch');
     brnWatch.onClick = () => {
-      popupService.showPopup(Replay,{history:record.history,gameType:record.gameType,player1:record.player1,player2:record.player2}).then((res)=>{
+      popupService.showPopup(Replay,{history:record.history,gameType:record.gameType,player1:record.player1,player2:record.player2,moves:record.moves}).then((res)=>{
         if(res == 'close'){
           console.log('resplay closed')
         }

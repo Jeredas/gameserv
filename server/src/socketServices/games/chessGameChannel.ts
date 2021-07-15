@@ -8,12 +8,14 @@ import { Move } from '../../chess-lib/move';
 import { time } from 'console';
 import { ICellCoord } from '../../chess-lib/icell-coord';
 import { Field } from '../../chess-lib/field';
+import { writeStatistic } from '../../httpServices/statService';
+import { IHistoryItem } from '../../chess-lib/ihistory-item';
 
 interface IChatResponse {
   type: string;
 }
 
-interface IChessHistory {
+export interface IChessHistory {
   coords: Array<Vector>;
   time: number;
   figName: string;
@@ -297,6 +299,19 @@ export class ChessGameChannel extends ChatChannel {
   // gameMode: string;
   chessProcessor: IChessProcessor;
   players: Array<IPlayerData>;
+  recordData: { history: IHistoryItem[];
+     player1: IPlayerData;
+     player2: IPlayerData;
+      date: string;
+       time: string;
+        winner: string;
+         gameType: string;
+          gameMode: string;
+           moves:Array<{ field: string; player: string; history: IChessHistory}>;
+           };
+  field: Array<string> = [];
+  //move: { field: string; player: string; history: IChessHistory; };
+  moves: Array<{ field: string; player: string; history: IChessHistory}>;
 
   constructor(name: string, type: string, params: any) {
     super(name, type, params);
@@ -306,6 +321,7 @@ export class ChessGameChannel extends ChatChannel {
     this.players = new Array<IPlayerData>();
     this.history = [];
     this.gameMode = params.gameMode;
+    this.moves = [];
   }
 
   sendForAllClients(response: IChatResponse) {
@@ -481,9 +497,17 @@ export class ChessGameChannel extends ChatChannel {
             historyItem = {
               time: historyLastEl.time - this.chessProcessor.getStartTime(),
               figName: figure,
-              coords: moveCoords
+              coords: moveCoords,
+
             };
+            const  move = {
+              field : this.chessProcessor.getField(),
+              player: currentUser.login,
+              history: historyItem
+            }
+            this.moves.push(move);
           }
+          
           const kingPos = this.chessProcessor.getKingPos();
           const kingRivals = this.chessProcessor.getKingRivals();
           let checkModel: { coords: Vector; rival: Array<Vector> } | null;
@@ -529,6 +553,7 @@ export class ChessGameChannel extends ChatChannel {
             historyItem,
             king
           );
+          
           this.sendForAllClients(response);
           if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate && !isStaleMate) {
             const botMove = this.chessProcessor.getRecommendMove();
@@ -612,6 +637,8 @@ export class ChessGameChannel extends ChatChannel {
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
             rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+            writeStatistic(this.getRecordData())
+            this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
           } else {
@@ -640,6 +667,8 @@ export class ChessGameChannel extends ChatChannel {
           } else if (params.messageText === 'draw') {
             currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
           }
+          writeStatistic(this.getRecordData())
+          this.field = [];
           this.chessProcessor.clearData();
           this.players = [];
         }
@@ -659,6 +688,8 @@ export class ChessGameChannel extends ChatChannel {
             let rivalClient = this._getUserByLogin(rivalPlayer);
               currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
               rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+            writeStatistic(this.getRecordData())
+            this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
           } else {
@@ -672,6 +703,8 @@ export class ChessGameChannel extends ChatChannel {
             } else {
               currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
             }
+            writeStatistic(this.getRecordData())
+            this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
           }
@@ -699,6 +732,8 @@ export class ChessGameChannel extends ChatChannel {
           } else {
             const playerCurrent = this.chessProcessor.getPlayerColor();
             currentClient.send(response);
+            writeStatistic(this.getRecordData())
+            this.field = [];
             this.chessProcessor.clearData();
             this.players = [];
           }
@@ -723,6 +758,8 @@ export class ChessGameChannel extends ChatChannel {
           currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
         }
+        writeStatistic(this.getRecordData())
+        this.field = [];
         this.chessProcessor.clearData();
         this.players = [];
       }
@@ -738,4 +775,18 @@ export class ChessGameChannel extends ChatChannel {
   takePlayerOffGame(login): void {
     this.players = this.players.filter((player) => player.login !== login);
   }
+  getRecordData(){
+    let date = new Date();
+    return this.recordData = {
+      history: this.chessProcessor.getHistory(),
+      player1: this.players[0],
+      player2: this.players[1],
+      date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
+      time: `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`,
+      winner: this.moves[this.moves.length-1].player,
+      gameType: 'CHESS',
+      gameMode: this.gameMode,
+      moves: this.moves
+    }
+  } 
 }

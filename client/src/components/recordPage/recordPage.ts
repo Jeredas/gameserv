@@ -14,6 +14,7 @@ export interface IGameRecord {
   time: string;
   history:Array<IChessHistory>|Array<ICrossHistory>;
   gameMode:string;
+  moves:Array<{ field: string; player: string; history: IChessHistory}>
 }
 
 

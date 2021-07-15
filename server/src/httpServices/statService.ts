@@ -1,7 +1,7 @@
+import { IChessHistory } from '../socketServices/games/chessGameChannel';
 import { Router } from './httpRouter';
 import DefaultResponse from './defaultResponse';
 import StatModel from '../dataModels/statisticModel';
-
 class StatResponse {
   session: string;
   gameData: {
@@ -11,7 +11,8 @@ class StatResponse {
     player2: string,
     winner:string,
     time:string,
-    history: []
+    history: [],
+    moves : Array<{ field: string; player: string; history: IChessHistory}>;
 }
 
   constructor(statistic: StatModel) {
@@ -22,7 +23,8 @@ class StatResponse {
       player2: statistic.player2,
       winner:statistic.winner,
       time:statistic.time,
-      history:statistic.history
+      history:statistic.history,
+      moves : statistic.moves
     }
   }
 }

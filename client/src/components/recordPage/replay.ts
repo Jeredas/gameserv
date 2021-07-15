@@ -1,26 +1,27 @@
-import { IChessHistory, ICrossHistory, IPublicUserInfo } from './../utilities/interfaces';
+import { IChessHistory, ICrossHistory, IPublicUserInfo, IChessData } from './../utilities/interfaces';
 import Control from "../utilities/control";
 import GenericPopup from '../genericPopup/genericPopup';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import recordStyles from './recordPage.module.css';
 import InputWrapper from '../inputWrapper/inputWrapper';
 import Cross from '../games/cross/cross';
+import ChessGame, { fromFen } from '../games/chess/chess-game';
 export class Replay extends GenericPopup<string> {
     history: Array<IChessHistory> | Array<ICrossHistory>;
     replaySrceen: Control;
     popupWrapper : Control;
     gameType:string;
-    params: {history : Array<IChessHistory> | Array<ICrossHistory>,gameType:string,player1:IPublicUserInfo,player2:IPublicUserInfo}
+    params: {history : Array<IChessHistory> | Array<ICrossHistory>,gameType:string,player1:IPublicUserInfo,player2:IPublicUserInfo,moves:Array<{ field: string; player: string; history: IChessHistory}>}
     startButton: ButtonDefault;
     closeBtn: ButtonDefault;
     speed :number;
     speedSelection: InputWrapper;
     view: Cross;
-    // player1:IPublicUserInfo;
-    // player2:IPublicUserInfo;
+    chessView: ChessGame;
+    
     
 
-    constructor(parentNode:HTMLElement,params:{history : Array<IChessHistory> | Array<ICrossHistory>,gameType:string,player1:IPublicUserInfo,player2:IPublicUserInfo}){
+    constructor(parentNode:HTMLElement,params:{history : Array<IChessHistory> | Array<ICrossHistory>,gameType:string,player1:IPublicUserInfo,player2:IPublicUserInfo,moves:Array<{ field: string; player: string; history: IChessHistory}>}){
         super(parentNode);
         this.params = params;
         this.speed = 1;
@@ -36,6 +37,8 @@ export class Replay extends GenericPopup<string> {
             this.start()
         }        
         this.replaySrceen = new Control(this.popupWrapper.node, 'div', recordStyles.record_replayScreen);
+        this.replaySrceen.node.style.width = '500px';
+        this.replaySrceen.node.style.height = '500px';
         this.closeBtn = new ButtonDefault(this.popupWrapper.node,recordStyles.record_closeButton,'')
         this.closeBtn.onClick = () =>{
             this.onSelect('close')
@@ -60,21 +63,47 @@ export class Replay extends GenericPopup<string> {
                    this.view.timer.node.innerHTML = `${res.time}` 
                    const field : Array<Array<string>> = [[],[],[]];
                    field[res.move.y][res.move.x] = res.sign;
-                   this.view.updateGameField(field)
+                   this.view.updateGameField(field)  
                 },(1000 / this.speed) * ++i);
                 
             })
         }
-        if (this.gameType === 'CHESS'){
-            //TODO:Доделать 
-            (this.params.history as Array<IChessHistory>).forEach((res:IChessHistory,i:number)=>{
+        if (this.params.gameType == 'CHESS'){
+            const startTime = Date.now();
+            console.log(this.params)
+            const players = [
+                {login:this.params.player1.login,
+                avatar:''},
+                {login:this.params.player2.login,
+                    avatar:''}
+            ]
+            this.chessView = new ChessGame(this.replaySrceen.node,'network',0);
+            this.chessView.setPlayer({player:this.params.player1.login,players:players});
+            this.chessView.setPlayer({player:this.params.player2.login,players:players});
+            this.chessView.startGame({field:'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',time:startTime})
+            this.params.moves.forEach((move,i)=>{
                 setTimeout(()=>{
-                    const move = new Control(this.replaySrceen.node, 'div', );
-                    move.node.textContent = `${res.figName}-${res.coords}-${res.coords}-${res.time}`;
-                },(1000 / this.speed) * ++i)
-                
+                    const chessDataMove: IChessData= {
+                        coords: move.history.coords,
+                        player: '',
+                        field: move.field,
+                        winner: '',
+                        rotate: false,
+                        history: move.history,
+                        king: {
+                          check:  null,
+                          mate: false,
+                          staleMate: false,
+                        }
+                      }
+                    this.chessView.onFigureMove(chessDataMove)
+                 },move.history.time/this.speed)
             })
+        //     this.field.forEach((fen:string,i:number) => {
+                
+                
+        //     })
+        // }
         }
-        
     }
 }

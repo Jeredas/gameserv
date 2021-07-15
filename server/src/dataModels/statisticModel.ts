@@ -1,3 +1,4 @@
+import { IChessHistory } from '../socketServices/games/chessGameChannel'
 import { databaseService } from '../databaseService';
 const collectionName = 'games'
 
@@ -10,6 +11,8 @@ export default class StatModel {
   time: string
   history: []
   gameMode:string
+  field: string[]
+  moves: { field: string; player: string; history: IChessHistory; }[];
 
   constructor(gameDto) {
     if (!gameDto) {
@@ -22,7 +25,8 @@ export default class StatModel {
     this.date = gameDto.date;
     this.player1 = gameDto.player1;
     this.player2 = gameDto.player2;
-    this.gameMode = gameDto.gameMode
+    this.gameMode = gameDto.gameMode;
+    this.moves = gameDto.moves;
   }
 
   static async buildStatistics(params:StatModel): Promise<StatModel> {
@@ -34,7 +38,8 @@ export default class StatModel {
       date: params.date,
       player1: params.player1,
       player2: params.player2,
-      gameMode:params.gameMode
+      gameMode:params.gameMode,
+      moves:params.moves
     };
 
     await databaseService.db.collection(collectionName).insertOne(gameDto);

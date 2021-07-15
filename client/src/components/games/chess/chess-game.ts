@@ -318,11 +318,14 @@ class ChessGame extends Control {
   initBoard(): void {
     this.chessBoard.createFieldCells(fromFen(fen));
   }
+  chessBoardClear(fen: string): void {
+    this.chessBoard.clearData(fromFen(fen));
+  }
 }
 
 export default ChessGame;
 
-function fromFen(fen: string): Array<string> {
+export function fromFen(fen: string): Array<string> {
   const fromFen: Array<string> = [];
   fen.split('/').join('').split('').forEach((el) => {
     if (!Number.isNaN(+el)) {
