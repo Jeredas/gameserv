@@ -7,17 +7,19 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  max-width: 600px;
+  /* width: 600px; */
+  margin: 0 auto;
 }
 
 .chess_board {
   position: relative;
-  width: var(--size);
+  /* width: var(--size); */
   display: flex;
   flex-wrap: wrap;
   margin: 0 auto;
-  height: var(--size);
-  /* --size: 480px; */
+  /* height: var(--size); */
+  /* width: 450px;
+  height: 450px; */
   transition-property: transform;
   transition-duration: .5s;
   transition-timing-function: ease;
@@ -34,8 +36,9 @@
 }
 
 .chess_board_cell {
-  width: calc(100% / 8);
-  height: calc(100% / 8);
+  /* width: calc(100% / 8);
+  height: calc(100% / 8); */
+  color: #333;
 }
 
 .cell_light {
@@ -65,6 +68,8 @@
 .chess_cell {
   width: calc(100% / 8);
   height: calc(100% / 8);
+  /* width: 100%;
+  height: 100%; */
   cursor: pointer;
   font-size: 50px;
   color: #e4e4e4;
@@ -110,6 +115,7 @@
   justify-content: space-between;
   margin-bottom: 20px;
   align-items: center;
+  width: 100%;
 }
 
 .chess_player {
@@ -130,6 +136,8 @@
   align-items: flex-start;
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.2);
+  margin: 0 auto;
+  /* background-color: transparent; */
 }
 
 .chess_history {
@@ -139,7 +147,8 @@
   padding-right: 10px;
   margin-right: 10px;
   overflow-y: scroll;
-  height: var(--size);
+  /* height: var(--size); */
+  /* height: 450px; */
   /* --size: 480px; */
 }
 
@@ -232,6 +241,18 @@
   box-shadow: inset 0 0 40px #f16a6ad2;
 }
 
+.king_rival_check {
+  box-shadow: inset 0 0 40px #ee69eed2;
+}
+
+.king_rival_mate {
+  box-shadow: inset 0 0 40px #f1ff2bd2;
+}
+
+.recommended_move {
+  box-shadow: inset 0 0 40px #44b3f3d2;
+}
+
 .player_active {
   position: relative;
   color: #fff;
@@ -251,5 +272,25 @@
 }
 
 @media screen and (max-width: 870px) {
-  
+  .chess_wrapper {
+    max-width: 500px;
+  }
+
+  .chess_board {
+    position: relative;
+    /* width: var(--size); */
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    /* height: var(--size); */
+    width: 350px;
+    height: 350px;
+    transition-property: transform;
+    transition-duration: .5s;
+    transition-timing-function: ease;
+  }
+  /* .chess_cell {
+    width: calc(100% / 8);
+    height: calc(100% / 8);
+  } */
 }

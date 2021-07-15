@@ -1,5 +1,5 @@
 import Control from "../../../utilities/control";
-import Button from '../chess-button';
+import ChessButton from "../chess-button";
 import modalStyles from './modal.module.css';
 
 class ModalDraw extends Control {
@@ -9,11 +9,11 @@ class ModalDraw extends Control {
 
   private messageBody: Control;
 
-  private btnOk: Button;
+  private btnOk: ChessButton;
 
   public onModalDrawClick: (response: string) => void = () => {};
-  private btnAgree: Button;
-  private btnDisagree: Button;
+  private btnAgree: ChessButton;
+  private btnDisagree: ChessButton;
 
   constructor(
     parentNode: HTMLElement,
@@ -23,6 +23,8 @@ class ModalDraw extends Control {
     method: string
   ) {
     super(parentNode, 'div', modalStyles.modal_wrapper);
+    console.log('Client', method);
+    
     this.modalMessage = new Control(this.node, 'div', modalStyles.modal_message);
     let messageDraw = 'Claim a draw. Nobody won, nobody lost';
     const player = players.find((player) => player !== host);
@@ -31,9 +33,9 @@ class ModalDraw extends Control {
     this.messageHead = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
     this.messageBody = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
 
-    if (method === 'drawSingleGame') {
+    if (method === 'drawSingle') {
       messageDraw = 'You have claimed a draw. Nobody won, nobody lost';
-      this.btnOk = new Button(this.modalMessage.node, 'OK');
+      this.btnOk = new ChessButton(this.modalMessage.node, 'OK');
       this.btnOk.onClick = () => {
         this.onModalDrawClick('ok');
       };
@@ -45,12 +47,12 @@ class ModalDraw extends Control {
 
     if (method === 'drawAgreeNetwork') {
       messageDraw = 'Your rival has claimed a draw. Please make a choice';
-      this.btnAgree = new Button(this.modalMessage.node, 'Agree');
+      this.btnAgree = new ChessButton(this.modalMessage.node, 'Agree');
       this.btnAgree.onClick = () => {
         this.onModalDrawClick('agree');
       };
 
-      this.btnDisagree = new Button(this.modalMessage.node, 'Disagree');
+      this.btnDisagree = new ChessButton(this.modalMessage.node, 'Disagree');
       this.btnDisagree.onClick = () => {
         this.onModalDrawClick('disagree');
       };

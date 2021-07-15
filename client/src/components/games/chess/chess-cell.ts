@@ -7,9 +7,11 @@ class ChessCell extends Control {
 
   private coords: Vector;
 
-  constructor(parentNode: HTMLElement, coords: Vector, cellColor: string) {
+  constructor(parentNode: HTMLElement, coords: Vector, cellColor: string, cellSize: number) {
     super(parentNode, 'div', chessStyles.chess_cell);
     this.node.classList.add(cellColor);
+    // this.node.style.width = `${cellSize}px`;
+    // this.node.style.height = `${cellSize}px`;
     this.coords = coords;
 
     this.node.onclick = () => {
@@ -21,10 +23,10 @@ class ChessCell extends Control {
     return this.coords;
   }
 
-  clickedCell(sign: string): void {
-    this.node.classList.add('clicked');
-    this.node.textContent = sign;
-  }
+  // clickedCell(sign: string): void {
+  //   this.node.classList.add('clicked');
+  //   this.node.textContent = sign;
+  // }
 
   clearCell(): void {
     this.node.classList.remove('clicked');
@@ -45,6 +47,30 @@ class ChessCell extends Control {
 
   removeKingCell(): void {
     this.node.classList.remove(chessStyles.king_check);
+  }
+
+  setRivalMove(): void {
+    this.node.classList.add(chessStyles.king_rival_check);
+  }
+
+  removeRivalMove(): void {
+    this.node.classList.remove(chessStyles.king_rival_check);
+  }
+
+  setMateMove(): void {
+    this.node.classList.add(chessStyles.king_rival_mate);
+  }
+
+  removeMateMove(): void {
+    this.node.classList.remove(chessStyles.king_rival_mate);
+  }
+
+  setRecommendedMove(): void {
+    this.node.classList.add(chessStyles.recommended_move);
+  }
+
+  removeRecommendedMove(): void {
+    this.node.classList.remove(chessStyles.recommended_move);
   }
 }
 

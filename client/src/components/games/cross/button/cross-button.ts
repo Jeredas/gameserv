@@ -20,6 +20,14 @@ class CrossButton extends Control {
     this.node.removeAttribute('disabled');
     this.node.classList.remove(crossButtonStyles.disabled);
   }
+
+  buttonHide() {
+    this.node.classList.add(crossButtonStyles.hide);
+  }
+
+  buttonShow() {
+    this.node.classList.remove(crossButtonStyles.hide);
+  }
 }
 
 

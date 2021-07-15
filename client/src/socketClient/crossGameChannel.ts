@@ -294,6 +294,7 @@ export class CrossGameChannelView extends MainView {
     this.crossGame = new Cross(this.mainViewAction.node);
     this.model.getPlayers('');
 
+    this.model.getPlayers('');
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
         console.log('Enter the game', res);
@@ -336,7 +337,6 @@ export class CrossGameChannelView extends MainView {
     });
 
     this.mainViewUsers.onChannelLeave = () => {
-      // this.model.crossStop('loss');
       this.model.leavePlayer();
       this.onLeaveClick();
     };

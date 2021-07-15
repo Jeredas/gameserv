@@ -4,6 +4,7 @@ import Figure from './chess-figure';
 import ChessCell from './chess-cell';
 import chessStyles from './chess-game.module.css';
 import { chessModeConfig } from './config-chess';
+import { IKingInfo } from 'src/components/utilities/interfaces';
 
 class ChessField extends Control {
   private dragableItems: Control;
@@ -34,7 +35,10 @@ class ChessField extends Control {
 
   constructor(parentNode: HTMLElement, configFigures: Map<string, string>, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_board);
-    this.node.style.setProperty('--size', `${parentHeight}px`);
+    // this.node.style.width = `${parentHeight}px`;
+    // this.node.style.height = `${parentHeight}px`;
+
+    // this.node.style.setProperty('--size', `${parentHeight}px`);
     this.configFigures = configFigures;
 
     const boardView = new Control(this.node, 'div', chessStyles.chess_board_view);
@@ -44,11 +48,11 @@ class ChessField extends Control {
         let color = '';
         if (i % 2 === 0) {
           color = j % 2 === 0 ? chessStyles.cell_light : chessStyles.cell_dark;
-          const cell = new ChessCell(boardView.node, new Vector(j, i), color);
+          const cell = new ChessCell(boardView.node, new Vector(j, i), color, parentHeight/8);
           this.cells.push(cell);
         } else if (i % 2 !== 0) {
           color = j % 2 === 0 ? chessStyles.cell_dark : chessStyles.cell_light;
-          const cell = new ChessCell(boardView.node, new Vector(j, i), color);
+          const cell = new ChessCell(boardView.node, new Vector(j, i), color, parentHeight/8);
           this.cells.push(cell);
         }
       }
@@ -216,9 +220,46 @@ class ChessField extends Control {
     });
   }
 
-  removeAlloweMoves(): void {
+  removeAllowedMoves(): void {
     this.cells.forEach((cell) => cell.removeAllowedMove());
   }
+
+  showRivalMoves(coords: Array<Vector>): void {
+    coords.forEach((coord) => {
+      this.cells.forEach((cell) => {
+        if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+          cell.setRivalMove();
+        }
+      });
+    });
+  }
+
+  removeRivalMoves(): void {
+    this.cells.forEach((cell) => cell.removeRivalMove());
+  }
+
+  removeKingCheck(): void {
+    this.cells.forEach((cell) => cell.removeKingCell());
+  }
+
+  removeMateMoves(): void {
+    this.cells.forEach((cell) => cell.removeMateMove());
+  }
+
+  showRecommendedMoves(coords: Array<Vector>): void {
+    coords.forEach((coord) => {
+      this.cells.forEach((cell) => {
+        if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+          cell.setRecommendedMove();
+        }
+      });
+    });
+  }
+
+  removeRecommendedMoves(): void {
+    this.cells.forEach((cell) => cell.removeRecommendedMove());
+  }
+
 
   clearData(fen: Array<string>): void {
     this.dragableItems && this.dragableItems.destroy();
@@ -231,13 +272,45 @@ class ChessField extends Control {
     this.chessMode = chessMode;
   }
 
-  showKingCheck(coords: Vector): void {
-    if (coords) {
-      this.cells.forEach((cell) => cell.removeKingCell());
+  showKingCheck(kingInfo: IKingInfo): void {
+    if (kingInfo.coords) {
+      // this.cells.forEach((cell) => cell.removeKingCell());
       const kingCell = this.cells.find(
-        (cell) => cell.getCellCoord().x === coords.x && cell.getCellCoord().y === coords.y
+        (cell) =>
+          cell.getCellCoord().x === kingInfo.coords.x && cell.getCellCoord().y === kingInfo.coords.y
       );
       kingCell.setKingCell();
+    }
+
+    if (kingInfo.rival) {
+      kingInfo.rival.forEach((coord) => {
+        this.cells.forEach((cell) => {
+          if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+            cell.setRivalMove();
+          }
+        });
+      });
+    }
+  }
+
+  showKingMate(kingInfo: IKingInfo): void {
+    if (kingInfo.coords) {
+      // this.cells.forEach((cell) => cell.removeKingCell());
+      const kingCell = this.cells.find(
+        (cell) =>
+          cell.getCellCoord().x === kingInfo.coords.x && cell.getCellCoord().y === kingInfo.coords.y
+      );
+      kingCell.setKingCell();
+    }
+
+    if (kingInfo.rival) {
+      kingInfo.rival.forEach((coord) => {
+        this.cells.forEach((cell) => {
+          if (cell.getCellCoord().x === coord.x && cell.getCellCoord().y === coord.y) {
+            cell.setMateMove();
+          }
+        });
+      });
     }
   }
 

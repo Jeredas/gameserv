@@ -88,13 +88,12 @@
 .cross_button {
   background-color: #555;
   color: #fff;
-  font-size: 18px;
+  font-size: 14px;
   padding: 5px 5px;
   margin: 0 10px 5px;
   border-radius: 5px;
   width: 100%;
   cursor: pointer;
-  /* transition: .2s all ease; */
 }
 
 .player_active {

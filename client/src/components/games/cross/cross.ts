@@ -168,6 +168,7 @@ class Cross extends Control {
   }
 
   createModalGameOver(params: {method: string, player: string}): void {
+    this.timer.stop();
     this.modalPopup && this.modalPopup.destroy();
     this.modalGameOver = new ModalGameOver(this.node, params, this.players);
     this.modalGameOver.onGameOverClick = () => {

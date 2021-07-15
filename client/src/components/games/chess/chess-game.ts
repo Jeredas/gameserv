@@ -1,3 +1,4 @@
+import { IKingInfo } from 'src/components/utilities/interfaces';
 import { IChessHistory } from './../../utilities/interfaces';
 import Control from '../../utilities/control';
 import Timer from '../../timer/timer';
@@ -35,15 +36,15 @@ class ChessGame extends Control {
 
   private btnStart: ChessButton;
 
-  public onStartClick: () => void = () => {};
+  public onStartClick: (player: string) => void = () => {};
 
   private btnDraw: ChessButton;
 
-  public onDrawClick: () => void = () => {};
+  public onDrawClick: (method: string) => void = () => {};
 
   private btnLoss: ChessButton;
 
-  public onLossClick: () => void = () => {};
+  public onLossClick: (method: string) => void = () => {};
 
   public onFigureDrop: (posStart: Vector, posDrop: Vector) => void = () => {};
 
@@ -63,82 +64,73 @@ class ChessGame extends Control {
 
   private chessBody: Control;
 
-  private parent: Control;
   private modalPopup: ModalDraw;
   private modalGameOver: ModalGameOver;
   public onGameOverClick: () => void = () => {};
+  field: string;
+  private singleModePlayerIndex: number;
 
-  constructor(
-    parentNode: HTMLElement,
-    // chessModel: ChessModel,
-    chessMode: string,
-    parentHeight: number,
-    // parent: Control
-  ) {
+  private boardSize: number = 0;
+
+  constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
-    console.log('chess Mode', chessMode);
-    
-    // this.parent = parent;
     this.node.classList.add('game_action_size');
-    // this.model = chessModel;
     this.chessMode = chessMode;
     const chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
     const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
     this.playerOne = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player1');
     this.playerOne.node.classList.add(chessStyles.player_active);
+    this.field = fen;
 
     this.timer = new Timer(chessHead.node);
 
     this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
+    const nodeHeight = this.node.getBoundingClientRect().height;
     console.log(this.node.getBoundingClientRect().height);
-    
-    this.history = new ChessHistoryBlock(this.chessBody.node, parentHeight);
+    // this.chessBody.node.style.width = `${nodeHeight}px`;
+    //   this.chessBody.node.style.height = `${nodeHeight - 140}px`;
 
-    this.chessBoard = new ChessField(this.chessBody.node, configFigures, parentHeight);
+    this.history = new ChessHistoryBlock(this.chessBody.node, nodeHeight);
+
+    this.chessBoard = new ChessField(this.chessBody.node, configFigures, nodeHeight);
     this.initBoard();
 
     this.btnStart = new ChessButton(chessControls.node, 'Start');
     this.btnStart.buttonDisable();
     this.btnStart.onClick = () => {
-      // this.model.chessStartGame(this.host);
+      this.onStartClick(this.host);
       this.btnStart.buttonDisable();
     };
     this.btnDraw = new ChessButton(chessControls.node, 'Draw');
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
+      this.onDrawClick('draw');
       // this.model.chessStopGame('draw');
     };
     this.btnLoss = new ChessButton(chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
+      this.onLossClick('loss');
       // this.model.chessStopGame('loss');
     };
 
     this.chessBoard.onFigureDrop = (posStart: Vector, posDrop: Vector) => {
-      // this.model.chessMove(JSON.stringify([ posStart, posDrop ]));
+      this.onFigureDrop(posStart, posDrop);
     };
 
     this.chessBoard.onFigureGrab = (pos: Vector) => {
-      // this.model.chessFigureGrab(JSON.stringify(pos));
+      this.onFigureGrab(pos);
     };
-
-    // this.model.onChessMove.add((data) => this.onFigureMove(data));
-
-    // this.model.onStartGame.add((data) => this.createChessField(data));
-    // this.model.onStopGame.add((data) => this.createModalDraw(data));
-    // this.model.onChessFigureGrab.add((data) => this.showAllowedMoves(data));
 
     window.onresize = () => {
-      const parentHeight = Math.min(
-        parentNode.clientWidth,
-        parentNode.clientHeight - 140
-      );
-      this.chessBody.node.style.setProperty('--size', `${parentHeight}px`);
-      this.chessBoard.changeHeight(parentHeight);
-      this.history.changeHeight(parentHeight);
+      const nodeHeight = this.node.getBoundingClientRect().height;
+      this.chessBody.node.style.width = `${nodeHeight}px`;
+      this.chessBody.node.style.height = `${nodeHeight - 140}px`;
+      this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
+      this.chessBoard.node.style.width = `${nodeHeight - 140}px`;
+      this.history.node.style.height = `${nodeHeight - 140}px`;
     };
-
     window.onresize(null);
   }
 
@@ -159,20 +151,32 @@ class ChessGame extends Control {
     this.players = [];
     this.playerOne.node.textContent = 'Player1';
     this.playerTwo.node.textContent = 'Player2';
-    // this.chessBoard.clearData();
-    this.chessMode = '';
+    // this.chessMode = '';
     this.timer.clear();
-    this.initBoard();
-    // this.destroy();
+    this.history.clearHistory();
+    this.removeAllowedMoves();
+    this.removeRivalMoves();
+    this.chessBoard.removeKingCheck();
+    this.chessBoard.removeMateMoves();
+    this.chessBoard.clearData(fromFen(fen));
+    this.singleModePlayerIndex = 0;
+    this.chessBoard.setDragable(false);
   }
 
   setPlayer(params: IJoinedPlayer): void {
-    console.log(params);
     const player1 = params.players[0].login;
     this.playerOne.node.textContent = player1;
     this.players.push(player1);
+    console.log('chess players', params.players);
+    
 
     if (this.chessMode !== chessModeConfig.network) {
+      console.log('gameMode', this.chessMode);
+      
+      this.singleModePlayerIndex = 0;
+      const player2 = params.players[1].login;
+      this.playerTwo.node.textContent = player2;
+      this.players.push(player2);
       this.host = player1;
       this.btnStart.buttonEnable();
     } else if (params.players[1]) {
@@ -180,6 +184,8 @@ class ChessGame extends Control {
       this.playerTwo.node.textContent = player2;
       this.players.push(player2);
       this.host = params.player !== player1 ? player1 : player2;
+      console.log('HOST', this.host);
+
       this.btnStart.buttonEnable();
     }
   }
@@ -187,10 +193,12 @@ class ChessGame extends Control {
   setHistoryMove(params: IChessHistory): void {
     this.history.setHistoryMove(params);
   }
-  
+
   createModalDraw(data: IChessStop): void {
     console.log(data.player, this.host);
-
+    if (data.method === 'disagree') {
+      this.createModalGameOver({ method: data.method, player: data.player });
+    }
     this.modalPopup = new ModalDraw(this.node, data.stop, data.player, this.players, data.method);
     this.modalPopup.onModalDrawClick = (response: string) => {
       this.onModalDrawClick(response);
@@ -209,37 +217,76 @@ class ChessGame extends Control {
     this.chessBoard.showAllowedMoves(coords);
   }
 
+  showKingMate(kingInfo: IKingInfo): void {
+    this.chessBoard.showKingMate(kingInfo);
+  }
+
   removeAllowedMoves(): void {
-    this.chessBoard.removeAlloweMoves();
+    this.chessBoard.removeAllowedMoves();
+  }
+
+  removeRivalMoves(): void {
+    this.chessBoard.removeRivalMoves();
+  }
+
+  showRecommendedMoves(coords: Array<Vector>): void {
+    this.chessBoard.showRecommendedMoves(coords);
+  }
+
+  removeRecommendedMoves(): void {
+    this.chessBoard.removeRecommendedMoves();
   }
 
   onFigureMove(data: IChessData): void {
-    this.host = data.player;
+    if (this.field !== data.field) {
+      this.host = this.players.find((player) => data.player !== player);
+      if (this.chessMode === chessModeConfig.network) {
+        if (this.playerOne.node.textContent !== data.player) {
+          this.playerOne.node.classList.add(chessStyles.player_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_active);
+        } else {
+          this.playerOne.node.classList.remove(chessStyles.player_active);
+          this.playerTwo.node.classList.add(chessStyles.player_active);
+        }
+      } else {
+        if (this.singleModePlayerIndex === 0) {
+          this.playerOne.node.classList.remove(chessStyles.player_active);
+          this.playerTwo.node.classList.add(chessStyles.player_active);
+        } else if (this.singleModePlayerIndex === 1) {
+          this.playerOne.node.classList.add(chessStyles.player_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_active);
+        }
+        this.singleModePlayerIndex = this.singleModePlayerIndex === 1 ? 0 : 1;
+      }
+      this.field = data.field;
+    }
+
     const newField = fromFen(data.field);
 
+    console.log(`Host: ${this.host}, player: ${data.player}`);
     this.setHistoryMove(data.history);
+
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);
     const newFigPos = new Vector(data.coords[1].x, data.coords[1].y);
 
     this.setFigurePosition(oldFigPos, newFigPos);
     this.chessBoard.clearData(newField);
 
-    this.updateGameField(data.rotate);
+    // this.updateGameField(data.rotate);
+    this.updateGameField(false);
     this.removeAllowedMoves();
-    this.chessBoard.showKingCheck(data.king);
+    this.removeRivalMoves();
+    this.chessBoard.removeKingCheck();
+    this.removeRecommendedMoves();
 
-    if (this.chessMode === chessModeConfig.network) {
-      if (this.playerOne.node.textContent !== data.player) {
-        this.playerOne.node.classList.add(chessStyles.player_active);
-        this.playerTwo.node.classList.remove(chessStyles.player_active);
-      } else {
-        this.playerOne.node.classList.remove(chessStyles.player_active);
-        this.playerTwo.node.classList.add(chessStyles.player_active);
-      }
+    if (data.king.check) {
+      const kingInfo = data.king.check;
+      this.chessBoard.showKingCheck(kingInfo);
     }
   }
 
   startGame(data: IChessStart) {
+    this.field = data.field;
     this.chessBoard.setChessMode(this.chessMode);
     this.chessBoard.clearData(fromFen(data.field));
     // this.chessBoard.createFieldCells(fromFen(data.field));
@@ -254,13 +301,14 @@ class ChessGame extends Control {
     return this.players;
   }
 
-  createModalGameOver(params: {method: string, player: string}): void {
+  createModalGameOver(params: { method: string; player: string }): void {
+    this.timer.stop();
     this.modalPopup && this.modalPopup.destroy();
     this.modalGameOver = new ModalGameOver(this.node, params, this.players);
     this.modalGameOver.onGameOverClick = () => {
       this.onGameOverClick();
       this.destroyModalGameOver();
-    }
+    };
   }
 
   destroyModalGameOver(): void {
@@ -270,7 +318,6 @@ class ChessGame extends Control {
   initBoard(): void {
     this.chessBoard.createFieldCells(fromFen(fen));
   }
-
 }
 
 export default ChessGame;
@@ -285,4 +332,14 @@ function fromFen(fen: string): Array<string> {
     } else fromFen.push(el);
   });
   return fromFen.join('').split('').map((item) => (item === '-' ? '' : item));
+}
+
+export function kingInfoToVector(
+  coordsKing: { x: number; y: number },
+  cells: Array<{ x: number; y: number }>
+) {
+  return {
+    coords: new Vector(coordsKing.x, coordsKing.y),
+    rival: cells.map((cell) => new Vector(cell.x, cell.y))
+  };
 }

@@ -74,14 +74,14 @@ class ChatPage extends Control {
         if (res) {
           console.log('Chat height', this.node.clientHeight);
           
-          let channel = new channelOfChoice.view(null, channelModel, params.gameMode);
+          let channel = new channelOfChoice.view(null, channelModel, params.gameMode, this.node.clientHeight);
           this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
             this.channelBlock.removeActiveChannels();
             this.chatMain.remove(params.channelName);
             channel.destroy();
           };
-          window.onresize(null)
+          window.onresize(null);
         }
       });
     }
