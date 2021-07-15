@@ -30,7 +30,6 @@ class ChatChannels extends Control {
     this.channelContainer = new Control(this.node, 'div', chatStyles.chat_channels_list);
 
     createChannel.onClick = () => {
-      console.log('create');
       this.onCreateChannel();
     };
   }
@@ -44,7 +43,6 @@ class ChatChannels extends Control {
       ''
     );
     channel.onClick = (channelName) => {
-      console.log(channelName);
       this.removeActiveChannels();
       channel.addActiveChannel();
       this.onJoinChannel.emit(channelName);
@@ -60,7 +58,6 @@ class ChatChannels extends Control {
     });
   }
   addChannels(channels: Array<IChannelInfo>) {
-    console.log(channels);
     this.channelContainer.node.innerHTML = '';
     channels.forEach((chan) => {
     const channelIcon = channelConfig.get(chan.type).icon;

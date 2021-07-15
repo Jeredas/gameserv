@@ -87,9 +87,6 @@ class ChessGame extends Control {
     this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
     const nodeHeight = this.node.getBoundingClientRect().height;
-    console.log(this.node.getBoundingClientRect().height);
-    // this.chessBody.node.style.width = `${nodeHeight}px`;
-    //   this.chessBody.node.style.height = `${nodeHeight - 140}px`;
 
     this.history = new ChessHistoryBlock(this.chessBody.node, nodeHeight);
 
@@ -123,16 +120,23 @@ class ChessGame extends Control {
       this.onFigureGrab(pos);
     };
 
+    this.resizeView();
     window.onresize = () => {
-      const nodeHeight = this.node.getBoundingClientRect().height;
-      this.chessBody.node.style.width = `${nodeHeight}px`;
-      this.chessBody.node.style.height = `${nodeHeight - 140}px`;
-      this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
-      this.chessBoard.node.style.width = `${nodeHeight - 140}px`;
-      this.history.node.style.height = `${nodeHeight - 140}px`;
+      this.resizeView();
     };
-    window.onresize(null);
   }
+
+
+  resizeView() {
+    const nodeHeight = this.node.getBoundingClientRect().height;
+    this.chessBody.node.style.width = `${nodeHeight}px`;
+    this.chessBody.node.style.height = `${nodeHeight - 140}px`;
+    this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
+    this.chessBoard.node.style.width = `${nodeHeight - 140}px`;
+    this.history.node.style.height = `${nodeHeight - 140}px`;
+  
+  }
+
 
   updateGameField(rotate: boolean): void {
     if (this.chessMode === chessModeConfig.oneScreen) {
@@ -167,12 +171,8 @@ class ChessGame extends Control {
     const player1 = params.players[0].login;
     this.playerOne.node.textContent = player1;
     this.players.push(player1);
-    console.log('chess players', params.players);
-    
 
     if (this.chessMode !== chessModeConfig.network) {
-      console.log('gameMode', this.chessMode);
-      
       this.singleModePlayerIndex = 0;
       const player2 = params.players[1].login;
       this.playerTwo.node.textContent = player2;
@@ -184,7 +184,6 @@ class ChessGame extends Control {
       this.playerTwo.node.textContent = player2;
       this.players.push(player2);
       this.host = params.player !== player1 ? player1 : player2;
-      console.log('HOST', this.host);
 
       this.btnStart.buttonEnable();
     }
@@ -195,7 +194,6 @@ class ChessGame extends Control {
   }
 
   createModalDraw(data: IChessStop): void {
-    console.log(data.player, this.host);
     if (data.method === 'disagree') {
       this.createModalGameOver({ method: data.method, player: data.player });
     }
@@ -263,7 +261,6 @@ class ChessGame extends Control {
 
     const newField = fromFen(data.field);
 
-    console.log(`Host: ${this.host}, player: ${data.player}`);
     this.setHistoryMove(data.history);
 
     const oldFigPos = new Vector(data.coords[0].x, data.coords[0].y);

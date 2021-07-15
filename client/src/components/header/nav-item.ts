@@ -20,7 +20,6 @@ class NavItem extends Control {
 
   setActive() {
     this.link.node.classList.add(headerStyles.nav_link__active);
-    console.log('setActiveClass')
   }
 
   setInactive() {

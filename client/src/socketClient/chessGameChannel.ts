@@ -371,8 +371,6 @@ export class ChessGameChannelView extends MainView {
     };
 
     this.model.service.onJoinedPlayer.add((params) => {
-      console.log(params.players);
-
       if (params.players.length) {
         this.chessGame.setPlayer(params);
         this.mainViewPlayers.setPlayers(params.players);
@@ -504,6 +502,10 @@ export class ChessGameChannelView extends MainView {
         this.mainViewPlayers.hideRecommend();
       }
     });
+  }
+
+  resizeView() {
+    this.chessGame.resizeView();
   }
 
   destroy() {

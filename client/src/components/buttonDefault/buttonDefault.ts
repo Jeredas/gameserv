@@ -12,8 +12,6 @@ class ButtonDefault extends Control {
 
   buttonDisable(veiwDisabled = ''): void {
     this.node.setAttribute('disabled', 'true');
-    console.log(veiwDisabled);
-    
     if(veiwDisabled) {
       this.node.classList.add('BUTTON',veiwDisabled);
     }
