@@ -321,6 +321,21 @@ export class ChessGameChannel extends ChatChannel {
               color: ChessColor.black
             });
           }
+        } else if (this.gameMode === 'bot') {
+          if (this.players.length < 1) {
+            this.players.push({
+              login: currentClient.userData.login,
+              avatar: currentClient.userData.avatar,
+              color: ChessColor.white
+            });
+            this.players.push({
+              login: 'AI',
+              avatar: currentClient.userData.avatar,
+              color: ChessColor.black
+            });
+          }
+        } else {
+          throw new Error('ChessGameChanel.joinPlayer(): Illegal game mode');
         }
         const response = new ChannelJoinPlayerResponse(this.name, 'ok', params.requestId);
         currentClient.send(response);
@@ -414,14 +429,14 @@ export class ChessGameChannel extends ChatChannel {
     }
   }
 
-  chessMove(connection, params) {
+  chessMove(connection, params, bot = false) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser) {
         if (
-          this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
-            .login == currentUser.login
+          (this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
+            .login == currentUser.login) || bot
         ) {
           let coords = JSON.parse(params.messageText);
           const startCoord = new CellCoord(coords[0].x, coords[0].y);
@@ -488,6 +503,18 @@ export class ChessGameChannel extends ChatChannel {
             king
           );
           this.sendForAllClients(response);
+          if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate) {
+            const botMove = this.chessProcessor.getRecommendMove();
+            if (botMove !== null) {
+              const startBotCoord = botMove.startCell;
+              const targetBotCoord = botMove.getTargetCell();
+              const resultMove = new Array<Vector>();
+              resultMove.push(new Vector(startBotCoord.x, startBotCoord.y));
+              resultMove.push(new Vector(targetBotCoord.x, targetBotCoord.y))
+              params.messageText = JSON.stringify(resultMove);
+              this.chessMove(connection, params, true);
+            }
+          }
         }
       }
     }
@@ -526,9 +553,15 @@ export class ChessGameChannel extends ChatChannel {
         this.players.filter((player) => player.color == this.chessProcessor.getPlayerColor())[0]
           .login == currentUser.login
       ) {
-        const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
-        // const recommended = null;
-        console.log('MOVE RECOMMEND');
+        // const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
+        const recommended = new Array<Vector>();
+        const move = this.chessProcessor.getRecommendMove();
+        console.log('MOVE RECOMMEND: ', move !== null ? move.toString() : 'none')
+        if (move !== null) {
+          const targetCell = move.getTargetCell();
+          recommended.push(new Vector(move.startCell.x, move.startCell.y));
+          recommended.push(new Vector(targetCell.x, targetCell.y));
+        }
         const response = new ChessRecommendedResponse(this.name, recommended);
         currentClient.send(response);
       }
@@ -597,8 +630,8 @@ export class ChessGameChannel extends ChatChannel {
           const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
           let rivalClient = this._getUserByLogin(rivalPlayer);
 
-          currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-          rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+          currentClient?.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+          rivalClient?.send(new ChessMateResponse(this.name, 'won', currentPlayer));
           this.chessProcessor.clearData();
           this.players = [];
         }

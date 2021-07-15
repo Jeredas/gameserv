@@ -23,6 +23,7 @@
 import { ChessColor } from './chess-color';
 import { ICellCoord } from './icell-coord';
 import { IHistoryItem } from './ihistory-item';
+import { IMove } from './imove';
 import { Moves } from './moves';
 
 export interface IChessProcessor {
@@ -44,4 +45,5 @@ export interface IChessProcessor {
   getFigureStr(coord: ICellCoord): string;
   getKingRivals(): Set<string>;
   isMate(): boolean;
+  getRecommendMove(): IMove | null;
 }

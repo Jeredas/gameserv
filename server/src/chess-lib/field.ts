@@ -84,6 +84,16 @@ export class Field implements IField {
         return figure.getMoves(coord, this, checkDanger);
     }
   }
+  getAllAllowedMoves(checkDanger: boolean = true): Moves {
+    const moves = new Moves();
+    for (let figure of this.position.getAllCoordFigures()) {
+      const figureMoves = this.getAllowedMoves(CellCoord.fromString(figure[0]));
+      for(let move of figureMoves) {
+        moves.add(move);
+      }
+    }
+    return moves;
+  }
   getAttackedCells(): Set<string> {
     const result = new Set<string>();
     for (let figure of this.position.getAllCoordFigures()) {

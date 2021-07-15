@@ -10,14 +10,19 @@ import { HistoryItems } from './history-items';
 import { IHistoryItem } from './ihistory-item';
 import { King } from './figures/king';
 import { ICellCoord } from './icell-coord';
+import { IChessAI } from './ichessai'
+import { ChessAI } from './chessai'
+import { IMove } from './imove';
 
 export class ChessProcessor implements IChessProcessor {
   private field: IField;
+  private chessAI: IChessAI;
   // private players: Map<ChessColor, string>;
   private historyItems: HistoryItems;
   // private gameMode: string;
   constructor() {
     this.field = Field.getStartField();
+    this.chessAI = new ChessAI();
     // this.players = new Map<ChessColor, string>();
     this.historyItems = new HistoryItems();
     // this.gameMode = '';
@@ -99,5 +104,8 @@ export class ChessProcessor implements IChessProcessor {
   }
   isMate(): boolean {
     return this.field.isMate();
+  }
+  getRecommendMove(): IMove | null {
+    return this.chessAI.getRecommendMove(this.field);
   }
 }
