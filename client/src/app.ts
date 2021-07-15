@@ -153,6 +153,7 @@ class Application extends Control {
 
     lobbyModel.service.onClose.add(() => {
       this.navigation.removeConnection();
+      this.chatPage.userDisconnect();
       if(!this.lostConnectionPopupOpen) {
         this.lostConnectionPopupOpen = true;
         popupService.showPopup(ConnectToServer, {client: socket}).then((res) => {
