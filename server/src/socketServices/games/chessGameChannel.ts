@@ -116,6 +116,7 @@ class ChessMoveResponse {
     king: {
       check: IKingInfo | null;
       mate: boolean;
+      staleMate: boolean;
     };
   };
 
@@ -128,6 +129,7 @@ class ChessMoveResponse {
     king: {
       check: IKingInfo | null;
       mate: boolean;
+      staleMate: boolean;
     }
   ) {
     this.service = 'chat';
@@ -468,6 +470,7 @@ export class ChessGameChannel extends ChatChannel {
           const kingRivals = this.chessProcessor.getKingRivals();
           let checkModel: { coords: Vector; rival: Array<Vector> } | null;
           let isMate: boolean;
+          let isStaleMate: boolean;
           if (kingRivals.size !== 0) {
             const rivals = new Array<Vector>();
             for (let rival of kingRivals) {
@@ -479,6 +482,7 @@ export class ChessGameChannel extends ChatChannel {
               rival: rivals
             };
             isMate = this.chessProcessor.isMate();
+            isStaleMate = false;
             if (isMate) {
               console.log(
                 '!!!MATE!!! Winner is ',
@@ -488,10 +492,15 @@ export class ChessGameChannel extends ChatChannel {
           } else {
             checkModel = null;
             isMate = false;
+            isStaleMate = this.chessProcessor.isStaleMate();
+            if (isStaleMate) {
+              console.log('!!!STALEMATE!!! Draw');
+            }
           }
           const king = {
             check: checkModel,
-            mate: isMate
+            mate: isMate,
+            staleMate: isStaleMate
           };
           console.log('KING: ', king);
           const response = new ChessMoveResponse(
@@ -503,7 +512,7 @@ export class ChessGameChannel extends ChatChannel {
             king
           );
           this.sendForAllClients(response);
-          if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate) {
+          if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate && !isStaleMate) {
             const botMove = this.chessProcessor.getRecommendMove();
             if (botMove !== null) {
               const startBotCoord = botMove.startCell;
