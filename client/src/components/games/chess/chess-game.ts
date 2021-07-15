@@ -318,6 +318,10 @@ class ChessGame extends Control {
   initBoard(): void {
     this.chessBoard.createFieldCells(fromFen(fen));
   }
+
+  chessBoardClear(fen: string): void {
+    this.chessBoard.clearData(fromFen(fen));
+  }
 }
 
 export default ChessGame;
