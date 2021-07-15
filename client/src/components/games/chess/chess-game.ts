@@ -70,6 +70,8 @@ class ChessGame extends Control {
   field: string;
   private singleModePlayerIndex: number;
 
+  private boardSize: number = 0;
+
   constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
     this.node.classList.add('game_action_size');
@@ -84,11 +86,14 @@ class ChessGame extends Control {
 
     this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
+    const nodeHeight = this.node.getBoundingClientRect().height;
     console.log(this.node.getBoundingClientRect().height);
+    // this.chessBody.node.style.width = `${nodeHeight}px`;
+    //   this.chessBody.node.style.height = `${nodeHeight - 140}px`;
 
-    this.history = new ChessHistoryBlock(this.chessBody.node, parentHeight);
+    this.history = new ChessHistoryBlock(this.chessBody.node, nodeHeight);
 
-    this.chessBoard = new ChessField(this.chessBody.node, configFigures, parentHeight);
+    this.chessBoard = new ChessField(this.chessBody.node, configFigures, nodeHeight);
     this.initBoard();
 
     this.btnStart = new ChessButton(chessControls.node, 'Start');
@@ -119,10 +124,12 @@ class ChessGame extends Control {
     };
 
     window.onresize = () => {
-      const parentHeight = Math.min(parentNode.clientWidth, parentNode.clientHeight - 140);
-      this.chessBody.node.style.setProperty('--size', `${parentHeight}px`);
-      this.chessBoard.changeHeight(parentHeight);
-      this.history.changeHeight(parentHeight);
+      const nodeHeight = this.node.getBoundingClientRect().height;
+      this.chessBody.node.style.width = `${nodeHeight}px`;
+      this.chessBody.node.style.height = `${nodeHeight - 140}px`;
+      this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
+      this.chessBoard.node.style.width = `${nodeHeight - 140}px`;
+      this.history.node.style.height = `${nodeHeight - 140}px`;
     };
     window.onresize(null);
   }
@@ -153,6 +160,7 @@ class ChessGame extends Control {
     this.chessBoard.removeMateMoves();
     this.chessBoard.clearData(fromFen(fen));
     this.singleModePlayerIndex = 0;
+    this.chessBoard.setDragable(false);
   }
 
   setPlayer(params: IJoinedPlayer): void {

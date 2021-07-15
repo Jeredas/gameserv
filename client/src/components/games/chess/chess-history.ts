@@ -11,7 +11,7 @@ class ChessHistoryBlock extends Control {
 
   constructor(parentNode: HTMLElement, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_history);
-    this.node.style.setProperty('--size', `${parentHeight}px`);
+    // this.node.style.setProperty('--size', `${parentHeight}px`);
     this.historyHeader = new Control(this.node, 'div', chessStyles.chess_history_header);
     this.historyHeader.node.textContent = 'History: ';
     this.historyWrapper = new Control(this.node, 'div');

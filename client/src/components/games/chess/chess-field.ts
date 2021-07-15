@@ -35,7 +35,10 @@ class ChessField extends Control {
 
   constructor(parentNode: HTMLElement, configFigures: Map<string, string>, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_board);
-    this.node.style.setProperty('--size', `${parentHeight}px`);
+    // this.node.style.width = `${parentHeight}px`;
+    // this.node.style.height = `${parentHeight}px`;
+
+    // this.node.style.setProperty('--size', `${parentHeight}px`);
     this.configFigures = configFigures;
 
     const boardView = new Control(this.node, 'div', chessStyles.chess_board_view);
@@ -45,11 +48,11 @@ class ChessField extends Control {
         let color = '';
         if (i % 2 === 0) {
           color = j % 2 === 0 ? chessStyles.cell_light : chessStyles.cell_dark;
-          const cell = new ChessCell(boardView.node, new Vector(j, i), color);
+          const cell = new ChessCell(boardView.node, new Vector(j, i), color, parentHeight/8);
           this.cells.push(cell);
         } else if (i % 2 !== 0) {
           color = j % 2 === 0 ? chessStyles.cell_dark : chessStyles.cell_light;
-          const cell = new ChessCell(boardView.node, new Vector(j, i), color);
+          const cell = new ChessCell(boardView.node, new Vector(j, i), color, parentHeight/8);
           this.cells.push(cell);
         }
       }
