@@ -116,6 +116,7 @@ class ChessMoveResponse {
     king: {
       check: IKingInfo | null;
       mate: boolean;
+      staleMate: boolean;
     };
   };
 
@@ -128,6 +129,7 @@ class ChessMoveResponse {
     king: {
       check: IKingInfo | null;
       mate: boolean;
+      staleMate: boolean;
     }
   ) {
     this.service = 'chat';
@@ -261,6 +263,23 @@ class ChessMateResponse {
   constructor(channelName: string, method: string, player = '') {
     this.service = 'chat';
     this.type = 'chessMate';
+    this.channelName = channelName;
+    this.params = { method, player };
+  }
+}
+
+class ChessStaleMateResponse {
+  public type: string;
+  public service: string;
+  public channelName: string;
+  public params: {
+    method: string;
+    player: string;
+  };
+
+  constructor(channelName: string, method: string, player = '') {
+    this.service = 'chat';
+    this.type = 'chessStaleMate';
     this.channelName = channelName;
     this.params = { method, player };
   }
@@ -469,6 +488,7 @@ export class ChessGameChannel extends ChatChannel {
           const kingRivals = this.chessProcessor.getKingRivals();
           let checkModel: { coords: Vector; rival: Array<Vector> } | null;
           let isMate: boolean;
+          let isStaleMate: boolean;
           if (kingRivals.size !== 0) {
             const rivals = new Array<Vector>();
             for (let rival of kingRivals) {
@@ -480,6 +500,7 @@ export class ChessGameChannel extends ChatChannel {
               rival: rivals
             };
             isMate = this.chessProcessor.isMate();
+            isStaleMate = false;
             if (isMate) {
               console.log(
                 '!!!MATE!!! Winner is ',
@@ -489,10 +510,15 @@ export class ChessGameChannel extends ChatChannel {
           } else {
             checkModel = null;
             isMate = false;
+            isStaleMate = this.chessProcessor.isStaleMate();
+            if (isStaleMate) {
+              console.log('!!!STALEMATE!!! Draw');
+            }
           }
           const king = {
             check: checkModel,
-            mate: isMate
+            mate: isMate,
+            staleMate: isStaleMate
           };
           console.log('KING: ', king);
           const response = new ChessMoveResponse(
@@ -504,7 +530,7 @@ export class ChessGameChannel extends ChatChannel {
             king
           );
           this.sendForAllClients(response);
-          if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate) {
+          if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate && !isStaleMate) {
             const botMove = this.chessProcessor.getRecommendMove();
             if (botMove !== null) {
               const startBotCoord = botMove.startCell;
@@ -627,14 +653,12 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       if (currentPlayer) {
-        console.log('length', this.players.length);
         if (this.players.length) {
           if (this.gameMode === 'network') {
             const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
             let rivalClient = this._getUserByLogin(rivalPlayer);
-
-            currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-            rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+              currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+              rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
             this.chessProcessor.clearData();
             this.players = [];
           } else {
@@ -648,6 +672,33 @@ export class ChessGameChannel extends ChatChannel {
             } else {
               currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
             }
+            this.chessProcessor.clearData();
+            this.players = [];
+          }
+        }
+      }
+    }
+  }
+
+  chessStaleMate(connection, params) {
+    const currentClient = this._getUserByConnection(connection);
+    if (currentClient) {
+      let currentPlayer = currentClient.userData.login;
+      if (currentPlayer) {
+        console.log('length', this.players.length);
+        if (this.players.length) {
+          const response = new ChessStaleMateResponse(this.name, 'staleMate');
+          if (this.gameMode === 'network') {
+            const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+            let rivalClient = this._getUserByLogin(rivalPlayer);
+            currentClient.send(response);
+            rivalClient.send(response);
+
+            this.chessProcessor.clearData();
+            this.players = [];
+          } else {
+            const playerCurrent = this.chessProcessor.getPlayerColor();
+            currentClient.send(response);
             this.chessProcessor.clearData();
             this.players = [];
           }

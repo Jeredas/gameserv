@@ -45,5 +45,6 @@ export interface IChessProcessor {
   getFigureStr(coord: ICellCoord): string;
   getKingRivals(): Set<string>;
   isMate(): boolean;
+  isStaleMate(): boolean;
   getRecommendMove(): IMove | null;
 }

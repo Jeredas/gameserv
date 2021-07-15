@@ -105,6 +105,9 @@ export class ChessProcessor implements IChessProcessor {
   isMate(): boolean {
     return this.field.isMate();
   }
+  isStaleMate(): boolean {
+    return this.field.isStaleMate();
+  }
   getRecommendMove(): IMove | null {
     return this.chessAI.getRecommendMove(this.field);
   }

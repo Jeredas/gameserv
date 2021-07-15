@@ -29,6 +29,7 @@ export interface IField {
   getKingRivals(): Set<string>;
   isCheck(): boolean;
   isMate(): boolean;
+  isStaleMate(): boolean;
   // static fromFEN(fen: string): IField;
   // static getStartField(): IField;
 

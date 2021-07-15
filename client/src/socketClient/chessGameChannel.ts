@@ -35,6 +35,7 @@ export class ChessGameChannelService implements ISocketService {
   public onChessGrab: Signal<Array<Vector>> = new Signal();
   public onChessRecommend: Signal<Array<Vector> | null> = new Signal();
   public onChessMate: Signal<{ method: string; player: string }> = new Signal();
+  public onChessStaleMate: Signal<string> = new Signal();
   private channelName: string;
 
   constructor(channelName: string) {
@@ -121,6 +122,12 @@ export class ChessGameChannelService implements ISocketService {
               method: params.method,
               player: params.player
             });
+          }
+        ],
+        [
+          'chessStaleMate',
+          (params) => {
+            this.onChessStaleMate.emit(params.method);
           }
         ],
         [
@@ -305,6 +312,12 @@ export class ChessGameChannelModel extends ChatChannelModel {
     });
   }
 
+  chessStaleMate(message: string) {
+    this.send('chessStaleMate', {
+      messageText: message
+    });
+  }
+
   destroy() {
     this.service.remove();
   }
@@ -370,6 +383,11 @@ export class ChessGameChannelView extends MainView {
         console.log('KING MATE', params.king.mate);
         this.chessGame.showKingMate(params.king.check);
         this.model.chessMate('mate');
+      }
+      if(params.king.staleMate) {
+        console.log('!! StaleMate', params.king.staleMate);
+        
+        this.model.chessStaleMate('chessStaleMate');
       }
     });
 
@@ -462,6 +480,16 @@ export class ChessGameChannelView extends MainView {
         this.chessGame.showRecommendedMoves(recommendedMoves);
       }
     });
+
+    this.model.service.onChessStaleMate.add((params) => {
+      console.log('server on StaleMate');
+      const data = {
+        method: params,
+        player: ''
+      }
+      this.chessGame.createModalGameOver(data);
+    });
+
   }
 
   destroy() {
