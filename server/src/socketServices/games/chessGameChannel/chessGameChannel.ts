@@ -499,7 +499,7 @@ export class ChessGameChannel extends ChatChannel {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],
       player2: this.players[1],
-      date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
+      date: new Date().toLocaleDateString('ru'),
       time: `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`,
       winner: this.moves[this.moves.length - 1].player,
       gameType: 'CHESS',
