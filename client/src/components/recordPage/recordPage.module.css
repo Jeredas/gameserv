@@ -18,13 +18,14 @@
 
 .record_table_wrapper {
   width: 100%;
-  height: calc(50% - 20px);
+  height: 100%;
   padding: 10px;
-  background-color: #555;
+  /* background-color: #555; */
   overflow-y: scroll;
   position: relative;
-  margin-bottom: 20px;
 }
+
+
 
 .replay_popup {
   display: flex;
@@ -32,47 +33,77 @@
   justify-content: center;
   align-items: center;
 }
-/* .record_table_header {
- display: flex;
- justify-content: flex-start;
- align-items: center;
-} */
 
 .record_table_header {
-  display: grid;
-  grid-template-columns: auto auto auto auto 20px auto;
-  justify-content: space-around;
-  background-color: rgb(96, 0, 174);
-  min-width: 1000px;
+  background: linear-gradient(308deg, rgba(243, 213, 116, 0.4) 0%, rgba(226, 18, 35, 0.4) 50%, rgba(243, 83, 158, 0.4) 100%);
+  padding: 10px 5px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  min-width: 1020px;
+  color: #ccc;
 }
 
-.table_item_header {
-  /* width: 130px; */
-  height: 40px;
-  text-align: center;
+.record_game_name,
+.record_date {
+  width: 110px;
+  padding: 0 5px;
+  display: flex;
+  flex-shrink: 0;
+  text-align: start;
+}
+
+.record_time {
+  width: 110px;
+  padding: 0 5px;
+  display: flex;
+  flex-shrink: 0;
+  text-align: start;
+  overflow: hidden;
+}
+
+.record_players {
+  display: flex;
+  width:100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.record_winner {
+  width: 120px;
+  padding: 0 5px;
+  display: flex;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.record_mode {
+  width: 120px;
+  padding: 0 5px;
+  display: flex;
+  justify-content: flex-start;
+  flex-shrink: 0;
 }
 
 .odd_record {
-  background-color: rgb(106, 103, 103)
+  background-color: rgba(94, 84, 107, 0.521);
 }
 
-/* .record_line {
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-} */
+.even_record {
+  /* background-color: rgba(141, 99, 122, 0.548); */
+  background-color: transparent;
+}
 
 .record_line {
   display: flex;
   align-items: center;
   text-align: center;
   min-width: 1000px;
+  padding: 10px 5px;
 }
 
-.record_game_name {
-  font-size: 18px;
-}
+
 
 .record_button {
   border-radius: 15px;
@@ -97,26 +128,12 @@
 .default_hidden {
   display: none;
 }
-
-.record_players {
+.record_player {
   display: flex;
-  width:100%;
-  height: 50px;
+  justify-content: flex-start;
+  align-items: center;
 }
-
-.record_date,
-.record_time {
-  width: 100%;
-  height: 100%;
-  text-align: center;
-}
-
-.wrapper_players {
-  display: flex;
-  justify-content: center;
-}
-
-.record_avatar {
+.record_player_avatar {
   flex-shrink: 0;
   background-size: cover;
   background-position: center center;
@@ -124,22 +141,31 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-}
-.record_playerContainer {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 50px;
-  justify-content: center;
-}
-.record_playerNames {
+  border: 1px solid #ccc;
   margin: 0 5px;
-  vertical-align: middle;
-  width: 100%;
 }
-.record_winner {
-  width: 110%;
-  margin: 5px;
+
+.record_player_login {
+  margin: 0 5px;
+  min-width: 100px;
+  text-align: start;
+}
+
+.record_player_vs {
+  width: 50px;
+  text-align: center;
+  padding: 0 5px;
+}
+
+
+.record_time_watch {
+  width: 180px;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.record_table_body {
+  width: 100%;
 }
 
 .record_replayScreen {
