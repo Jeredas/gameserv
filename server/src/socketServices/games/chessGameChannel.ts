@@ -292,32 +292,26 @@ interface IPlayerData {
 }
 
 export class ChessGameChannel extends ChatChannel {
-  // logic: ChessGameLogic;
-  history: Array<string>; // !!!!! есть ли необходимость иметь историю в канале. Её из chessProcessor будем дёргать
-  // gameMode: string;
+  gameMode: string;
   chessProcessor: IChessProcessor;
   players: Array<IPlayerData>;
-  recordData: { history: IHistoryItem[];
-     player1: IPlayerData;
-     player2: IPlayerData;
-      date: string;
-       time: string;
-        winner: string;
-         gameType: string;
-          gameMode: string;
-           moves:Array<{ field: string; player: string; history: IChessHistory}>;
-           };
-  field: Array<string> = [];
-  //move: { field: string; player: string; history: IChessHistory; };
-  moves: Array<{ field: string; player: string; history: IChessHistory}>;
+  recordData: {
+    history: IHistoryItem[];
+    player1: IPlayerData;
+    player2: IPlayerData;
+    date: string;
+    time: string;
+    winner: string;
+    gameType: string;
+    gameMode: string;
+    moves: Array<{ field: string; player: string; history: IChessHistory }>;
+  };
+  moves: Array<{ field: string; player: string; history: IChessHistory }>;
 
   constructor(name: string, type: string, params: any) {
     super(name, type, params);
-    console.log('created ChessGameChannel');
-    // this.logic = new ChessGameLogic();
     this.chessProcessor = new ChessProcessor();
     this.players = new Array<IPlayerData>();
-    this.history = [];
     this.gameMode = params.gameMode;
     this.moves = [];
   }
@@ -334,7 +328,6 @@ export class ChessGameChannel extends ChatChannel {
       if (!this.players.find((player) => currentClient.userData.login === player.login)) {
         if (this.gameMode === 'network') {
           if (this.players.length < 2) {
-            // this.logic.setPlayers(currentClient.userData.login);
             this.players.push({
               login: currentClient.userData.login,
               avatar: currentClient.userData.avatar,
@@ -456,7 +449,6 @@ export class ChessGameChannel extends ChatChannel {
         );
         console.log('START', response);
 
-        this.history = [];
         this.sendForAllClients(response);
       }
     }
@@ -495,17 +487,16 @@ export class ChessGameChannel extends ChatChannel {
             historyItem = {
               time: historyLastEl.time - this.chessProcessor.getStartTime(),
               figName: figure,
-              coords: moveCoords,
-
+              coords: moveCoords
             };
-            const  move = {
-              field : this.chessProcessor.getField(),
+            const move = {
+              field: this.chessProcessor.getField(),
               player: currentUser.login,
               history: historyItem
-            }
+            };
             this.moves.push(move);
           }
-          
+
           const kingPos = this.chessProcessor.getKingPos();
           const kingRivals = this.chessProcessor.getKingRivals();
           let checkModel: { coords: Vector; rival: Array<Vector> } | null;
@@ -551,7 +542,7 @@ export class ChessGameChannel extends ChatChannel {
             historyItem,
             king
           );
-          
+
           this.sendForAllClients(response);
           if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate && !isStaleMate) {
             const botMove = this.chessProcessor.getRecommendMove();
@@ -633,8 +624,7 @@ export class ChessGameChannel extends ChatChannel {
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
             rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
-            writeStatistic(this.getRecordData())
-            this.field = [];
+            writeStatistic(this.getRecordData());
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -655,15 +645,17 @@ export class ChessGameChannel extends ChatChannel {
             clients.forEach((it) => it.send(responseDrawAgree));
             currentClient.send(responseDraw);
           }
-        } else  {
-          const rivalPlayer = 'Player2';
+        } else {
+          let rivalPlayer = 'Player2';
+          if (this.gameMode === 'bot') {
+            rivalPlayer = this.players[1].login;
+          }
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
           } else if (params.messageText === 'draw') {
             currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
           }
-          writeStatistic(this.getRecordData())
-          this.field = [];
+          writeStatistic(this.getRecordData());
           this.chessProcessor.clearData();
           this.players = [];
           this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -681,10 +673,9 @@ export class ChessGameChannel extends ChatChannel {
           if (this.gameMode === 'network') {
             const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
             let rivalClient = this._getUserByLogin(rivalPlayer);
-              currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-              rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
-            writeStatistic(this.getRecordData())
-            this.field = [];
+            currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+            rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
+            writeStatistic(this.getRecordData());
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -699,8 +690,7 @@ export class ChessGameChannel extends ChatChannel {
             } else {
               currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
             }
-            writeStatistic(this.getRecordData())
-            this.field = [];
+            writeStatistic(this.getRecordData());
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -728,10 +718,8 @@ export class ChessGameChannel extends ChatChannel {
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
-            const playerCurrent = this.chessProcessor.getPlayerColor();
             currentClient.send(response);
-            writeStatistic(this.getRecordData())
-            this.field = [];
+            writeStatistic(this.getRecordData());
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -757,8 +745,7 @@ export class ChessGameChannel extends ChatChannel {
           currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
         }
-        writeStatistic(this.getRecordData())
-        this.field = [];
+        writeStatistic(this.getRecordData());
         this.chessProcessor.clearData();
         this.players = [];
         this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -769,18 +756,18 @@ export class ChessGameChannel extends ChatChannel {
   takePlayerOffGame(login): void {
     this.players = this.players.filter((player) => player.login !== login);
   }
-  getRecordData(){
+  getRecordData() {
     let date = new Date();
-    return this.recordData = {
+    return (this.recordData = {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],
       player2: this.players[1],
       date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
       time: `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`,
-      winner: this.moves[this.moves.length-1].player,
+      winner: this.moves[this.moves.length - 1].player,
       gameType: 'CHESS',
       gameMode: this.gameMode,
       moves: this.moves
-    }
-  } 
+    });
+  }
 }
