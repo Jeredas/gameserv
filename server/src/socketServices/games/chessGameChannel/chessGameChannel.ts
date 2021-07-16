@@ -1,295 +1,32 @@
-import { CellCoord } from './../../chess-lib/cell-coord';
-import { ChatChannel } from '../socketChannel';
-import Vector from '../../utils/vector';
-import { IChessProcessor } from '../../chess-lib/ichess-processor';
-import { ChessProcessor } from '../../chess-lib/chess-processor';
-import { ChessColor } from '../../chess-lib/chess-color';
-import { Move } from '../../chess-lib/move';
+import { CellCoord } from '../../../chess-lib/cell-coord';
+import { ChatChannel } from '../../socketChannel';
+import Vector from '../../../utils/vector';
+import { IChessProcessor } from '../../../chess-lib/ichess-processor';
+import { ChessProcessor } from '../../../chess-lib/chess-processor';
+import { ChessColor } from '../../../chess-lib/chess-color';
+import { Move } from '../../../chess-lib/move';
 import { time } from 'console';
-import { ICellCoord } from '../../chess-lib/icell-coord';
-import { Field } from '../../chess-lib/field';
-import { writeStatistic } from '../../httpServices/statService';
-import { IHistoryItem } from '../../chess-lib/ihistory-item';
+import { ICellCoord } from '../../../chess-lib/icell-coord';
+import { Field } from '../../../chess-lib/field';
+import { writeStatistic } from '../../../httpServices/statService';
+import { IHistoryItem } from '../../../chess-lib/ihistory-item';
+import ChannelJoinPlayerResponse from '../../channelSupport/channelJoinPlayerResponse';
+import ChannelPlayerListResponse from '../../channelSupport/channelPlayerListResponse';
+import ChannelSendPlayersResponse from '../../channelSupport/channelSendPlayersResponse';
+import ChessStartResponse from './chessSupport/chessStartResponse';
+import ChessMoveResponse from './chessSupport/chessMoveResponse';
+import IChessHistory, { IPlayerData } from './chessSupport/chessInterfaces';
+import IChatResponse from '../../channelSupport/channelInterfaces';
+import ChessGrabResponse from './chessSupport/chessGrabResponse';
+import ChessRecommendedResponse from './chessSupport/chessRecommendedResponse';
+import ChessDrawResponse from './chessSupport/chessDrawResponse';
+import ChessDrawAgreeResponse from './chessSupport/chessDrawAgreeResponse';
+import ChessRenewResponse from './chessSupport/chessRenewResponse';
+import ChessRemoveResponse from './chessSupport/chessRemoveResponse';
+import ChessMateResponse from './chessSupport/chessMateResponse';
+import ChessStaleMateResponse from './chessSupport/chessStaleMateResponse';
 
-interface IChatResponse {
-  type: string;
-}
 
-export interface IChessHistory {
-  coords: Array<Vector>;
-  time: number;
-  figName: string;
-}
-
-interface IKingInfo {
-  coords: Vector;
-  rival: Array<Vector>;
-}
-
-export class ChannelJoinPlayerResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public requestId: number;
-  public params: {
-    status: string;
-  };
-
-  constructor(channelName: string, status: string, requestId: number) {
-    this.service = 'chat';
-    this.type = 'joined';
-    this.channelName = channelName;
-    this.requestId = requestId;
-    this.params = { status };
-  }
-}
-
-class ChannelPlayerListResponse implements IChatResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    playerList: Array<{ login: string; avatar: string }>;
-    renew: boolean;
-  };
-
-  constructor(channelName: string, playerList: Array<{ login: string; avatar: string }>, renew) {
-    this.service = 'chat';
-    this.type = 'playerList';
-    this.channelName = channelName;
-    this.params = {
-      playerList: [ ...playerList ],
-      renew
-    };
-  }
-}
-
-class ChannelSendPlayersResponse implements IChatResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    player: string;
-    players: Array<{ login: string; avatar: string }>;
-  };
-
-  constructor(
-    channelName: string,
-    player: string,
-    players: Array<{ login: string; avatar: string }>
-  ) {
-    this.service = 'chat';
-    this.type = 'getPlayers';
-    this.channelName = channelName;
-    this.params = { player, players };
-  }
-}
-
-class ChessStartResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    time: number;
-    field: string;
-  };
-
-  constructor(channelName: string, startTime: number, startField: string) {
-    this.service = 'chat';
-    this.type = 'chessStart';
-    this.channelName = channelName;
-    this.params = {
-      time: startTime,
-      field: startField
-    };
-  }
-}
-
-class ChessMoveResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-
-  public params: {
-    player: string;
-    field: string;
-    coords: string;
-    history: IChessHistory;
-    king: {
-      check: IKingInfo | null;
-      mate: boolean;
-      staleMate: boolean;
-    };
-  };
-
-  constructor(
-    channelName: string,
-    player: string,
-    field: string,
-    coords: string,
-    history: IChessHistory | null,
-    king: {
-      check: IKingInfo | null;
-      mate: boolean;
-      staleMate: boolean;
-    }
-  ) {
-    this.service = 'chat';
-    this.type = 'chessMove';
-    this.channelName = channelName;
-    this.params = {
-      player,
-      field,
-      coords,
-      history,
-      king
-    };
-  }
-}
-
-class ChessGrabResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    allowed: Array<Vector>;
-  };
-
-  constructor(channelName: string, allowed: Array<Vector>) {
-    this.service = 'chat';
-    this.type = 'chessGrab';
-    this.channelName = channelName;
-    this.params = {
-      allowed
-    };
-  }
-}
-
-class ChessRecommendedResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    recommended: Array<Vector> | null;
-  };
-
-  constructor(channelName: string, recommended: Array<Vector>) {
-    this.service = 'chat';
-    this.type = 'chessRecommend';
-    this.channelName = channelName;
-    this.params = {
-      recommended
-    };
-  }
-}
-class ChessDrawResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  time: number;
-  public params: {
-    stop: string;
-    player: string;
-    method: string;
-  };
-
-  constructor(channelName: string, stop: string, player: string) {
-    this.service = 'chat';
-    this.type = 'chessStop';
-    this.channelName = channelName;
-    this.params = { stop, player, method: 'drawNetwork' };
-  }
-}
-
-class ChessDrawAgreeResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    stop: string;
-    player: string;
-    method: string;
-  };
-
-  constructor(channelName: string, stop: string, player: string) {
-    this.service = 'chat';
-    this.type = 'chessStop';
-    this.channelName = channelName;
-    this.params = { stop, player, method: 'drawAgreeNetwork' };
-  }
-}
-
-class ChessRenewResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    method: string;
-  };
-
-  constructor(channelName: string) {
-    this.service = 'chat';
-    this.type = 'chessRenew';
-    this.channelName = channelName;
-    this.params = { method: 'renew' };
-  }
-}
-class ChessRemoveResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    method: string;
-    player: string;
-  };
-
-  constructor(channelName: string, method: string, player = '') {
-    this.service = 'chat';
-    this.type = 'chessRemove';
-    this.channelName = channelName;
-    this.params = { method, player };
-  }
-}
-
-class ChessMateResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    method: string;
-    player: string;
-  };
-
-  constructor(channelName: string, method: string, player = '') {
-    this.service = 'chat';
-    this.type = 'chessMate';
-    this.channelName = channelName;
-    this.params = { method, player };
-  }
-}
-
-class ChessStaleMateResponse {
-  public type: string;
-  public service: string;
-  public channelName: string;
-  public params: {
-    method: string;
-    player: string;
-  };
-
-  constructor(channelName: string, method: string, player = '') {
-    this.service = 'chat';
-    this.type = 'chessStaleMate';
-    this.channelName = channelName;
-    this.params = { method, player };
-  }
-}
-
-interface IPlayerData {
-  login: string;
-  avatar: string;
-  color: ChessColor;
-}
 
 export class ChessGameChannel extends ChatChannel {
   gameMode: string;

@@ -67,7 +67,8 @@ export class CrossGameChannel extends ChatChannel {
         this._sendForAllClients(
           new ChannelPlayerListResponse(
             this.name,
-            this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+            this.players.map((it) => ({ login: it.login, avatar: it.avatar })),
+            true
           )
         );
       }
@@ -118,7 +119,8 @@ export class CrossGameChannel extends ChatChannel {
       this._sendForAllClients(
         new ChannelPlayerListResponse(
           this.name,
-          this.players.map((it) => ({ login: it.login, avatar: it.avatar }))
+          this.players.map((it) => ({ login: it.login, avatar: it.avatar })),
+          true
         )
       );
       this.history = this.logic.getFullHistory();

@@ -2,7 +2,7 @@ import { ChatChannel } from './socketChannel';
 import { OnlyChatChannel } from './games/onlyChatChannel';
 import { connection } from 'websocket';
 import { CrossGameChannel } from './games/crossGameChannel/crossGameChannel';
-import { ChessGameChannel } from './games/chessGameChannel';
+import { ChessGameChannel } from './games/chessGameChannel/chessGameChannel';
 
 function createChannel(type: string, channelName, params: any): ChatChannel {
   return new { OnlyChatChannel, CrossGameChannel, ChessGameChannel }[type](

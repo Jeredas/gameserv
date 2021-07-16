@@ -1,7 +1,7 @@
-import { IChessHistory } from '../socketServices/games/chessGameChannel';
 import { Router } from './httpRouter';
 import DefaultResponse from './defaultResponse';
 import StatModel from '../dataModels/statisticModel';
+import IChessHistory from '../socketServices/games/chessGameChannel/chessSupport/chessInterfaces';
 class StatResponse {
   session: string;
   gameData: {
