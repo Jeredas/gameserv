@@ -10,51 +10,61 @@ import { IChessHistory, ICrossHistory } from '../utilities/interfaces';
 class Record extends Control {
   chessRecordBlock: Control;
   model: RecordModel = new RecordModel();
-  replay : Replay 
-  history:Array<IChessHistory>|Array<ICrossHistory>;
+  replay: Replay;
+  history: Array<IChessHistory> | Array<ICrossHistory>;
   constructor(parentNode: HTMLElement, record: IGameRecord) {
     super(parentNode, 'div', recordStyles.record_line);
-    const gameType = new Control(this.node, 'div', recordStyles.record_date);
+    const gameType = new Control(this.node, 'div', recordStyles.record_game_name);
     gameType.node.textContent = record.gameType;
-    const recordDate = new Control(this.node, 'div', recordStyles.record_date);
-    recordDate.node.textContent = record.date;
-    
-    const recordPlayers = new Control(this.node, 'div', recordStyles.record_players);
 
-    const wrapperPlayers = new Control(recordPlayers.node, 'div', recordStyles.wrapper_players);
-    const player1container = new Control(wrapperPlayers.node, 'div', recordStyles.record_playerContainer);
-    const player1Avatar = new Control(player1container.node,'div', recordStyles.record_avatar);
+    const gameDate = new Control(this.node, 'div', recordStyles.record_date);
+    gameDate.node.textContent = record.date;
+
+    const gamePlayers = new Control(this.node, 'div', recordStyles.record_players);
+
+    const player1 = new Control(gamePlayers.node, 'div', recordStyles.record_player);
+    const player1Avatar = new Control(player1.node, 'div', recordStyles.record_player_avatar);
     player1Avatar.node.style.backgroundImage = `url(${record.player1.avatar})`;
-    const player1Name = new Control(player1container.node,'div', recordStyles.record_playerNames);
-    player1Name.node.textContent = `${record.player1.login}`
-    const vs =  new Control(player1container.node,'div', recordStyles.record_playerNames);
+    const player1Login = new Control(player1.node, 'div', recordStyles.record_player_login);
+    player1Login.node.textContent = record.player1.login;
+
+    const vs = new Control(gamePlayers.node, 'div', recordStyles.record_player_vs);
     vs.node.textContent = 'vs';
-    const player2container = new Control(wrapperPlayers.node, 'div', recordStyles.record_playerContainer);
-    const player2Avatar = new Control(player2container.node,'div', recordStyles.record_avatar)
+
+    const player2 = new Control(gamePlayers.node, 'div', recordStyles.record_player);
+    const player2Avatar = new Control(player2.node, 'div', recordStyles.record_player_avatar);
     player2Avatar.node.style.backgroundImage = `url(${record.player2.avatar})`;
-    const player2Name = new Control(player2container.node,'div', recordStyles.record_playerNames)
-    player2Name.node.textContent = `${record.player2.login}`;
+    const player2Login = new Control(player2.node, 'div', recordStyles.record_player_login);
+    player2Login.node.textContent = record.player2.login;
+
+    const gameWinner = new Control(this.node, 'div', recordStyles.record_winner);
+    gameWinner.node.textContent = record.winner;
+
+    const gameMode = new Control(this.node, 'div', recordStyles.record_mode);
+    gameMode.node.textContent = record.gameMode;
+
+    const gameTimeWatch = new Control(this.node, 'div', recordStyles.record_time_watch);
+    const gameTime = new Control(gameTimeWatch.node, 'div', recordStyles.record_time);
     
-  
-
-    const recordWinner = new Control(this.node, 'div', recordStyles.record_winner);
-    recordWinner.node.textContent = record.winner;
-
-    const gameMode = new Control(this.node, 'div', recordStyles.record_winner);
-    gameMode.node.textContent = record.gameMode
-
-    const recordTime = new Control(this.node, 'div', recordStyles.record_time);
-    recordTime.node.textContent = record.time;
-
-    const brnWatch = new ButtonDefault(this.node, recordStyles.record_button, 'Watch');
+      gameTime.node.textContent = record.time;
+    
+    const brnWatch = new ButtonDefault(gameTimeWatch.node, recordStyles.record_button, 'Watch');
     brnWatch.onClick = () => {
-      popupService.showPopup(Replay,{history:record.history,gameType:record.gameType,player1:record.player1,player2:record.player2,moves:record.moves}).then((res)=>{
-        if(res == 'close'){
-          console.log('resplay closed')
-        }
+      popupService
+        .showPopup(Replay, {
+          history: record.history,
+          gameType: record.gameType,
+          player1: record.player1,
+          player2: record.player2,
+          moves: record.moves
         })
-    }
+        .then((res) => {
+          if (res == 'close') {
+            console.log('resplay closed');
+          }
+        });
+    };
   }
 }
 
-export default Record
+export default Record;
