@@ -1,5 +1,5 @@
-import { IChessHistory } from '../socketServices/games/chessGameChannel'
 import { databaseService } from '../databaseService';
+import IChessHistory from '../socketServices/games/chessGameChannel/chessSupport/chessInterfaces';
 const collectionName = 'games'
 
 export default class StatModel {
