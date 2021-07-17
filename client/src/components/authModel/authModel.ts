@@ -1,11 +1,12 @@
 
 import Signal from '../../socketClient/signal';
+import { httpUrl } from '../utilities/apiConfig';
 import { IAuthData, IPublicUserInfo, IUserAuth, IUserData } from '../utilities/interfaces';
 import appStorage from '../utilities/storage';
 import { apiPostRequest, apiRequest } from '../utilities/utils';
 
 
-const apiUrl = 'http://localhost:4040/authService/';
+const apiUrl = `${httpUrl}/authService/`;
 
 export class AuthModel {
   onResult: Signal<string> = new Signal();

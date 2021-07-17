@@ -1,10 +1,11 @@
 
 import Signal from '../../socketClient/signal';
+import { httpUrl } from '../utilities/apiConfig';
 import {IUserAuth} from '../utilities/interfaces';
 import { apiPostRequest, apiRequest } from '../utilities/utils';
 
 
-const apiUrl = 'http://localhost:4040/statService/';
+const apiUrl = `${httpUrl}/statService/`;
 
 export class RecordModel {
   // onResult: Signal<string> = new Signal();

@@ -12,11 +12,11 @@ import { AuthForm } from './components/authForm/authForm';
 import { SocketClient } from './socketClient/socketClient';
 import { LobbyModel } from './socketClient/lobbyService';
 import { AuthModel } from './components/authModel/authModel';
-const socketURL = 'ws://localhost:4080';
 import appStyles from './app.module.css';
 import RecordPage from './components/recordPage/recordPage';
 import ConnectToServer from './components/connectToServer/connectToServer';
 import appStorage from './components/utilities/storage';
+import { socketURL } from './components/utilities/apiConfig';
 
 class Application extends Control {
   navigation: Navigation;
