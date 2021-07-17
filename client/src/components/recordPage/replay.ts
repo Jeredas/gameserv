@@ -27,6 +27,7 @@ export class Replay extends GenericPopup<string> {
 
   constructor(parentNode: HTMLElement, params: IGameRecord) {
     super(parentNode);
+    this.popupWrapper.node.classList.add(recordStyles.replay_wrapper);
     this.params = params;
     this.speed = 1;
     this.startButton = new ButtonDefault(
@@ -98,12 +99,15 @@ export class Replay extends GenericPopup<string> {
       this.chessView = new ChessGame(this.replaySrceen.node, 'network', 0);
       this.chessView.hideButtons();
       this.chessView.setHistoryFontColor();
+      
       this.chessView.setPlayer({ player: this.params.player1.login, players: players });
       this.chessView.setPlayer({ player: this.params.player2.login, players: players });
       this.chessView.startGame({
         field: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
         time: startTime
       });
+      this.chessView.stopTimer();
+      this.chessView.timerReplace();
       this.params.moves.forEach((move, i) => {
         if (this.params.gameMode == 'bot') {
           let player = '';
@@ -128,6 +132,7 @@ export class Replay extends GenericPopup<string> {
               }
             };
             this.chessView.onFigureMove(chessDataMove);
+            
           }, move.history.time / this.speed);
           i++;
         } else if (this.params.gameMode == 'oneScreen') {

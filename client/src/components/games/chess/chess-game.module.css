@@ -250,15 +250,29 @@
   box-shadow: inset 0 0 40px #44b3f3d2;
 }
 
-.player_active {
+.player_left_active,
+.player_right_active {
   position: relative;
   color: #fff;
 }
 
-.player_active::after {
+.player_left_active::after {
   content: '';
   position: absolute;
   right: -25px;
+  top: -10%;
+  width: 30px;
+  height: 30px;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url('../../../assets/chess-figures/whiteBishop.svg');
+}
+
+.player_right_active::before {
+  content: '';
+  position: absolute;
+  left: -25px;
   top: -10%;
   width: 30px;
   height: 30px;

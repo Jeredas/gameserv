@@ -180,6 +180,21 @@
   width: 630px;
 }
 
+.replay_wrapper {
+  width: 700px;
+}
+
+@media screen and (max-height: 700px) {
+  .replay_wrapper {
+    height: 550px;
+    width: 480px;
+  }
+  .record_replayScreen {
+    height: 350px;
+    width: 480px;
+  }
+}
+
 .record_closeButton {
     position: absolute;
     background-image: url("../../assets/select-game-popup/close.png");
