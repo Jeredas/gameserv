@@ -1,7 +1,4 @@
-const socketURL = 'ws://localhost:4080';
 import {ISocketService} from './ISocketService';
-import {LobbyService, LobbyModel, LobbyView} from './lobbyService';
-import {OnlyChatChannelService, OnlyChatChannelModel, OnlyChatChannelView} from './onlyChatChannel/onlyChatChannel';
 import Signal from './signal';
 
 
@@ -86,29 +83,3 @@ export class SocketClient{
     this.socket.send(JSON.stringify(message));
   }
 }
-
-// (async function test() {
-//   let socket = new SocketClient();
-  
-//   let lobbyModel = new LobbyModel(socket);
-//   let lobby = new LobbyView(document.body, lobbyModel);
-
-//   lobby.onJoinClick = ()=>{
-//     let onlyChatChannelModel = new OnlyChatChannelModel(socket, 'dgh');
-//     onlyChatChannelModel.joinChannel().then(res=>{
-//       console.log('join channel', res);
-//       if (res){
-//         let channel = new OnlyChatChannelView(document.body, onlyChatChannelModel);
-//         channel.onLeaveClick = ()=>{
-//           channel.destroy();
-//         }
-//       }
-//     });
-    
-//   }
-
-//   socket.init(socketURL);
-//   /*lobbyModel.createNewChannel('fgdfs').then((params)=>{
-//     console.log('created ', params);
-//   });*/
-// })();

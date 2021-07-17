@@ -19,8 +19,6 @@ export interface IGameRecord {
   moves: Array<{ field: string; player: string; history: IChessHistory }>;
 }
 
-const tableHeader = [ 'Game', 'Date', 'Players', 'Winner', 'Game mode', 'Time/Watch Replay' ];
-
 class RecordPage extends Control {
   private chessRecordBlock: Control;
   private recordChess: Array<Record>;
@@ -42,8 +40,6 @@ class RecordPage extends Control {
         this.addRecordToChess(res);
       });
     };
-
-    
 
     this.model.getStatistic().then(async (res: Array<IGameRecord>) => {
       this.addRecordToChess(res);

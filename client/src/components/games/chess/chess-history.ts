@@ -2,7 +2,7 @@ import Vector from '../../utilities/vector';
 import Control from '../../utilities/control';
 import chessStyles from './chess-game.module.css';
 import configFigures from './config-chess';
-import { IChessHistory } from 'src/components/utilities/interfaces';
+import { IChessHistory } from '../../../components/utilities/interfaces';
 
 class ChessHistoryBlock extends Control {
   private historyWrapper: Control;

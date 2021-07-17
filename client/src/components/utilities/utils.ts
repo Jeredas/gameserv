@@ -1,3 +1,5 @@
+import appStorage from "./storage";
+
 export function digestMessage(message: string, key: string) {
     const msgUint8 = new TextEncoder().encode(message + key);
     return window.crypto.subtle.digest('SHA-256', msgUint8).then((hashBuffer) => {
@@ -14,7 +16,7 @@ export function digestMessage(message: string, key: string) {
   }
   
   export function apiRequest(apiUrl:string, service:string, params:any) {
-    const sessionId = localStorage.getItem('todoListApplicationSessionId');
+    const sessionId = appStorage.getSession();
     if (sessionId) {
       params.sessionId = sessionId;
     }

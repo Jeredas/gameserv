@@ -5,6 +5,7 @@ import Control from '../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
 import inputDefault from '../inputDefault/inputDefault';
 import defaultAvatar from '../../assets/select-game-popup/avat-def.png';
+import appStorage from '../utilities/storage';
 
 
 class SettingsUser extends GenericPopup<any> {
@@ -42,7 +43,7 @@ class SettingsUser extends GenericPopup<any> {
     }
     this.logOutButton.onClick = () =>{
       window.location.hash = '#about';
-      localStorage.removeItem('todoListApplicationSessionId');
+      appStorage.removeSession()
       this.onSelect('logOut')
     }
   }

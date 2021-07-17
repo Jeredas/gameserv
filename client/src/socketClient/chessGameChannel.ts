@@ -15,6 +15,7 @@ import ChessGame from '../components/games/chess/chess-game';
 import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
 import MainViewUsers from '../components/mainView/mainViewUsers/mainViewUsers';
+import appStorage from '../components/utilities/storage';
 
 export class ChessGameChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -217,7 +218,6 @@ export class ChessGameChannelModel extends ChatChannelModel {
 
   private send(method: string, params: Object) {
     this.service.send({
-      // sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
       service: this.serviceName,
       endpoint: 'sendToChannel',
       params: {
@@ -225,7 +225,7 @@ export class ChessGameChannelModel extends ChatChannelModel {
         channelMethod: method,
         channelRequestParams: {
           ...params,
-          sessionId: window.localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       }
     });

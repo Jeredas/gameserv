@@ -3,13 +3,13 @@ import { ISocketService } from '../ISocketService';
 import { SocketClient } from '../socketClient';
 import Signal from '../signal';
 import { ChatChannelModel } from '../chatChannelModel';
-import { channelModel } from 'src/components/utilities/config';
+import { channelModel } from '../../components/utilities/config';
 import MainView from '../../components/mainView/mainView';
 import { IChatUser, IUserChatMessage } from '../../components/utilities/interfaces';
 import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
 import channelStyles from './onlyChatChannel.module.css';
 import messageBlockImage from '../../assets/message-inner.png';
-import { throws } from 'assert';
+import appStorage from '../../components/utilities/storage';
 
 export class OnlyChatChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -114,7 +114,7 @@ export class OnlyChatChannelModel extends ChatChannelModel {
         channelMethod: method,
         channelRequestParams: {
           ...params,
-          sessionId: window.localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       }
     });

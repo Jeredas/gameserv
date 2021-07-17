@@ -16,8 +16,8 @@ import { GameSelectPopup } from '../game-select-popup/game-select-popup';
 import OtherGamePopup from '../OtherGamePopup/OtherGamePopup';
 import PaginatedContainer from './paginate-container';
 import { OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
-import { CrossGameChannelView } from 'src/socketClient/crossGameChannel';
-import { ChessGameChannelView } from 'src/socketClient/chessGameChannel';
+import { CrossGameChannelView } from '../../socketClient/crossGameChannel';
+import { ChessGameChannelView } from '../../socketClient/chessGameChannel';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;

@@ -1,10 +1,12 @@
 
 import Signal from '../../socketClient/signal';
+import { httpUrl } from '../utilities/apiConfig';
 import { IAuthData, IPublicUserInfo, IUserAuth, IUserData } from '../utilities/interfaces';
+import appStorage from '../utilities/storage';
 import { apiPostRequest, apiRequest } from '../utilities/utils';
 
 
-const apiUrl = 'http://localhost:4040/authService/';
+const apiUrl = `${httpUrl}/authService/`;
 
 export class AuthModel {
   onResult: Signal<string> = new Signal();
@@ -22,8 +24,8 @@ export class AuthModel {
           avatar: res.data.userData.avatar,
           //name: res.data.userData.name
         }
-        localStorage.removeItem('todoListApplicationSessionId');
-        localStorage.setItem('todoListApplicationSessionId', res.data.session);
+        appStorage.removeSession();
+        appStorage.setSession(res.data.session);
         this.onLogIn.emit(loginData);
         return true
     }).catch((err)=>{
