@@ -400,11 +400,6 @@ export class ChessGameChannelView extends MainView {
       this.mainViewMessages.addMessage(params);
     });
 
-    // this.mainViewUsers.onChannelLeave = () => {
-    //   this.model.leaveChannel();
-    //   this.onLeaveClick();
-    // };
-
     this.mainViewUsers.onChannelLeave = () => {
       this.model.leavePlayer();
       this.onLeaveClick();
