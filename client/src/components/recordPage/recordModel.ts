@@ -7,8 +7,8 @@ import { apiPostRequest, apiRequest } from '../utilities/utils';
 const apiUrl = 'http://localhost:4040/statService/';
 
 export class RecordModel {
-  onResult: Signal<string> = new Signal();
-  public onLogIn: Signal<IUserAuth> = new Signal();
+  // onResult: Signal<string> = new Signal();
+  // public onLogIn: Signal<IUserAuth> = new Signal();
 
   constructor() {
 

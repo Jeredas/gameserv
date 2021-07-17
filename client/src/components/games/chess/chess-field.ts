@@ -4,7 +4,7 @@ import Figure from './chess-figure';
 import ChessCell from './chess-cell';
 import chessStyles from './chess-game.module.css';
 import { chessModeConfig } from './config-chess';
-import { IKingInfo } from 'src/components/utilities/interfaces';
+import { IKingInfo } from '../../../components/utilities/interfaces';
 
 class ChessField extends Control {
   private dragableItems: Control;

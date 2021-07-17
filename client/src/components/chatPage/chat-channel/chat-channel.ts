@@ -1,4 +1,4 @@
-import { IChannelData } from 'src/components/utilities/interfaces';
+import { IChannelData } from '../../../components/utilities/interfaces';
 import Control from '../../utilities/control';
 import chatStyles from '../chatPage.module.css';
 

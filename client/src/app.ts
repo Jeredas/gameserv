@@ -16,6 +16,7 @@ const socketURL = 'ws://localhost:4080';
 import appStyles from './app.module.css';
 import RecordPage from './components/recordPage/recordPage';
 import ConnectToServer from './components/connectToServer/connectToServer';
+import appStorage from './components/utilities/storage';
 
 class Application extends Control {
   navigation: Navigation;
@@ -42,38 +43,9 @@ class Application extends Control {
     popupService.init(parentNode);
     popupService.showPopup(CheckSession).then((res) => {
       if (!res) {
-        // popupService.showPopup(RegisterCheck).then((res) => {
-        //   if (res==='SignUp') {
-        //     popupService.showPopup(RegForm).then((res) => {
-        //       if (res === 'register') {
-        //         console.log('registered');
-        //         this.showAuthPopUp().then(res => {
-        //           if(res) {
-        //             this.buildChatPage();
-        //           } else {
-        //             this.router.activateRouteByName('about');
-        //           }
-        //         })
-        //       } else {
-        //         this.router.activateRouteByName('about');
-        //         console.log('registration failed');
-        //       }
-        //     });
-        //   } else if(res === 'SignIn') {
-        //     this.showAuthPopUp().then(res => {
-        //       if(res) {
-        //         this.buildChatPage();
-        //       } else {
-        //         this.router.activateRouteByName('about');
-        //       }
-        //     })
-        //   } else if(res === 'Close'){
-        //     this.router.activateRouteByName('about');
-        //   }
-        // });
       } else {
         console.log('build here')
-        this.model.authBySession({sessionId:localStorage.getItem('todoListApplicationSessionId')}).then((res)=>{
+        this.model.authBySession({sessionId:appStorage.getSession()}).then((res)=>{
           this.currentUser.setData(res)
           this.buildChatPage();
         })

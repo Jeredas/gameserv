@@ -2,6 +2,7 @@ import { IChessHistory } from './../../utilities/interfaces';
 import Vector from '../../utilities/vector';
 import { IChessData, IChessStart, IChessStop } from '../../utilities/interfaces';
 import Signal from '../../../socketClient/signal';
+import appStorage from '../../../components/utilities/storage';
 
 class ChessModel {
   onChessMove: Signal<IChessData> = new Signal();
@@ -73,7 +74,7 @@ class ChessModel {
         endpoint: 'chessMove',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       })
     );
@@ -86,7 +87,7 @@ class ChessModel {
         endpoint: 'chessFigureGrab',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       })
     );
@@ -99,7 +100,7 @@ class ChessModel {
         endpoint: 'chessStartGame',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       })
     );
@@ -112,7 +113,7 @@ class ChessModel {
         endpoint: 'chessStopGame',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       })
     );
@@ -125,7 +126,7 @@ class ChessModel {
         endpoint: 'chessRemoveGame',
         params: {
           messageText: message,
-          sessionId: localStorage.getItem('todoListApplicationSessionId')
+          sessionId: appStorage.getSession()
         }
       })
     );

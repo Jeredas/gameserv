@@ -25,8 +25,7 @@ import ChessRenewResponse from './chessSupport/chessRenewResponse';
 import ChessRemoveResponse from './chessSupport/chessRemoveResponse';
 import ChessMateResponse from './chessSupport/chessMateResponse';
 import ChessStaleMateResponse from './chessSupport/chessStaleMateResponse';
-
-
+import ChessPlayer from './chessSupport/chessPlayer';
 
 export class ChessGameChannel extends ChatChannel {
   gameMode: string;
@@ -65,37 +64,74 @@ export class ChessGameChannel extends ChatChannel {
       if (!this.players.find((player) => currentClient.userData.login === player.login)) {
         if (this.gameMode === 'network') {
           if (this.players.length < 2) {
-            this.players.push({
-              login: currentClient.userData.login,
-              avatar: currentClient.userData.avatar,
-              color: this.players.length == 0 ? ChessColor.white : ChessColor.black
-            });
+            // this.players.push({
+            //   login: currentClient.userData.login,
+            //   avatar: currentClient.userData.avatar,
+            //   color: this.players.length == 0 ? ChessColor.white : ChessColor.black
+            // });
+            this.players.push(
+              new ChessPlayer(
+                currentClient.userData.login,
+                currentClient.userData.avatar,
+                this.players.length == 0 ? ChessColor.white : ChessColor.black
+              )
+            );
           }
         } else if (this.gameMode === 'oneScreen') {
           if (this.players.length < 1) {
-            this.players.push({
-              login: currentClient.userData.login,
-              avatar: currentClient.userData.avatar,
-              color: ChessColor.white
-            });
-            this.players.push({
-              login: currentClient.userData.login,
-              avatar: currentClient.userData.avatar,
-              color: ChessColor.black
-            });
+            // this.players.push({
+            //   login: currentClient.userData.login,
+            //   avatar: currentClient.userData.avatar,
+            //   color: ChessColor.white
+            // });
+            // this.players.push({
+            //   login: currentClient.userData.login,
+            //   avatar: currentClient.userData.avatar,
+            //   color: ChessColor.black
+            // });
+            this.players.push(
+              new ChessPlayer(
+                currentClient.userData.login,
+                currentClient.userData.avatar,
+                ChessColor.white
+              )
+            );
+            this.players.push(
+              new ChessPlayer(
+                currentClient.userData.login,
+                currentClient.userData.avatar,
+                ChessColor.black
+              )
+            );
           }
         } else if (this.gameMode === 'bot') {
           if (this.players.length < 1) {
-            this.players.push({
-              login: currentClient.userData.login,
-              avatar: currentClient.userData.avatar,
-              color: ChessColor.white
-            });
-            this.players.push({
-              login: 'AI',
-              avatar: currentClient.userData.avatar,
-              color: ChessColor.black
-            });
+            // this.players.push({
+            //   login: currentClient.userData.login,
+            //   avatar: currentClient.userData.avatar,
+            //   color: ChessColor.white
+            // });
+            // this.players.push({
+            //   login: 'AI',
+            //   avatar: currentClient.userData.avatar,
+            //   color: ChessColor.black
+            // });
+            this.players.push(
+              new ChessPlayer(
+                currentClient.userData.login,
+                currentClient.userData.avatar,
+                ChessColor.white
+              )
+            );
+            this.players.push(
+              new ChessPlayer(
+                'AI',
+                '',
+                ChessColor.black
+              )
+            );
+
+
           }
         } else {
           throw new Error('ChessGameChanel.joinPlayer(): Illegal game mode');
@@ -451,13 +487,13 @@ export class ChessGameChannel extends ChatChannel {
             let rivalClient = this._getUserByLogin(rivalPlayer);
             currentClient.send(response);
             rivalClient.send(response);
-            writeStatistic(this.getRecordData("StaleMate"));
+            writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             currentClient.send(response);
-            writeStatistic(this.getRecordData("StaleMate"));
+            writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -485,7 +521,7 @@ export class ChessGameChannel extends ChatChannel {
           rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
           writeStatistic(this.getRecordData(rivalPlayer));
         }
-        
+
         this.chessProcessor.clearData();
         this.players = [];
         this.sendForAllClients(new ChessRenewResponse(this.name));
@@ -496,7 +532,7 @@ export class ChessGameChannel extends ChatChannel {
   takePlayerOffGame(login): void {
     this.players = this.players.filter((player) => player.login !== login);
   }
-  getRecordData(winner:string) {
+  getRecordData(winner: string) {
     return (this.recordData = {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],

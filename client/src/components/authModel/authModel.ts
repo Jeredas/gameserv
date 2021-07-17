@@ -1,6 +1,7 @@
 
 import Signal from '../../socketClient/signal';
 import { IAuthData, IPublicUserInfo, IUserAuth, IUserData } from '../utilities/interfaces';
+import appStorage from '../utilities/storage';
 import { apiPostRequest, apiRequest } from '../utilities/utils';
 
 
@@ -22,8 +23,8 @@ export class AuthModel {
           avatar: res.data.userData.avatar,
           //name: res.data.userData.name
         }
-        localStorage.removeItem('todoListApplicationSessionId');
-        localStorage.setItem('todoListApplicationSessionId', res.data.session);
+        appStorage.removeSession();
+        appStorage.setSession(res.data.session);
         this.onLogIn.emit(loginData);
         return true
     }).catch((err)=>{

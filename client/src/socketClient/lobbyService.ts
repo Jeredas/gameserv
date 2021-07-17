@@ -4,6 +4,7 @@ import {ISocketService} from './ISocketService';
 import { SocketClient } from './socketClient';
 import Signal from './signal';
 import { IChannelData } from '../components/utilities/interfaces';
+import appStorage from '../components/utilities/storage';
 
 
 export class LobbyService implements ISocketService{
@@ -115,7 +116,7 @@ export class LobbyModel{
       }
       this.service.onChannelType.add(listener);
       this.service.send({
-        sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
+        sessionId: appStorage.getSession(),
         service: this.serviceName,
         endpoint: 'getChannelInfo',
         params: {
@@ -163,7 +164,7 @@ export class LobbyModel{
       this.service.onCreated.add(listener);
       this.service.send({
         
-        sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
+        sessionId: appStorage.getSession(),
         service: this.serviceName,
         endpoint: 'createNewChannel',
         params: {
@@ -183,7 +184,7 @@ export class LobbyModel{
         service: this.serviceName ,
         endpoint: 'channelList',
         params: {
-          sessionId: window.localStorage.getItem('todoListApplicationSessionId'),
+          sessionId: appStorage.getSession(),
         },
       },
     );

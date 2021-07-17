@@ -1,7 +1,7 @@
 import Vector from '../../../utilities/vector';
 import Control from '../../../utilities/control';
 import historyStyles from './crossHistory.module.css'
-import { ICrossHistory } from 'src/components/utilities/interfaces';
+import { ICrossHistory } from '../../../../components/utilities/interfaces';
 
 class HistoryBlock extends Control {
   private historyWrapper: Control;
