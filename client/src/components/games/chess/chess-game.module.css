@@ -13,13 +13,11 @@
 
 .chess_board {
   position: relative;
-  /* width: var(--size); */
   display: flex;
   flex-wrap: wrap;
   margin: 0 auto;
-  /* height: var(--size); */
-  /* width: 450px;
-  height: 450px; */
+  height: 100%;
+  width: 100%;
   transition-property: transform;
   transition-duration: .5s;
   transition-timing-function: ease;
@@ -130,26 +128,24 @@
 
 .chess_body {
   display: flex;
-  width: 100%;
-  height: 100%;
+  height: 430px;
+  width: 540px;
   justify-content: center;
   align-items: flex-start;
   border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.2);
   margin: 0 auto;
-  /* background-color: transparent; */
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .chess_history {
-  min-width: 100px;
-  max-width: 100px;
+  width: 100px;
   padding: 5px;
   padding-right: 10px;
   margin-right: 10px;
   overflow-y: scroll;
-  /* height: var(--size); */
-  /* height: 450px; */
-  /* --size: 480px; */
+  flex-shrink: 0;
+  color: #ccc;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .chess_history_item {
@@ -271,26 +267,36 @@
   background-image: url('../../../assets/chess-figures/whiteBishop.svg');
 }
 
+@media screen and (max-height: 800px) {
+  .chess_body {
+    height: 280px;
+    width: 390px;
+  }
+  .chess_history {
+    height: 280px;
+  }
+
+  .chess_button {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-height: 700px) {
+  .chess_body {
+    height: 350px;
+    width: 460px;
+  }
+  .chess_history {
+    height: 350px;
+  }
+
+  .chess_button {
+    font-size: 16px;
+  }
+}
+
 @media screen and (max-width: 870px) {
   .chess_wrapper {
     max-width: 500px;
   }
-
-  .chess_board {
-    position: relative;
-    /* width: var(--size); */
-    display: flex;
-    flex-wrap: wrap;
-    margin: 0 auto;
-    /* height: var(--size); */
-    width: 350px;
-    height: 350px;
-    transition-property: transform;
-    transition-duration: .5s;
-    transition-timing-function: ease;
-  }
-  /* .chess_cell {
-    width: calc(100% / 8);
-    height: calc(100% / 8);
-  } */
 }
