@@ -4,10 +4,6 @@ import Vector from '../../../utils/vector';
 import { IChessProcessor } from '../../../chess-lib/ichess-processor';
 import { ChessProcessor } from '../../../chess-lib/chess-processor';
 import { ChessColor } from '../../../chess-lib/chess-color';
-import { Move } from '../../../chess-lib/move';
-import { time } from 'console';
-import { ICellCoord } from '../../../chess-lib/icell-coord';
-import { Field } from '../../../chess-lib/field';
 import { writeStatistic } from '../../../httpServices/statService';
 import { IHistoryItem } from '../../../chess-lib/ihistory-item';
 import ChannelJoinPlayerResponse from '../../channelSupport/channelJoinPlayerResponse';
@@ -155,8 +151,6 @@ export class ChessGameChannel extends ChatChannel {
         currentClient.userData.login,
         this.players
       );
-      console.log('JOIN Players', this.players.length);
-
       this.sendForAllClients(response);
     } else {
       connection.sendUTF(
@@ -179,27 +173,27 @@ export class ChessGameChannel extends ChatChannel {
 
     if (this.players && this.players.length) {
       let currentPlayer = currentClient.userData.login;
-      if (this.gameMode === 'network') {
-        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer);
-        if (rivalPlayer) {
-          let rivalClient = this._getUserByLogin(rivalPlayer.login);
-          this.players = this.players.filter((it) => it.login != currentClient.userData.login);
-          if (rivalClient) {
-            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer.login));
-            rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+      if (this.players.find((player) => player.login === currentPlayer)) {
+        if (this.gameMode === 'network') {
+          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer);
+          if (rivalPlayer) {
+            let rivalClient = this._getUserByLogin(rivalPlayer.login);
+            this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+            if (rivalClient) {
+              currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer.login));
+              rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+            }
           }
         }
-      }
-      this._sendForAllClients(
-        new ChannelPlayerListResponse(
+        const response = new ChannelPlayerListResponse(
           this.name,
           this.players.map((it) => ({ login: it.login, avatar: it.avatar })),
           true
-        )
-      );
-
-      this.chessProcessor.clearData();
-      this.players = [];
+        );
+        this._sendForAllClients(response);
+        this.chessProcessor.clearData();
+        this.players = [];
+      }
     }
     super.leaveUser(connection, params);
   }
@@ -214,8 +208,6 @@ export class ChessGameChannel extends ChatChannel {
           this.chessProcessor.getStartTime(),
           this.chessProcessor.getField()
         );
-        console.log('START', response);
-
         this.sendForAllClients(response);
       }
     }
@@ -377,64 +369,55 @@ export class ChessGameChannel extends ChatChannel {
   }
 
   chessStop(connection, params) {
-    console.log('GAME MODE', this.gameMode);
-
     const currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
       if (currentUser.login) {
         let currentPlayer = currentClient.userData.login;
         if (this.gameMode === 'network') {
-          console.log('CHESS STOP + ', this.gameMode);
-          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-          let rivalClient = this._getUserByLogin(rivalPlayer);
-          if (params.messageText === 'loss') {
-            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-            rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
-            writeStatistic(this.getRecordData(currentPlayer));
-            this.chessProcessor.clearData();
-            this.players = [];
-            this.sendForAllClients(new ChessRenewResponse(this.name));
-          } else {
-            const responseDrawAgree = new ChessDrawAgreeResponse(
-              this.name,
-              params.messageText,
-              currentUser.login
-            );
-            const responseDraw = new ChessDrawResponse(
-              this.name,
-              params.messageText,
-              currentUser.login
-            );
-            const clients = this.clients.filter(
-              (client) => client.userData.login !== currentUser.login
-            );
-            clients.forEach((it) => it.send(responseDrawAgree));
-            currentClient.send(responseDraw);
+          const checkPlayer = this.players.find((player) => player.login === currentPlayer);
+          if (checkPlayer) {
+            const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+            let rivalClient = this._getUserByLogin(rivalPlayer);
+            if (params.messageText === 'loss') {
+              currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+              rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+              writeStatistic(this.getRecordData(currentPlayer));
+              this.chessProcessor.clearData();
+              this.players = [];
+              this.sendForAllClients(new ChessRenewResponse(this.name));
+            } else {
+              const responseDrawAgree = new ChessDrawAgreeResponse(
+                this.name,
+                params.messageText,
+                currentUser.login
+              );
+              const responseDraw = new ChessDrawResponse(
+                this.name,
+                params.messageText,
+                currentUser.login
+              );
+              rivalClient.send(responseDrawAgree);
+              currentClient.send(responseDraw);
+            }
           }
         } else {
-          let rivalPlayer = 'Player2';
-          if (this.gameMode === 'bot') {
-            rivalPlayer = this.players[1].login;
-          }
-          if (params.messageText === 'loss') {
-            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-            writeStatistic(this.getRecordData('AI'));
+          if (currentUser.login === this.players[1].login) {
+            let rivalPlayer = 'Player2';
+            if (this.gameMode === 'bot') {
+              rivalPlayer = this.players[1].login;
+            }
+            if (params.messageText === 'loss') {
+              currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+              writeStatistic(this.getRecordData('AI'));
+            } else if (params.messageText === 'draw') {
+              currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
+              writeStatistic(this.getRecordData('draw'));
+            }
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
-          } else if (params.messageText === 'draw') {
-            currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
-            writeStatistic(this.getRecordData('draw'));
-            this.chessProcessor.clearData();
-            this.players = [];
-            this.moves =[];
-           this.sendForAllClients(new ChessRenewResponse(this.name));
           }
-          this.chessProcessor.clearData();
-          this.players = [];
-          this.sendForAllClients(new ChessRenewResponse(this.name));
-          this.moves =[];
         }
       }
     }
@@ -483,7 +466,6 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       if (currentPlayer) {
-        console.log('length', this.players.length);
         if (this.players.length) {
           const response = new ChessStaleMateResponse(this.name, 'staleMate');
           if (this.gameMode === 'network') {
@@ -514,8 +496,10 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       if (this.gameMode === 'network') {
-        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-        let rivalClient = this._getUserByLogin(rivalPlayer);
+        const checkPlayer = this.players.find((player) => player.login === currentPlayer);
+        if (checkPlayer) {
+          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+          let rivalClient = this._getUserByLogin(rivalPlayer);
 
         if (params.messageText === 'agree') {
           const response = new ChessRemoveResponse(this.name, 'draw');
@@ -543,7 +527,7 @@ export class ChessGameChannel extends ChatChannel {
       }
     }
   }
-
+  }
   takePlayerOffGame(login): void {
     this.players = this.players.filter((player) => player.login !== login);
   }
