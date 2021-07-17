@@ -38,8 +38,8 @@ export class Replay extends GenericPopup<string> {
             this.start()
         }
         this.replaySrceen = new Control(this.popupWrapper.node, 'div', recordStyles.record_replayScreen);
-        this.replaySrceen.node.style.width = '500px';
-        this.replaySrceen.node.style.height = '500px';
+        // this.replaySrceen.node.style.width = '500px';
+        // this.replaySrceen.node.style.height = '500px';
         this.closeBtn = new ButtonDefault(this.popupWrapper.node, recordStyles.record_closeButton, '')
         this.closeBtn.onClick = () => {
             this.onSelect('close')
@@ -50,7 +50,6 @@ export class Replay extends GenericPopup<string> {
         this.replaySrceen.node.innerHTML = ''
         if (this.params.gameType == 'CROSS') {
             this.view = new Cross(this.replaySrceen.node);
-            console.log(this.params.player1)
             this.view.playerOne.node.textContent = this.params.player1.login;
             this.view.playerTwo.node.textContent = this.params.player2.login;
             this.view.btnStart.destroy();
@@ -58,9 +57,6 @@ export class Replay extends GenericPopup<string> {
             this.view.btnLoss.destroy();
             (this.params.history as Array<ICrossHistory>).forEach((res: ICrossHistory, i: number) => {
                 setTimeout(() => {
-                    //const move = new Control( this.replaySrceen.node, 'div', );
-                    // move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
-                    console.log(res)
                     this.view.timer.node.innerHTML = `${res.time}`
                     const field: Array<Array<string>> = [[], [], []];
                     field[res.move.y][res.move.x] = res.sign;
@@ -71,7 +67,6 @@ export class Replay extends GenericPopup<string> {
         }
         if (this.params.gameType == 'CHESS') {
             const startTime = Date.now();
-            console.log(this.params)
             const players = [
                 {
                     login: this.params.player1.login,
@@ -160,9 +155,17 @@ export class Replay extends GenericPopup<string> {
                     }, move.history.time / this.speed)
                     i++
                 }
-                console.log(i)
             })
-
+           const delay = this.params.moves[ this.params.moves.length-1].history.time + 500;
+           if(this.params.winner.toLocaleLowerCase() =='draw' || this.params.winner.toLocaleLowerCase() =='stalemate'){
+            setTimeout(()=>{
+                alert(this.params.winner.toLocaleUpperCase())
+               },delay/this.speed)
+           } else {
+            setTimeout(()=>{
+                alert(`Winner is ${this.params.winner}`)
+               },delay/this.speed)
+           }
         }
     }
 }

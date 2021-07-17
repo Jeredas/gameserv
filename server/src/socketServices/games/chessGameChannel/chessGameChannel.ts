@@ -420,13 +420,21 @@ export class ChessGameChannel extends ChatChannel {
           if (params.messageText === 'loss') {
             currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
             writeStatistic(this.getRecordData('AI'));
+            this.chessProcessor.clearData();
+            this.players = [];
+            this.sendForAllClients(new ChessRenewResponse(this.name));
           } else if (params.messageText === 'draw') {
             currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
             writeStatistic(this.getRecordData('draw'));
+            this.chessProcessor.clearData();
+            this.players = [];
+            this.moves =[];
+           this.sendForAllClients(new ChessRenewResponse(this.name));
           }
           this.chessProcessor.clearData();
           this.players = [];
           this.sendForAllClients(new ChessRenewResponse(this.name));
+          this.moves =[];
         }
       }
     }
@@ -446,6 +454,7 @@ export class ChessGameChannel extends ChatChannel {
             writeStatistic(this.getRecordData(currentPlayer));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             let rivalPlayer = 'Player2';
@@ -461,6 +470,7 @@ export class ChessGameChannel extends ChatChannel {
             writeStatistic(this.getRecordData(rivalPlayer));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
@@ -484,12 +494,14 @@ export class ChessGameChannel extends ChatChannel {
             writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             currentClient.send(response);
             writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
@@ -510,14 +522,23 @@ export class ChessGameChannel extends ChatChannel {
           currentClient.send(response);
           rivalClient.send(response);
           writeStatistic(this.getRecordData('DRAW'));
+          this.chessProcessor.clearData();
+          this.players = [];
+          this.moves =[];
+          this.sendForAllClients(new ChessRenewResponse(this.name));
         } else if (params.messageText === 'disagree') {
           currentClient.send(new ChessRemoveResponse(this.name, 'won', rivalPlayer));
           rivalClient.send(new ChessRemoveResponse(this.name, 'lost', currentPlayer));
           writeStatistic(this.getRecordData(rivalPlayer));
+          this.chessProcessor.clearData();
+          this.players = [];
+          this.moves =[];
+          this.sendForAllClients(new ChessRenewResponse(this.name));
         }
 
         this.chessProcessor.clearData();
         this.players = [];
+        this.moves =[];
         this.sendForAllClients(new ChessRenewResponse(this.name));
       }
     }
@@ -527,16 +548,24 @@ export class ChessGameChannel extends ChatChannel {
     this.players = this.players.filter((player) => player.login !== login);
   }
   getRecordData(winner: string) {
+    let time = '00:00:00';
+    if(this.chessProcessor.getHistory().length >= 1){
+      time = `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`
+    }
+     
     return (this.recordData = {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],
       player2: this.players[1],
       date: new Date().toLocaleDateString('ru'),
-      time: `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`,
+      time: time,
       winner: winner,
       gameType: 'CHESS',
       gameMode: this.gameMode,
-      moves: this.moves
+      moves: this.moves? this.moves : []
     });
+  }
+  clearAll(){
+    
   }
 }

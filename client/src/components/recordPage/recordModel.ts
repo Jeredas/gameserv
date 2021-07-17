@@ -17,7 +17,6 @@ export class RecordModel {
 
   async getStatistic() {
     const response = await apiRequest(apiUrl, 'getStatistic', {}).then((res) => {
-        console.log(res.data,'data from server')
         const recordData = res.data
         return recordData
     }).catch((err)=>{
