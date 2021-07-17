@@ -71,12 +71,13 @@ class ChessGame extends Control {
   private singleModePlayerIndex: number;
 
   private boardSize: number = 0;
+  private chessControls: Control;
 
   constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
     this.node.classList.add('game_action_size');
     this.chessMode = chessMode;
-    const chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
+    this.chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
     const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
     this.playerOne = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player1');
     this.playerOne.node.classList.add(chessStyles.player_active);
@@ -88,24 +89,24 @@ class ChessGame extends Control {
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
     const nodeHeight = this.node.getBoundingClientRect().height;
 
-    this.history = new ChessHistoryBlock(this.chessBody.node, nodeHeight);
+    this.history = new ChessHistoryBlock(this.chessBody.node);
 
     this.chessBoard = new ChessField(this.chessBody.node, configFigures, nodeHeight);
     this.initBoard();
 
-    this.btnStart = new ChessButton(chessControls.node, 'Start');
+    this.btnStart = new ChessButton(this.chessControls.node, 'Start');
     this.btnStart.buttonDisable();
     this.btnStart.onClick = () => {
       this.onStartClick(this.host);
       this.btnStart.buttonDisable();
     };
-    this.btnDraw = new ChessButton(chessControls.node, 'Draw');
+    this.btnDraw = new ChessButton(this.chessControls.node, 'Draw');
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
       this.onDrawClick('draw');
       // this.model.chessStopGame('draw');
     };
-    this.btnLoss = new ChessButton(chessControls.node, 'Loss');
+    this.btnLoss = new ChessButton(this.chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
       this.onLossClick('loss');
@@ -322,6 +323,14 @@ class ChessGame extends Control {
 
   stopTimer():void {
     this.timer.stop();
+  }
+
+  hideButtons(): void {
+    this.chessControls.node.style.display = 'none';
+  }
+
+  setHistoryFontColor(): void {
+    this.history.setHistoryFontColor();
   }
 }
 

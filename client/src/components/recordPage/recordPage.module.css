@@ -172,13 +172,17 @@
 .record_replayScreen {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0 auto;
   width: 100%;
-  
+  height: 500px;
+  width: 630px;
 }
 
 .record_closeButton {
     position: absolute;
-    background-image: url("../../assets//select-game-popup/close.png");
+    background-image: url("../../assets/select-game-popup/close.png");
     width: 40px;
     height: 40px;
     background-size: contain;
@@ -189,3 +193,4 @@
     background-color: transparent;
 
 }
+
