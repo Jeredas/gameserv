@@ -73,7 +73,6 @@ export class RegForm extends GenericPopup<any> {
     this.registerButton.onClick = () => {
       this.onSelect('register');
       this.model.regValidation(this.getData()).then(async (res) => {
-        console.log(res);
         if (res == 'ok') {
           const res = await this.model.passwordValidation(this.getData());
           res === 'ok' ? this.model.registerUser(this.getAuthData()) : console.log('wrong');
