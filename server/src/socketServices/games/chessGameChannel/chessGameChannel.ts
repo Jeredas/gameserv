@@ -123,15 +123,7 @@ export class ChessGameChannel extends ChatChannel {
                 ChessColor.white
               )
             );
-            this.players.push(
-              new ChessPlayer(
-                'AI',
-                '',
-                ChessColor.black
-              )
-            );
-
-
+            this.players.push(new ChessPlayer('AI', '', ChessColor.black));
           }
         } else {
           throw new Error('ChessGameChanel.joinPlayer(): Illegal game mode');
@@ -188,12 +180,14 @@ export class ChessGameChannel extends ChatChannel {
     if (this.players && this.players.length) {
       let currentPlayer = currentClient.userData.login;
       if (this.gameMode === 'network') {
-        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-        let rivalClient = this._getUserByLogin(rivalPlayer);
-        this.players = this.players.filter((it) => it.login != currentClient.userData.login);
-        if (rivalClient) {
-          currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-          rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+        const rivalPlayer = this.players.find((player) => player.login !== currentPlayer);
+        if (rivalPlayer) {
+          let rivalClient = this._getUserByLogin(rivalPlayer.login);
+          this.players = this.players.filter((it) => it.login != currentClient.userData.login);
+          if (rivalClient) {
+            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer.login));
+            rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+          }
         }
       }
       this._sendForAllClients(
