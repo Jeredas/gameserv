@@ -47,17 +47,14 @@ class Record extends Control {
     const gameTime = new Control(gameTimeWatch.node, 'div', recordStyles.record_time);
     
       gameTime.node.textContent = record.time;
-    
+      if(record.moves){
+        gameTime.node.textContent = (msToTime((record.moves[record.moves.length-1].history.time-record.moves[0].history.time/1000)))
+        console.log(msToTime((record.moves[record.moves.length-1].history.time-record.moves[0].history.time/1000)) )
+      }
     const brnWatch = new ButtonDefault(gameTimeWatch.node, recordStyles.record_button, 'Watch');
     brnWatch.onClick = () => {
       popupService
-        .showPopup(Replay, {
-          history: record.history,
-          gameType: record.gameType,
-          player1: record.player1,
-          player2: record.player2,
-          moves: record.moves
-        })
+        .showPopup(Replay, record)
         .then((res) => {
           if (res == 'close') {
             console.log('resplay closed');
@@ -68,3 +65,16 @@ class Record extends Control {
 }
 
 export default Record;
+
+
+function msToTime(duration:number) {
+  let seconds = Math.round(((duration / 1000) % 60)),
+      minutes = Math.round((duration / (1000 * 60)) % 60),
+      hours = Math.round((duration / (1000 * 60 * 60)) % 2);
+
+  let hoursS = (hours < 10) ? "0" + hours : hours;
+  let minutesS = (minutes < 10) ? "0" + minutes : minutes;
+  let secondsS = (seconds < 10) ? "0" + seconds : seconds;
+
+  return hoursS + ":" + minutesS + ":" + secondsS;
+}
