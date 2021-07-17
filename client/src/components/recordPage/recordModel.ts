@@ -1,6 +1,6 @@
 
 import Signal from '../../socketClient/signal';
-import { httpUrl } from '../utilities/apiConfig';
+import httpUrl  from '../utilities/apiConfig';
 import {IUserAuth} from '../utilities/interfaces';
 import { apiPostRequest, apiRequest } from '../utilities/utils';
 

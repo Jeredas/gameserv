@@ -9,9 +9,8 @@ class ChessHistoryBlock extends Control {
 
   private historyHeader: Control;
 
-  constructor(parentNode: HTMLElement, parentHeight: number) {
+  constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', chessStyles.chess_history);
-    // this.node.style.setProperty('--size', `${parentHeight}px`);
     this.historyHeader = new Control(this.node, 'div', chessStyles.chess_history_header);
     this.historyHeader.node.textContent = 'History: ';
     this.historyWrapper = new Control(this.node, 'div');
@@ -54,6 +53,10 @@ class ChessHistoryBlock extends Control {
   clearHistory() {
     this.historyWrapper.destroy();
     this.historyWrapper = new Control(this.node, 'div');
+  }
+
+  setHistoryFontColor(): void {
+    this.node.classList.add(chessStyles.history_dark);
   }
 }
 

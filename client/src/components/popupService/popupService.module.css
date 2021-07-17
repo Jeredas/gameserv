@@ -20,7 +20,8 @@
 .popup_wrapper {
   position: relative;
   width: 100%;
-  max-width: 500px;
+  /* max-width: 500px; */
+  width: 500px;
   min-height: 300px;
   background-color: #ccc;
   color: #000;

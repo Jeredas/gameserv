@@ -140,10 +140,7 @@ class ChatPage extends Control {
   }
 
   userDisconnect() {
-    console.log('LEAVE');
     this.joinedChannels.forEach((channel) => {
-      console.log('LEAVE and channel name', channel.channelName);
-      
       this.chatMain.remove(channel.channelName);
       channel.channel.destroy();
     })

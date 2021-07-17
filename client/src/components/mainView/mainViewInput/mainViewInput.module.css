@@ -23,3 +23,9 @@
   border-bottom-right-radius: 5px;
   border-top-right-radius: 5px;
 }
+
+@media screen and (max-height: 700px) {
+  .chat_input {
+    display: none;
+  }
+}

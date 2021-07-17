@@ -66,7 +66,6 @@ class AboutPage extends Control {
   private showAuthPopUp() {
     return popupService.showPopup<{ status: string; data: IUserAuth }>(AuthForm).then((res) => {
       if (res.status === 'login') {
-        console.log(res.data, 'res data');
         return { status: true, data: res.data };
       } else {
         return { status: false };
