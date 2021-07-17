@@ -38,7 +38,6 @@ class JoinChannelPopup extends GenericPopup<any> {
     this.cancelBtn = new ButtonDefault(wrapperBtns.node, popupStyles.settings_button, langConfig.cancelButtonText);
 
     this.joinBtn.onClick = () => {
-      console.log('join to the channel');
       this.onSelect(this.searchField.getValue());
     }
 

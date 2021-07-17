@@ -41,7 +41,6 @@ export class GameSelectPopup extends GenericPopup<string> {
       button.node.style.backgroundImage = `url(${gameIcons.get(channelType)})`;
       
       button.onClick = () => {
-        console.log(channelType)
         this.onSelect(channelType);
       };
     });

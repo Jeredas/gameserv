@@ -1,6 +1,5 @@
-
 import Signal from '../../socketClient/signal';
-import { httpUrl } from '../utilities/apiConfig';
+import httpUrl from '../utilities/apiConfig';
 import { IAuthData, IPublicUserInfo, IUserAuth, IUserData } from '../utilities/interfaces';
 import appStorage from '../utilities/storage';
 import { apiPostRequest, apiRequest } from '../utilities/utils';
@@ -18,11 +17,9 @@ export class AuthModel {
 
   async sendAuthData(userData: IAuthData) {
     const response = await apiRequest(apiUrl, 'auth', userData).then((res) => {
-      // console.log(res.data,'auth response');
         const loginData = {
           login: res.data.userData.login,
           avatar: res.data.userData.avatar,
-          //name: res.data.userData.name
         }
         appStorage.removeSession();
         appStorage.setSession(res.data.session);
@@ -36,7 +33,6 @@ export class AuthModel {
 
   async testAccess() {
     const response = await apiRequest(apiUrl, 'testAccess', {}).then((res) => {
-      // console.log(res.userData);
       if(res.userData){
         console.log('session exists');
         return true;
@@ -53,7 +49,6 @@ export class AuthModel {
       return res
     });
     return request
-
   }
 
   regValidation(userData: IAuthData): Promise<string> {
@@ -87,7 +82,6 @@ export class AuthModel {
   }
   authBySession(params:{sessionId:string}){
     const userInfo = apiRequest(apiUrl, 'authBySession', params).then((res) => {
-      console.log(res)
       return {
         login: res.data.userData.login,
         avatar: res.data.userData.avatar

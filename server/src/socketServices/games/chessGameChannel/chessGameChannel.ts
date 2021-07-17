@@ -4,10 +4,6 @@ import Vector from '../../../utils/vector';
 import { IChessProcessor } from '../../../chess-lib/ichess-processor';
 import { ChessProcessor } from '../../../chess-lib/chess-processor';
 import { ChessColor } from '../../../chess-lib/chess-color';
-import { Move } from '../../../chess-lib/move';
-import { time } from 'console';
-import { ICellCoord } from '../../../chess-lib/icell-coord';
-import { Field } from '../../../chess-lib/field';
 import { writeStatistic } from '../../../httpServices/statService';
 import { IHistoryItem } from '../../../chess-lib/ihistory-item';
 import ChannelJoinPlayerResponse from '../../channelSupport/channelJoinPlayerResponse';
@@ -155,8 +151,6 @@ export class ChessGameChannel extends ChatChannel {
         currentClient.userData.login,
         this.players
       );
-      console.log('JOIN Players', this.players.length);
-
       this.sendForAllClients(response);
     } else {
       connection.sendUTF(
@@ -214,8 +208,6 @@ export class ChessGameChannel extends ChatChannel {
           this.chessProcessor.getStartTime(),
           this.chessProcessor.getField()
         );
-        console.log('START', response);
-
         this.sendForAllClients(response);
       }
     }
@@ -377,8 +369,6 @@ export class ChessGameChannel extends ChatChannel {
   }
 
   chessStop(connection, params) {
-    console.log('GAME MODE', this.gameMode);
-
     const currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
@@ -387,7 +377,6 @@ export class ChessGameChannel extends ChatChannel {
         if (this.gameMode === 'network') {
           const checkPlayer = this.players.find((player) => player.login === currentPlayer);
           if (checkPlayer) {
-            console.log('CHESS STOP + ', this.gameMode);
             const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
             let rivalClient = this._getUserByLogin(rivalPlayer);
             if (params.messageText === 'loss') {
@@ -408,10 +397,6 @@ export class ChessGameChannel extends ChatChannel {
                 params.messageText,
                 currentUser.login
               );
-              const clients = this.clients.filter(
-                (client) => client.userData.login !== currentUser.login
-              );
-              // clients.forEach((it) => it.send(responseDrawAgree));
               rivalClient.send(responseDrawAgree);
               currentClient.send(responseDraw);
             }
@@ -479,7 +464,6 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       if (currentPlayer) {
-        console.log('length', this.players.length);
         if (this.players.length) {
           const response = new ChessStaleMateResponse(this.name, 'staleMate');
           if (this.gameMode === 'network') {

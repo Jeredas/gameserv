@@ -8,8 +8,6 @@ class CheckSession extends GenericPopup<boolean> {
   ButtonYes: ButtonDefault;
   ButtonNo: ButtonDefault;
   popupWrapper: Control;
-  // onShowAbout: () => void;
-  // onShowChat: () => void;
   model: AuthModel;
   onSelect: (value: boolean) => void;
   spinner: Control;
@@ -21,16 +19,6 @@ class CheckSession extends GenericPopup<boolean> {
     this.model = new AuthModel();
     this.title = new Control(this.popupWrapper.node, 'div', stylePopup.title_check);
     this.spinner = new Control(this.popupWrapper.node, 'div', stylePopup.loader);
-    // this.ButtonYes = new ButtonDefault(this.popupWrapper.node,stylePopup.popup_default_button, 'yes');
-    // this.ButtonNo = new ButtonDefault(this.popupWrapper.node,stylePopup.popup_default_button, 'no');
-
-    // this.ButtonYes.onClick = () => {
-    //   this.onSelect(true)
-    // }
-    // this.ButtonNo.onClick = () => {
-    //   console.log('show abot page with sign in button');
-    //   this.onSelect(false)
-    //}
     this.tryConnect();
   }
 
@@ -53,7 +41,6 @@ class CheckSession extends GenericPopup<boolean> {
       this.model
         .testAccess()
         .then((res) => {
-          console.log(res);
           if (res) {
             this.onSelect(true);
           } else {
