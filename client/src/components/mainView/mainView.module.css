@@ -163,3 +163,12 @@
     height: 100%;
   }
 }
+
+@media screen and (max-height: 700px) {
+  .chat_action {
+    height: calc(100% - 130px - 35px + 50px);
+  }
+  .chat_messages {
+    display: none;
+  }
+}
