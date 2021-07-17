@@ -71,41 +71,43 @@ class ChessGame extends Control {
   private singleModePlayerIndex: number;
 
   private boardSize: number = 0;
+  private chessControls: Control;
+  private chessHead: Control;
 
   constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
     this.node.classList.add('game_action_size');
     this.chessMode = chessMode;
-    const chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
-    const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
-    this.playerOne = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player1');
-    this.playerOne.node.classList.add(chessStyles.player_active);
+    this.chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
+    this.chessHead = new Control(this.node, 'div', chessStyles.chess_head);
+    this.playerOne = new Control(this.chessHead.node, 'div', chessStyles.chess_player, 'Player1');
+    this.playerOne.node.classList.add(chessStyles.player_left_active);
     this.field = fen;
 
-    this.timer = new Timer(chessHead.node);
+    this.timer = new Timer(this.chessHead.node);
 
-    this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
+    this.playerTwo = new Control(this.chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
     const nodeHeight = this.node.getBoundingClientRect().height;
 
-    this.history = new ChessHistoryBlock(this.chessBody.node, nodeHeight);
+    this.history = new ChessHistoryBlock(this.chessBody.node);
 
     this.chessBoard = new ChessField(this.chessBody.node, configFigures, nodeHeight);
     this.initBoard();
 
-    this.btnStart = new ChessButton(chessControls.node, 'Start');
+    this.btnStart = new ChessButton(this.chessControls.node, 'Start');
     this.btnStart.buttonDisable();
     this.btnStart.onClick = () => {
       this.onStartClick(this.host);
       this.btnStart.buttonDisable();
     };
-    this.btnDraw = new ChessButton(chessControls.node, 'Draw');
+    this.btnDraw = new ChessButton(this.chessControls.node, 'Draw');
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
       this.onDrawClick('draw');
       // this.model.chessStopGame('draw');
     };
-    this.btnLoss = new ChessButton(chessControls.node, 'Loss');
+    this.btnLoss = new ChessButton(this.chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
       this.onLossClick('loss');
@@ -129,6 +131,8 @@ class ChessGame extends Control {
 
   resizeView() {
     const nodeHeight = this.node.getBoundingClientRect().height;
+    console.log(nodeHeight);
+    
     this.chessBody.node.style.width = `${nodeHeight}px`;
     this.chessBody.node.style.height = `${nodeHeight - 140}px`;
     this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
@@ -240,19 +244,19 @@ class ChessGame extends Control {
       this.host = this.players.find((player) => data.player !== player);
       if (this.chessMode === chessModeConfig.network) {
         if (this.playerOne.node.textContent !== data.player) {
-          this.playerOne.node.classList.add(chessStyles.player_active);
-          this.playerTwo.node.classList.remove(chessStyles.player_active);
+          this.playerOne.node.classList.add(chessStyles.player_left_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_right_active);
         } else {
-          this.playerOne.node.classList.remove(chessStyles.player_active);
-          this.playerTwo.node.classList.add(chessStyles.player_active);
+          this.playerOne.node.classList.remove(chessStyles.player_left_active);
+          this.playerTwo.node.classList.add(chessStyles.player_right_active);
         }
       } else {
         if (this.singleModePlayerIndex === 0) {
-          this.playerOne.node.classList.remove(chessStyles.player_active);
-          this.playerTwo.node.classList.add(chessStyles.player_active);
+          this.playerOne.node.classList.remove(chessStyles.player_left_active);
+          this.playerTwo.node.classList.add(chessStyles.player_right_active);
         } else if (this.singleModePlayerIndex === 1) {
-          this.playerOne.node.classList.add(chessStyles.player_active);
-          this.playerTwo.node.classList.remove(chessStyles.player_active);
+          this.playerOne.node.classList.add(chessStyles.player_left_active);
+          this.playerTwo.node.classList.remove(chessStyles.player_right_active);
         }
         this.singleModePlayerIndex = this.singleModePlayerIndex === 1 ? 0 : 1;
       }
@@ -322,6 +326,22 @@ class ChessGame extends Control {
 
   stopTimer():void {
     this.timer.stop();
+  }
+
+  hideButtons(): void {
+    this.chessControls.node.style.display = 'none';
+  }
+
+  setHistoryFontColor(): void {
+    this.history.setHistoryFontColor();
+  }
+
+  timerReplace(): void {
+    (this.timer as Control).node.textContent = '';
+  }
+
+  timerShowReplay(time: string) {
+    (this.timer as Control).node.textContent = time;
   }
 }
 
