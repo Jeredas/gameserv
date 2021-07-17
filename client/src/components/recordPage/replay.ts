@@ -131,9 +131,9 @@ export class Replay extends GenericPopup<string> {
                 } else if(this.params.gameMode == 'network') {
                     let player:string =''
                     if(i % 2 !== 0) {
-                        player =this.params.player2.login;
+                        player =this.params.player1.login;
                     } else {
-                        player =this.params.player1.login
+                        player =this.params.player2.login
                     }
                     setTimeout(() => {
                         const chessDataMove: IChessData = {
@@ -154,14 +154,19 @@ export class Replay extends GenericPopup<string> {
                 }
             })
            const delay = this.params.moves[ this.params.moves.length-1].history.time + 500;
+           
            if(this.params.winner.toLocaleLowerCase() =='draw' || this.params.winner.toLocaleLowerCase() =='stalemate'){
-            setTimeout(()=>{
-                alert(this.params.winner.toLocaleUpperCase())
+             setTimeout(()=>{
+                 this.chessView.stopTimer();
+                const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
+                winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
                },delay/this.speed)
            } else {
             setTimeout(()=>{
-                alert(`Winner is ${this.params.winner}`)
-               },delay/this.speed)
+                this.chessView.stopTimer();
+                const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
+                winnerAlert.node.textContent = `Winner is ${this.params.winner}`
+            },delay/this.speed)
            }
         }
     }

@@ -120,7 +120,7 @@ class ChessGame extends Control {
       this.onFigureGrab(pos);
     };
 
-    // this.resizeView();
+    this.resizeView();
     window.onresize = () => {
       this.resizeView();
     };

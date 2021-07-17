@@ -535,8 +535,7 @@ export class ChessGameChannel extends ChatChannel {
     let time = '00:00:00';
     if(this.chessProcessor.getHistory().length >= 1){
       time = `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`
-    }
-     
+    }  
     return (this.recordData = {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],
