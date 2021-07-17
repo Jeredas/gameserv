@@ -106,7 +106,6 @@ export class Replay extends GenericPopup<string> {
                         }
                         this.chessView.onFigureMove(chessDataMove)
                     }, move.history.time / this.speed)
-                    i++
                 } else if(this.params.gameMode == 'oneScreen') {
                     let player:string ='';
                     if(i % 2 !== 0) {
@@ -129,7 +128,6 @@ export class Replay extends GenericPopup<string> {
                         
                         this.chessView.onFigureMove(chessDataMove)
                     }, move.history.time / this.speed)
-                    i++
                 } else if(this.params.gameMode == 'network') {
                     let player:string =''
                     if(i % 2 !== 0) {
@@ -153,7 +151,6 @@ export class Replay extends GenericPopup<string> {
                         }
                         this.chessView.onFigureMove(chessDataMove)
                     }, move.history.time / this.speed)
-                    i++
                 }
             })
            const delay = this.params.moves[ this.params.moves.length-1].history.time + 500;
