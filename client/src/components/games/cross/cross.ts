@@ -82,7 +82,6 @@ class Cross extends Control {
       this.onStartClick(this.host);
     };
     this.btnDraw = new CrossButton(crossControls.node, 'Draw');
-    // this.model.chessStopGame('draw');
     this.btnDraw.buttonDisable();
 
     this.btnDraw.onClick = () => {
@@ -92,12 +91,8 @@ class Cross extends Control {
     this.btnLoss.buttonDisable();
 
     this.btnLoss.onClick = () => {
-      // this.model.chessStopGame('loss');
       this.onLossClick();
     };
-    // window.onresize = () => {}
-    // window.onresize(null);
-    // this.model.onStopGame.add((data) => this.createModalDraw(data));
   }
 
   updateGameField(field: Array<Array<string>>): void {

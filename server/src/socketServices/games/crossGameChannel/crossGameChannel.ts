@@ -285,12 +285,18 @@ export class CrossGameChannel extends ChatChannel {
   }
   getRecordData() {
     let date = new Date();
+    let time = '00:00:00';
+    if(this.logic.getFullHistory().length >= 1){
+      time = `${this.logic.getFullHistory()[this.logic.getFullHistory().length - 1].time}`
+    }
+
+
     return (this.recordData = {
       history: this.logic.getFullHistory(),
       player1: this.players[0],
       player2: this.players[1],
-      date: `${date.getDay()}.${date.getMonth()}.${date.getFullYear()}`,
-      time: `${this.logic.getFullHistory()[this.logic.getFullHistory().length - 1].time}`,
+      date: new Date().toLocaleDateString('ru'),
+      time: time,
       winner: this.logic.getWinner(),
       gameType: 'CROSS',
       gameMode: this.gameMode
