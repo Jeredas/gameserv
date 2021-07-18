@@ -45,7 +45,7 @@ export class Move implements IMove {
     }
     return result;
   }
-  private updateCastlingFlags(castlingFlags: number, startCellString: string, targetCellString: string): number {
+  protected updateCastlingFlags(castlingFlags: number, startCellString: string, targetCellString: string): number {
     if (startCellString == 'a1' || targetCellString == 'a1') {
       castlingFlags = castlingFlags & (COMMON.ALL_CASTLING ^ COMMON.LONG_WHITE_CASTLING);
     }
@@ -55,13 +55,13 @@ export class Move implements IMove {
     if (startCellString == 'e1' || targetCellString == 'e1') {
       castlingFlags = castlingFlags & (COMMON.ALL_CASTLING ^ COMMON.LONG_WHITE_CASTLING ^ COMMON.SHORT_WHITE_CASTLING);
     }
-    if (startCellString == 'h8' || targetCellString == 'h8') {
+    if (startCellString == 'a8' || targetCellString == 'a8') {
       castlingFlags = castlingFlags & (COMMON.ALL_CASTLING ^ COMMON.LONG_BLACK_CASTLING);
     }
-    if (startCellString == 'a8' || targetCellString == 'a8') {
+    if (startCellString == 'h8' || targetCellString == 'h8') {
       castlingFlags = castlingFlags & (COMMON.ALL_CASTLING ^ COMMON.SHORT_BLACK_CASTLING);
     }
-    if (startCellString == 'd8' || targetCellString == 'd8') {
+    if (startCellString == 'e8' || targetCellString == 'e8') {
       castlingFlags = castlingFlags & (COMMON.ALL_CASTLING ^ COMMON.LONG_BLACK_CASTLING ^ COMMON.SHORT_BLACK_CASTLING);
     }
     return castlingFlags;

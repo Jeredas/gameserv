@@ -14,6 +14,9 @@ export class Vector implements IVector {
   sum(vector: IVector): IVector {
     return new Vector(this.x + vector.x, this.y + vector.y);
   }
+  equal(other: IVector): boolean{
+    return (this.x === other.x && this.y === other.y);
+  }
   resultPosition(startCell: CellCoord): CellCoord {
     return new CellCoord(startCell.x + this.x, startCell.y + this.y);
   }

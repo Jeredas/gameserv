@@ -5,5 +5,6 @@ export interface IVector {
   readonly y: number;
   sum(v: IVector): IVector;
   copy(): IVector;
+  equal(other: IVector): boolean;
   resultPosition(start: CellCoord): CellCoord;
 }

@@ -17,50 +17,12 @@ import { IMove } from './imove';
 export class ChessProcessor implements IChessProcessor {
   private field: IField;
   private chessAI: IChessAI;
-  // private players: Map<ChessColor, string>;
   private historyItems: HistoryItems;
-  // private gameMode: string;
   constructor() {
     this.field = Field.getStartField();
     this.chessAI = new ChessAI();
-    // this.players = new Map<ChessColor, string>();
     this.historyItems = new HistoryItems();
-    // this.gameMode = '';
   }
-  // setPlayer(player: string): boolean {
-  //   if (!this.players.has(ChessColor.white)) {
-  //     this.players.set(ChessColor.white, player);
-  //     return true;
-  //   }
-  //   if (!this.players.has(ChessColor.black) && this.gameMode == 'network') {
-  //     this.players.set(ChessColor.black, player);
-  //     return true;
-  //   }
-  //   return false;
-  // }
-  // getPlayersNumber(): number {
-  //   return this.players.size;
-  // }
-  // getPlayers(): Array<string> {
-  //   const result = new Array<string>();
-  //   if (this.players.has(ChessColor.white)) {
-  //     result.push(this.players.get(ChessColor.white));
-  //   }
-  //   if (this.players.has(ChessColor.black)) {
-  //     result.push(this.players.get(ChessColor.black));
-  //   }
-  //   return result;
-  // }
-  // setGameMode(mode: string) {
-  //   this.gameMode = mode;
-  // }
-  // getGameMode(): string {
-  //   return this.gameMode;
-  // }
-  // getCurrentPlayer(): string {
-  //   const playerName = this.players.get(this.field.playerColor);
-  //   return playerName ? playerName : (this.gameMode == 'oneScreen' ? this.players.get(ChessColor.white) : 'none');
-  // }
   clearData(): void {
     this.field = Field.getStartField();
     this.historyItems = new HistoryItems();
@@ -69,8 +31,13 @@ export class ChessProcessor implements IChessProcessor {
     return this.field.toFEN();
   }
   makeMove(start_coord: ICellCoord, end_coord: ICellCoord): boolean {
-    const move = new Move(start_coord, new Vector(end_coord.x - start_coord.x, end_coord.y - start_coord.y));
-    if (move.isValid(this.field)) {
+    // const move = new Move(start_coord, new Vector(end_coord.x - start_coord.x, end_coord.y - start_coord.y));
+    const moves = Array.from(this.field.getAllowedMoves(start_coord)).filter(move => move.getTargetCell().equal(end_coord));
+    let move: IMove;
+    if (moves.length > 0) {
+      move = moves[0];
+    }
+    if (move && move.isValid(this.field)) {
       this.historyItems.addItem(move, this.field);
       this.field = move.makeMove(this.field);
       return true;

@@ -8,6 +8,10 @@ import { Bishop } from './figures/bishop';
 import { Knight } from './figures/knight';
 import { King } from './figures/king';
 import { Pawn } from './figures/pawn';
+import { ICastlingData } from './icastling-data';
+import { CastlingMove } from './castling-move';
+import { CellCoord } from './cell-coord';
+import { CastlingType } from './castling-type';
 
 export enum LOCALES {
   RU,
@@ -26,8 +30,53 @@ export class COMMON {
   static SHORT_BLACK_CASTLING = 4;
   static LONG_BLACK_CASTLING = 8;
   static ALL_CASTLING = 15;
-
-
+  
+  static CASTLING_DATA = new Map<CastlingType, ICastlingData>([
+    ['K', {
+      kingVector: new Vector(2, 0),
+      rookVector: new Vector(-2, 0),
+      rookStart: new CellCoord(7,7),
+      kingStart: new CellCoord(4, 7),
+      freeCells: [new CellCoord(5, 7), new CellCoord(6, 7)],
+      notCheckCells: [new Vector(1, 0), new Vector(2, 0)],
+      notation: 'O-O',
+      color: ChessColor.white,
+      flag: COMMON.SHORT_WHITE_CASTLING
+    }],
+    ['Q', {
+      kingStart: new CellCoord(4, 7),
+      kingVector: new Vector(-2, 0),
+      rookStart: new CellCoord(0,7),
+      rookVector: new Vector(3, 0),
+      freeCells: [new CellCoord(3, 7), new CellCoord(2, 7), new CellCoord(1, 7)],
+      notCheckCells: [new Vector(-1, 0), new Vector(-2, 0)],
+      notation: 'O-O-O',
+      color: ChessColor.white,
+      flag: COMMON.LONG_WHITE_CASTLING
+    }],
+    ['k', {
+      kingStart: new CellCoord(4, 0),
+      kingVector: new Vector(2, 0),
+      rookStart: new CellCoord(7,0),
+      rookVector: new Vector(-2, 0),
+      freeCells: [new CellCoord(5, 0), new CellCoord(6, 0)],
+      notCheckCells: [new Vector(1, 0), new Vector(2, 0)],
+      notation: 'o-o',
+      color: ChessColor.black,
+      flag: COMMON.SHORT_BLACK_CASTLING
+    }],
+    ['q', {
+      kingStart: new CellCoord(4, 0),
+      kingVector: new Vector(-2, 0),
+      rookStart: new CellCoord(0, 0),
+      rookVector: new Vector(3, 0),
+      freeCells: [new CellCoord(3, 0), new CellCoord(2, 0), new CellCoord(1, 0)],
+      notCheckCells: [new Vector(-1, 0), new Vector(-2, 0)],
+      notation: 'o-o-o',
+      color: ChessColor.black,
+      flag: COMMON.LONG_BLACK_CASTLING
+    }]
+  ]);
   static FIGURE_SHORT_NAMES = new Map([
     // TODO: переписать красиво, чтобы удобно было обращаться к элементам
     [
