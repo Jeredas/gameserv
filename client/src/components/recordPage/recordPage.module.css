@@ -183,6 +183,17 @@
 .replay_wrapper {
   width: 700px;
 }
+.record_winnerPop {
+  position: absolute;
+  text-align: center;
+  width: 30%;
+  height: 30%;
+  border-radius: 5%;
+  background-color: #ccc;
+  top: 50%;
+  left:50%;
+  transform:translate(-50%,-50%)
+}
 
 @media screen and (max-height: 700px) {
   .replay_wrapper {
