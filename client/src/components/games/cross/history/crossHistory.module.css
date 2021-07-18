@@ -2,8 +2,9 @@
 .cross_history {
   height: 270px;
   padding: 5px;
-  padding-right: 20px;
   overflow-y: scroll;
+  margin-right: 10px;
+  width: 110px;
 }
 
 .cross_history_item {

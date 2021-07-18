@@ -437,6 +437,7 @@ export class ChessGameChannel extends ChatChannel {
             writeStatistic(this.getRecordData(currentPlayer));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             let rivalPlayer = 'Player2';
@@ -446,12 +447,15 @@ export class ChessGameChannel extends ChatChannel {
             const playerCurrent = this.chessProcessor.getPlayerColor();
             if (playerCurrent === 1) {
               currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+              writeStatistic(this.getRecordData(rivalPlayer));
             } else {
               currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
+              writeStatistic(this.getRecordData(currentPlayer));
             }
-            writeStatistic(this.getRecordData(rivalPlayer));
+            // writeStatistic(this.getRecordData(rivalPlayer));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
@@ -474,12 +478,14 @@ export class ChessGameChannel extends ChatChannel {
             writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             currentClient.send(response);
             writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
+            this.moves =[];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
@@ -520,16 +526,24 @@ export class ChessGameChannel extends ChatChannel {
     this.players = this.players.filter((player) => player.login !== login);
   }
   getRecordData(winner: string) {
+    let time = '00:00:00';
+    if(this.chessProcessor.getHistory().length >= 1){
+      time = `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`
+    }
+     
     return (this.recordData = {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],
       player2: this.players[1],
       date: new Date().toLocaleDateString('ru'),
-      time: `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`,
+      time: time,
       winner: winner,
       gameType: 'CHESS',
       gameMode: this.gameMode,
-      moves: this.moves
+      moves: this.moves? this.moves : []
     });
+  }
+  clearAll(){
+    
   }
 }

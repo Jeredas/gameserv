@@ -318,4 +318,11 @@
   .chess_wrapper {
     max-width: 500px;
   }
+  .chess_body {
+    height: 350px;
+    width: 460px;
+  }
+  .chess_history {
+    height: 350px;
+  }
 }
