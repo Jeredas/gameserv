@@ -13,7 +13,7 @@ databaseService.start(serverConfig.localDatabaseURL).then(isDBStarted=>{
 }).then(isServerStarted=>{
   if (isServerStarted) {
     console.log(`Server is started on http://localhost:${serverConfig.httpServerPort}`);
-    return socketServer.start(serverConfig.socketServerPort);
+    return socketServer.start(serverConfig.socketServerPort,httpServer.server);
   } else {
     throw new Error("Server start error.");
   }

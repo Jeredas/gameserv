@@ -130,7 +130,6 @@ class ChessGame extends Control {
 
   resizeView() {
     const nodeHeight = this.node.getBoundingClientRect().height;
-    console.log(nodeHeight);
 
     this.chessBody.node.style.width = `${nodeHeight}px`;
     this.chessBody.node.style.height = `${nodeHeight - 140}px`;
@@ -140,12 +139,13 @@ class ChessGame extends Control {
   }
 
   updateGameField(rotate: boolean): void {
+    
     if (this.chessMode === chessModeConfig.oneScreen) {
       if (rotate) {
         if (!this.isRotated) {
-          this.chessBoard.node.classList.add('rotate');
+          this.chessBoard.node.classList.add(chessStyles.rotate);
         } else {
-          this.chessBoard.node.classList.remove('rotate');
+          this.chessBoard.node.classList.remove(chessStyles.rotate);
         }
         this.isRotated = !this.isRotated;
       }
@@ -168,6 +168,7 @@ class ChessGame extends Control {
     this.chessBoard.clearData(fromFen(fen));
     this.singleModePlayerIndex = 0;
     this.chessBoard.setDragable(false);
+    this.isRotated = false;
   }
 
   setPlayer(params: IJoinedPlayer): void {
@@ -273,7 +274,7 @@ class ChessGame extends Control {
     this.chessBoard.clearData(newField);
 
     // this.updateGameField(data.rotate);
-    this.updateGameField(false);
+    this.updateGameField(true);
     this.removeAllowedMoves();
     this.removeRivalMoves();
     this.chessBoard.removeKingCheck();

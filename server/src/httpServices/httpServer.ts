@@ -13,6 +13,7 @@ function paramsParser(paramsString: string): any {
 }
 
 class Server {
+  server: http.Server;
   constructor() { }
 
   response(res: http.ServerResponse, value: string) {
@@ -54,7 +55,7 @@ class Server {
         statService.start(router).then(()=>{
           console.log('stat Service started')
         })
-        http.createServer((req, res)=>this.processRequest(req, res)).listen(port);
+        this.server = http.createServer((req, res)=>this.processRequest(req, res)).listen(port);
         return true;
       } else {
         throw new Error("Auth service start error.");
