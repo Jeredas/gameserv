@@ -174,7 +174,6 @@ class ChessField extends Control {
   onFigureDropOnCell(e: MouseEvent) {
     e.preventDefault();
     const fieldBox = this.dragableField.node.getBoundingClientRect();
-    console.log(this.node.scrollTop);
 
     const ratio = Math.floor(fieldBox.width / 8);
     if (window.getComputedStyle(this.node).transform !== 'none' && e.buttons == 1) {

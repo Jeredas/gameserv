@@ -15,7 +15,7 @@ export class DatabaseService {
       });
 
       mongo.connect().then(() => {
-        this.db = mongo.db('jeredasdb');
+        this.db = mongo.db('chessmate');
         console.log('Connected to database.');
         resolve(true);
       });

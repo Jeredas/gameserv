@@ -178,9 +178,11 @@ export class CrossGameChannel extends ChatChannel {
   crossStop(connection, params) {
     const currentClient = this._getUserByConnection(connection);
     if (currentClient) {
-      let currentUser = currentClient.userData;
-      if (currentUser.login) {
-        let currentPlayer = currentClient.userData.login;
+      // let currentUser = currentClient.userData;
+      let currentPlayer = currentClient.userData.login;
+      if (currentPlayer && this.players.find((player) => player.login === currentPlayer)) {
+      // if (currentUser.login) {
+        
         const checkPlayer = this.players.find((player) => player.login === currentPlayer);
         if (checkPlayer) {
           const rivalPlayer = this.logic.getPlayers().find((player) => player !== currentPlayer);
@@ -196,15 +198,15 @@ export class CrossGameChannel extends ChatChannel {
             const responseDrawAgree = new CrossDrawAgreeResponse(
               this.name,
               params.messageText,
-              currentUser.login
+              currentPlayer
             );
             const responseDraw = new CrossDrawResponse(
               this.name,
               params.messageText,
-              currentUser.login
+              currentPlayer
             );
             const clients = this.clients.filter(
-              (client) => client.userData.login !== currentUser.login
+              (client) => client.userData.login !== currentPlayer
             );
             rivalClient.send(responseDrawAgree);
             currentClient.send(responseDraw);

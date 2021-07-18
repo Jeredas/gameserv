@@ -25,7 +25,7 @@ class Figure extends Control {
     const inner = new Control(this.node, 'div', chessStyles.drag_item_inner);
     inner.node.style.backgroundImage = `url(${figure})`;
     if (rotate) {
-      this.node.classList.add('figure-rotate');
+      this.node.classList.add(chessStyles.figure_rotate);
     }
 
     this.node.onmousedown = (e) => {
