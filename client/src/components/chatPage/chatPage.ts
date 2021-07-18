@@ -18,6 +18,7 @@ import PaginatedContainer from './paginate-container';
 import { OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
 import { CrossGameChannelView } from '../../socketClient/crossGameChannel';
 import { ChessGameChannelView } from '../../socketClient/chessGameChannel';
+import { ComplexityBotPopup } from '../complexity-bot-popup/complexity-bot-popup';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -114,16 +115,32 @@ class ChatPage extends Control {
       } else {
         popupService.showPopup(SettingsChannel).then((newChannel: IChannelData) => {
           newChannel.channelType = channelType;
-          this.model.createNewChannel(newChannel).then((res: any) => {
-            if (res.status === 'ok') {
-              const channelIcon = channelConfig.get(newChannel.channelType).icon;
-              this.channelBlock.addChannel(
-                newChannel.channelName,
-                newChannel.channelType,
-                channelIcon
-              );
-            }
-          });
+          if(newChannel.gameMode === 'bot') {
+            popupService.showPopup<string>(ComplexityBotPopup).then((complexity) => {
+              this.model.createNewChannel(newChannel).then((res: any) => {
+                if (res.status === 'ok') {
+                  const channelIcon = channelConfig.get(newChannel.channelType).icon;
+                  this.channelBlock.addChannel(
+                    newChannel.channelName,
+                    newChannel.channelType,
+                    channelIcon,
+                    complexity
+                  );
+                }
+              });
+            })
+          } else {
+            this.model.createNewChannel(newChannel).then((res: any) => {
+              if (res.status === 'ok') {
+                const channelIcon = channelConfig.get(newChannel.channelType).icon;
+                this.channelBlock.addChannel(
+                  newChannel.channelName,
+                  newChannel.channelType,
+                  channelIcon
+                );
+              }
+            });
+          }
         });
       }
     });
