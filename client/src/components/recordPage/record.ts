@@ -45,12 +45,13 @@ class Record extends Control {
 
     const gameTimeWatch = new Control(this.node, 'div', recordStyles.record_time_watch);
     const gameTime = new Control(gameTimeWatch.node, 'div', recordStyles.record_time);
-    
-      gameTime.node.textContent = record.time;
-      if(record.moves){
-        gameTime.node.textContent = (msToTime((record.moves[record.moves.length-1].history.time-record.moves[0].history.time/1000)))
-        console.log(msToTime((record.moves[record.moves.length-1].history.time-record.moves[0].history.time/1000)) )
+
+    gameTime.node.textContent = record.time;
+    if (record.moves) {
+      if (record.moves[record.moves.length - 1]) {
+        gameTime.node.textContent = (msToTime((record.moves[record.moves.length - 1].history.time - record.moves[0].history.time / 1000)))
       }
+    }
     const brnWatch = new ButtonDefault(gameTimeWatch.node, recordStyles.record_button, 'Watch');
     brnWatch.onClick = () => {
       popupService
@@ -67,14 +68,18 @@ class Record extends Control {
 export default Record;
 
 
-function msToTime(duration:number) {
-  let seconds = Math.round(((duration / 1000) % 60)),
+function msToTime(duration: number) {
+  if (duration) {
+    let seconds = Math.round(((duration / 1000) % 60)),
       minutes = Math.round((duration / (1000 * 60)) % 60),
       hours = Math.round((duration / (1000 * 60 * 60)) % 2);
 
-  let hoursS = (hours < 10) ? "0" + hours : hours;
-  let minutesS = (minutes < 10) ? "0" + minutes : minutes;
-  let secondsS = (seconds < 10) ? "0" + seconds : seconds;
+    let hoursS = (hours < 10) ? "0" + hours : hours;
+    let minutesS = (minutes < 10) ? "0" + minutes : minutes;
+    let secondsS = (seconds < 10) ? "0" + seconds : seconds;
 
-  return hoursS + ":" + minutesS + ":" + secondsS;
+    return hoursS + ":" + minutesS + ":" + secondsS;
+  } else {
+    console.log('no history')
+  }
 }

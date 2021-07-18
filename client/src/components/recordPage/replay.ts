@@ -24,6 +24,7 @@ export class Replay extends GenericPopup<string> {
   speedSelection: InputWrapper;
   view: Cross;
   chessView: ChessGame;
+  speedTimer: NodeJS.Timeout;
 
   constructor(parentNode: HTMLElement, params: IGameRecord) {
     super(parentNode);
@@ -40,6 +41,7 @@ export class Replay extends GenericPopup<string> {
       'Enter replay speed value',
       () => null,
       'Value from 1 to 10',
+      'number',
       'number'
     );
     (this.speedSelection.field.node as HTMLInputElement).pattern = '^d+$';
@@ -54,8 +56,8 @@ export class Replay extends GenericPopup<string> {
       'div',
       recordStyles.record_replayScreen
     );
-    // this.replaySrceen.node.style.width = '500px';
-    // this.replaySrceen.node.style.height = '500px';
+    this.replaySrceen.node.style.width = '500px';
+    this.replaySrceen.node.style.height = '500px';
     this.closeBtn = new ButtonDefault(this.popupWrapper.node, recordStyles.record_closeButton, '');
     this.closeBtn.onClick = () => {
       this.onSelect('close');
@@ -73,8 +75,8 @@ export class Replay extends GenericPopup<string> {
       this.view.btnLoss.destroy();
       (this.params.history as Array<ICrossHistory>).forEach((res: ICrossHistory, i: number) => {
         setTimeout(() => {
-          //const move = new Control( this.replaySrceen.node, 'div', );
-          // move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
+          const move = new Control( this.replaySrceen.node, 'div', );
+          move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
           console.log(res);
           this.view.timer.node.innerHTML = `${res.time}`;
           const field: Array<Array<string>> = [ [], [], [] ];
@@ -99,23 +101,30 @@ export class Replay extends GenericPopup<string> {
       this.chessView = new ChessGame(this.replaySrceen.node, 'network', 0);
       this.chessView.hideButtons();
       this.chessView.setHistoryFontColor();
-      
       this.chessView.setPlayer({ player: this.params.player1.login, players: players });
       this.chessView.setPlayer({ player: this.params.player2.login, players: players });
       this.chessView.startGame({
         field: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
         time: startTime
       });
+      if(this.speed > 1){
       this.chessView.stopTimer();
       this.chessView.timerReplace();
+      let time = 1;
+      this.speedTimer = setInterval(()=>{
+        this.chessView.timer.node.textContent = `${getTimeString(time)}`;
+        time+=1
+      },1000/this.speed)
+      }
+      
       this.params.moves.forEach((move, i) => {
         if (this.params.gameMode == 'bot') {
           let player = '';
           if (i % 2 !== 0) {
-            player = this.params.player2.login;
+            player = this.params.player1.login;
             move.history.time += 500;
           } else {
-            player = this.params.player1.login;
+            player = this.params.player2.login;
           }
           setTimeout(() => {
             const chessDataMove: IChessData = {
@@ -134,7 +143,6 @@ export class Replay extends GenericPopup<string> {
             this.chessView.onFigureMove(chessDataMove);
             
           }, move.history.time / this.speed);
-          i++;
         } else if (this.params.gameMode == 'oneScreen') {
           let player: string = '';
           if (i % 2 !== 0) {
@@ -157,13 +165,12 @@ export class Replay extends GenericPopup<string> {
 
             this.chessView.onFigureMove(chessDataMove);
           }, move.history.time / this.speed);
-          i++;
         } else if (this.params.gameMode == 'network') {
           let player: string = '';
           if (i % 2 !== 0) {
-            player = this.params.player2.login;
-          } else {
             player = this.params.player1.login;
+          } else {
+            player = this.params.player2.login;
           }
           setTimeout(() => {
             const chessDataMove: IChessData = {
@@ -181,10 +188,36 @@ export class Replay extends GenericPopup<string> {
             };
             this.chessView.onFigureMove(chessDataMove);
           }, move.history.time / this.speed);
-          i++;
         }
-        console.log(i);
       });
+      let delay = 500;
+        if(this.params.moves.length){
+          delay = this.params.moves[ this.params.moves.length-1].history.time + 500;
+        }
+           if(this.params.winner.toLocaleLowerCase() =='draw' || this.params.winner.toLocaleLowerCase() =='stalemate'){
+             setTimeout(()=>{
+                 this.chessView.stopTimer();
+                const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
+                winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
+                clearInterval(this.speedTimer)
+               },delay/this.speed)
+               
+           } else {
+            setTimeout(()=>{
+                this.chessView.stopTimer();
+                const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
+                winnerAlert.node.textContent = `Winner is ${this.params.winner}`;
+                clearInterval(this.speedTimer)
+            },delay/this.speed)
+           
+           }
     }
   }
+}
+function getTimeString(time:number): string {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
+  const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
+  return `${minOutput}:${secOutput}`;
 }
