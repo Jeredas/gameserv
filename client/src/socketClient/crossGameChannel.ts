@@ -5,6 +5,7 @@ import { ChatChannelModel } from './chatChannelModel';
 import { channelModel } from '../components/utilities/config';
 import MainView from '../components/mainView/mainView';
 import {
+  IChannelPlayer,
   IChatUser,
   ICrossMove,
   ICrossStop,
@@ -32,9 +33,10 @@ export class CrossGameChannelService implements ISocketService {
   public onCrossStop: Signal<ICrossStop> = new Signal();
   public onCrossRemove: Signal<{ method: string; player: string }> = new Signal();
   public onUserList: Signal<Array<IChatUser>> = new Signal();
-  public onPlayerList: Signal<Array<{ login: string; avatar: string }>> = new Signal();
+  public onPlayerList: Signal<{ playerList: Array<IChannelPlayer>; renew: boolean }> = new Signal();
   private channelName: string;
   public onCrossNoMoves: Signal<{ method: string; player: string }> = new Signal();
+  public onCrossRenew: Signal<string> = new Signal();
 
   constructor(channelName: string) {
     this.channelName = channelName;
@@ -103,6 +105,12 @@ export class CrossGameChannelService implements ISocketService {
           }
         ],
         [
+          'chessRenew',
+          (params) => {
+            this.onCrossRenew.emit(params.method);
+          }
+        ],
+        [
           'userList',
           (params) => {
             this.onUserList.emit(
@@ -114,10 +122,10 @@ export class CrossGameChannelService implements ISocketService {
         [
           'playerList',
           (params) => {
-            this.onPlayerList.emit(
-              // params.userList.map((user: string) => ({avatar: '', userName: user}))
-              params.playerList
-            );
+            this.onPlayerList.emit({
+              playerList: params.playerList,
+              renew: params.renew
+            });
           }
         ],
         [
@@ -391,10 +399,22 @@ export class CrossGameChannelView extends MainView {
     });
 
     this.model.service.onPlayerList.add((params) => {
-      this.mainViewPlayers.setPlayers(params);
+      this.mainViewPlayers.setPlayers(params.playerList);
+      if (params.renew) {
+        this.crossGame.clearData();
+        this.mainViewPlayers.setPlayers([]);
+      }
     });
     this.model.service.onCrossNoMoves.add((params) => {
       this.crossGame.createModalGameOver(params);
+    });
+
+    
+    this.model.service.onCrossRenew.add((renew) => {
+      if (renew) {
+        this.mainViewPlayers.setPlayers([]);
+        this.crossGame.clearData();
+      }
     });
   }
 

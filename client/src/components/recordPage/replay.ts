@@ -56,8 +56,8 @@ export class Replay extends GenericPopup<string> {
       'div',
       recordStyles.record_replayScreen
     );
-    this.replaySrceen.node.style.width = '500px';
-    this.replaySrceen.node.style.height = '500px';
+    // this.replaySrceen.node.style.width = '500px';
+    // this.replaySrceen.node.style.height = '500px';
     this.closeBtn = new ButtonDefault(this.popupWrapper.node, recordStyles.record_closeButton, '');
     this.closeBtn.onClick = () => {
       this.onSelect('close');
@@ -75,9 +75,10 @@ export class Replay extends GenericPopup<string> {
       this.view.btnLoss.destroy();
       (this.params.history as Array<ICrossHistory>).forEach((res: ICrossHistory, i: number) => {
         setTimeout(() => {
-          const move = new Control( this.replaySrceen.node, 'div', );
-          move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
+          // const move = new Control( this.replaySrceen.node, 'div', );
+          // move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
           console.log(res);
+          this.view.setHistoryMove(res)
           this.view.timer.node.innerHTML = `${res.time}`;
           const field: Array<Array<string>> = [ [], [], [] ];
           field[res.move.y][res.move.x] = res.sign;

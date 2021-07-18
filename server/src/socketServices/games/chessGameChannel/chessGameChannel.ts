@@ -447,10 +447,12 @@ export class ChessGameChannel extends ChatChannel {
             const playerCurrent = this.chessProcessor.getPlayerColor();
             if (playerCurrent === 1) {
               currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+              writeStatistic(this.getRecordData(rivalPlayer));
             } else {
               currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
+              writeStatistic(this.getRecordData(currentPlayer));
             }
-            writeStatistic(this.getRecordData(rivalPlayer));
+            // writeStatistic(this.getRecordData(rivalPlayer));
             this.chessProcessor.clearData();
             this.players = [];
             this.moves =[];

@@ -128,19 +128,16 @@ class ChessGame extends Control {
     };
   }
 
-
   resizeView() {
     const nodeHeight = this.node.getBoundingClientRect().height;
     console.log(nodeHeight);
-    
+
     this.chessBody.node.style.width = `${nodeHeight}px`;
     this.chessBody.node.style.height = `${nodeHeight - 140}px`;
     this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
     this.chessBoard.node.style.width = `${nodeHeight - 140}px`;
     this.history.node.style.height = `${nodeHeight - 140}px`;
-  
   }
-
 
   updateGameField(rotate: boolean): void {
     if (this.chessMode === chessModeConfig.oneScreen) {
@@ -159,6 +156,8 @@ class ChessGame extends Control {
     this.players = [];
     this.playerOne.node.textContent = 'Player1';
     this.playerTwo.node.textContent = 'Player2';
+    this.playerOne.node.classList.add(chessStyles.player_left_active);
+    this.playerTwo.node.classList.remove(chessStyles.player_right_active);
     // this.chessMode = '';
     this.timer.clear();
     this.history.clearHistory();
@@ -324,7 +323,7 @@ class ChessGame extends Control {
     this.chessBoard.clearData(fromFen(fen));
   }
 
-  stopTimer():void {
+  stopTimer(): void {
     this.timer.stop();
   }
 
