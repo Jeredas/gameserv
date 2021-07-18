@@ -66,8 +66,8 @@ export class SocketServer {
     this.router.closeConnection(connection);
   }
 
-  async start(port:number){
-    const server = await createServer(port);
+  async start(port:number,_server?:http.Server){
+    const server = _server || await createServer(port);
     const wsServer = new WebSocketServer({
       httpServer: server,
       autoAcceptConnections: false
