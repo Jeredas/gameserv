@@ -39,7 +39,7 @@ export interface IChessProcessor {
   getHistory(): Array<IHistoryItem>;
   getMoves(coord: ICellCoord): Moves;
   getKingPos(): ICellCoord;
-  startGame(): void;
+  startGame(fen?: string): void;
   getStartTime(): number;
   getPlayerColor(): ChessColor;
   getFigureStr(coord: ICellCoord): string;

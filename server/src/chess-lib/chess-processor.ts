@@ -54,7 +54,10 @@ export class ChessProcessor implements IChessProcessor {
   getKingPos(): ICellCoord {
     return this.field.getKingCoord();
   }
-  startGame(): void {
+  startGame(fen?: string): void {
+    if (fen) {
+      this.field = Field.fromFEN(fen)
+    }
     this.historyItems.startHistory();
   }
   getStartTime(): number {
