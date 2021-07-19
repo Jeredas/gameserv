@@ -9,7 +9,10 @@ export const aboutWelcomeBack = [
   'Hi again!',
   'We are so happy to see you back!',
   `Choose whatever you want and enjoy.`,
-  `Have fun!`
+  `Have fun!`,
+  '',
+  `PS: go to page Lobby and create a channel of your choice`
+
 ];
 
 export default aboutWelcome;

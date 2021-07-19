@@ -141,7 +141,7 @@ class Application extends Control {
     });
     
     this.chatPage = new ChatPage(this.pageContainer.node, lobbyModel, socket);
-    this.addPage('chat', 'chat', this.chatPage);
+    this.addPage('lobby', 'chat', this.chatPage);
     this.router.processHash();
   }
 
