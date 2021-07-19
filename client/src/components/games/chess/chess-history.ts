@@ -44,6 +44,7 @@ class ChessHistoryBlock extends Control {
       const to = params.coords[1];
       historyText.node.textContent = `${this.coordToString(from)}-${this.coordToString(to)} ${this.getTimeString(params.time)}`;
     }
+    this.node.scrollTop = this.node.scrollHeight;
   }
 
   changeHeight(size: number): void {
