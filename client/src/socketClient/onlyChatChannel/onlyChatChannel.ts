@@ -167,6 +167,7 @@ export class OnlyChatChannelView extends MainView {
     this.mainViewMessages.node.classList.add(channelStyles.chat_messages);
     this.mainViewMessages.node.style.backgroundImage = `url(${messageBlockImage})`;
     this.mainViewUsers = new MainViewUsers(this.node);
+    this.mainViewInput.node.classList.add(channelStyles.only_chat);
 
     this.model.service.onMessage.add((params: IUserChatMessage) => {
       this.mainViewMessages.addMessage(params);
