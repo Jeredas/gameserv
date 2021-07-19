@@ -13,6 +13,7 @@ export class Navigation extends Control {
 
   private userBlock: HeaderAuth;
   public onUserClick: () => void = () => {};
+  public userOnSign: () => void;
   public onLogout : Signal<null> = new Signal();
   private logo: Control;
 
@@ -27,6 +28,10 @@ export class Navigation extends Control {
     
     this.userBlock.onUserClick = () => {
       this.onUserClick();
+    };
+
+    this.userBlock.onSignIn = () => {
+      this.userOnSign();
     };
     this.userBlock.onLogout.add(()=>{
       this.onLogout.emit(null)

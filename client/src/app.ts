@@ -58,7 +58,12 @@ class Application extends Control {
       this.navigation.setUserData(to);
       this.about.setUserData(to);
       
-    })
+    });    
+
+    this.navigation.userOnSign = () => {
+     this.about.logInHeader();
+    };
+
     this.navigation.onLogout.add(()=>{
       this.removePage('chat');
       this.router.selectPage('about');
