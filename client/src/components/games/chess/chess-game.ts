@@ -68,7 +68,7 @@ class ChessGame extends Control {
   private modalGameOver: ModalGameOver;
   public onGameOverClick: () => void = () => {};
   private field: string;
-  private singleModePlayerIndex: number;
+  private singleModePlayerIndex: number = 0;
   private chessControls: Control;
   private chessHead: Control;
 

@@ -99,7 +99,7 @@ export class Replay extends GenericPopup<string> {
           avatar: ''
         }
       ];
-      this.chessView = new ChessGame(this.replaySrceen.node, 'network');
+      this.chessView = new ChessGame(this.replaySrceen.node, this.params.gameMode);
       this.chessView.hideButtons();
       this.chessView.setHistoryFontColor();
       this.chessView.setPlayer({ player: this.params.player1.login, players: players });
