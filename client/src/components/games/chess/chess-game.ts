@@ -173,7 +173,7 @@ class ChessGame extends Control {
     const player1 = params.players[0].login;
     this.playerOne.node.textContent = player1;
     this.players.push(player1);
-
+    console.log(params)
     if (this.chessMode !== chessModeConfig.network) {
       this.singleModePlayerIndex = 0;
       const player2 = params.players[1].login;
@@ -334,13 +334,16 @@ class ChessGame extends Control {
     this.history.setHistoryFontColor();
   }
 
-  timerReplace(): void {
-    (this.timer as Control).node.textContent = '';
+  // timerReplace(): void {
+  //   (this.timer as Control).node.textContent = '';
+  // }
+  setSpeed(speed:number){
+    this.timer.setSpeed(speed)
   }
 
-  timerShowReplay(time: string) {
-    (this.timer as Control).node.textContent = time;
-  }
+  // timerShowReplay(time: string) {
+  //   (this.timer as Control).node.textContent = time;
+  // }
 }
 
 export default ChessGame;

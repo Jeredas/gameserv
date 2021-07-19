@@ -12,18 +12,21 @@ class Timer extends Control {
 
   private isPlaying = false;
 
+  private interval: number;
+
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', timerStyles.cross_timer);
     this.node.textContent = '00:00';
+    this.interval = 1000;
   }
 
   start() {
     this.isPlaying = true;
     this.node.textContent = '00:00';
     this.counter = window.setInterval(() => {
-      this.time = Math.floor((Date.now() - this.startTime) / 1000);
+      this.time = Math.floor((Date.now() - this.startTime) / this.interval)
       this.node.textContent = this.getTimeString();
-    }, 1000);
+    }, 100);
   }
 
   clear() {
@@ -42,10 +45,10 @@ class Timer extends Control {
         this.start();
         this.isPlaying = true;
       } else {
-        this.time = Math.floor((Date.now() - this.startTime) / 1000);
+        this.time = Math.floor((Date.now() - this.startTime) / this.interval);
         this.node.textContent = this.getCountDownString();
       }
-    }, 1000);
+    }, this.interval);
   }
 
   setTimer(startTime: number) {
@@ -77,6 +80,9 @@ class Timer extends Control {
 
   stop(): void {
     window.clearInterval(this.counter);
+  }
+  setSpeed(speed:number) {
+    this.interval = 1000 / speed;
   }
 }
 

@@ -63,11 +63,10 @@ export class Replay extends GenericPopup<string> {
       this.onSelect('close');
     };
   }
-  start() {
+  async start() {
     this.replaySrceen.node.innerHTML = '';
     if (this.params.gameType == 'CROSS') {
       this.view = new Cross(this.replaySrceen.node);
-      console.log(this.params.player1);
       this.view.playerOne.node.textContent = this.params.player1.login;
       this.view.playerTwo.node.textContent = this.params.player2.login;
       this.view.btnStart.destroy();
@@ -77,10 +76,9 @@ export class Replay extends GenericPopup<string> {
         setTimeout(() => {
           // const move = new Control( this.replaySrceen.node, 'div', );
           // move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
-          console.log(res);
           this.view.setHistoryMove(res)
           this.view.timer.node.innerHTML = `${res.time}`;
-          const field: Array<Array<string>> = [ [], [], [] ];
+          const field: Array<Array<string>> = [[], [], []];
           field[res.move.y][res.move.x] = res.sign;
           this.view.updateGameField(field);
         }, 1000 / this.speed * ++i);
@@ -88,7 +86,6 @@ export class Replay extends GenericPopup<string> {
     }
     if (this.params.gameType == 'CHESS') {
       const startTime = Date.now();
-      console.log(this.params);
       const players = [
         {
           login: this.params.player1.login,
@@ -99,7 +96,7 @@ export class Replay extends GenericPopup<string> {
           avatar: ''
         }
       ];
-      this.chessView = new ChessGame(this.replaySrceen.node, 'network');
+      this.chessView = new ChessGame(this.replaySrceen.node, this.params.gameMode);
       this.chessView.hideButtons();
       this.chessView.setHistoryFontColor();
       this.chessView.setPlayer({ player: this.params.player1.login, players: players });
@@ -108,117 +105,70 @@ export class Replay extends GenericPopup<string> {
         field: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
         time: startTime
       });
-      if(this.speed > 1){
-      this.chessView.stopTimer();
-      this.chessView.timerReplace();
-      let time = 1;
-      this.speedTimer = setInterval(()=>{
-        this.chessView.timer.node.textContent = `${getTimeString(time)}`;
-        time+=1
-      },1000/this.speed)
-      }
-      
-      this.params.moves.forEach((move, i) => {
-        if (this.params.gameMode == 'bot') {
-          let player = '';
-          if (i % 2 !== 0) {
-            player = this.params.player1.login;
-            move.history.time += 500;
-          } else {
-            player = this.params.player2.login;
-          }
-          setTimeout(() => {
-            const chessDataMove: IChessData = {
-              coords: move.history.coords,
-              player: player,
-              field: move.field,
-              winner: '',
-              rotate: false,
-              history: move.history,
-              king: {
-                check: null,
-                mate: false,
-                staleMate: false
-              }
-            };
-            this.chessView.onFigureMove(chessDataMove);
-            
-          }, move.history.time / this.speed);
-        } else if (this.params.gameMode == 'oneScreen') {
-          let player: string = '';
-          if (i % 2 !== 0) {
-            player = this.params.player1.login;
-          }
-          setTimeout(() => {
-            const chessDataMove: IChessData = {
-              coords: move.history.coords,
-              player: player,
-              field: move.field,
-              winner: '',
-              rotate: false,
-              history: move.history,
-              king: {
-                check: null,
-                mate: false,
-                staleMate: false
-              }
-            };
-
-            this.chessView.onFigureMove(chessDataMove);
-          }, move.history.time / this.speed);
-        } else if (this.params.gameMode == 'network') {
-          let player: string = '';
-          if (i % 2 !== 0) {
-            player = this.params.player1.login;
-          } else {
-            player = this.params.player2.login;
-          }
-          setTimeout(() => {
-            const chessDataMove: IChessData = {
-              coords: move.history.coords,
-              player: player,
-              field: move.field,
-              winner: '',
-              rotate: false,
-              history: move.history,
-              king: {
-                check: null,
-                mate: false,
-                staleMate: false
-              }
-            };
-            this.chessView.onFigureMove(chessDataMove);
-          }, move.history.time / this.speed);
+      this.chessView.setSpeed(this.speed);
+      // if (this.speed > 1) {
+      //   this.chessView.stopTimer();
+      //   this.chessView.timerReplace();
+      //   let time = 1;
+      //   this.speedTimer = setInterval(() => {
+      //     this.chessView.timer.node.textContent = `${getTimeString(time)}`;
+      //     time += 1
+      //   }, 1000 / this.speed)
+      // }
+      const moves = this.params.moves;
+      for (let i = 0; i < moves.length; i++) {
+        const move = moves[i];
+        const deltaTime = move.history.time - (i > 0 ? moves[i - 1].history.time : 0);
+        await this.replayMove(move, i, deltaTime);
+      };
+      let delayWinner = 500;
+      delay(delayWinner / this.speed).then(() => {
+        if (this.params.winner.toLocaleLowerCase() == 'draw' || this.params.winner.toLocaleLowerCase() == 'stalemate') {
+          const winnerAlert = new Control(this.replaySrceen.node, 'div', recordStyles.record_winnerPop);
+          winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
+        } else {
+          const winnerAlert = new Control(this.replaySrceen.node, 'div', recordStyles.record_winnerPop);
+          winnerAlert.node.textContent = `Winner is ${this.params.winner}`;
         }
-      });
-      let delay = 500;
-        if(this.params.moves.length){
-          delay = this.params.moves[ this.params.moves.length-1].history.time + 500;
-        }
-           if(this.params.winner.toLocaleLowerCase() =='draw' || this.params.winner.toLocaleLowerCase() =='stalemate'){
-             setTimeout(()=>{
-                 this.chessView.stopTimer();
-                const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
-                winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
-                clearInterval(this.speedTimer)
-               },delay/this.speed)
-               
-           } else {
-            setTimeout(()=>{
-                this.chessView.stopTimer();
-                const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
-                winnerAlert.node.textContent = `Winner is ${this.params.winner}`;
-                clearInterval(this.speedTimer)
-            },delay/this.speed)
-           
-           }
+        this.chessView.clearData()
+        this.chessView.stopTimer();
+        clearInterval(this.speedTimer);
+      })
     }
   }
+
+  private replayMove(move: { field: string; player: string; history: IChessHistory; }, i: number, deltaTime: number) {
+    return delay(deltaTime / this.speed).then(() => {
+      const chessDataMove: IChessData = {
+        coords: move.history.coords,
+        player: move.player,
+        field: move.field,
+        winner: '',
+        rotate: false,
+        history: move.history,
+        king: {
+          check: null,
+          mate: false,
+          staleMate: false
+        }
+      };
+      this.chessView.onFigureMove(chessDataMove);
+    });
+  }
 }
-function getTimeString(time:number): string {
+
+function getTimeString(time: number): string {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
   const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
   const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
   return `${minOutput}:${secOutput}`;
+}
+
+function delay(time: number): Promise<void> {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res(null)
+    }, time)
+  })
 }
