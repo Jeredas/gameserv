@@ -34,7 +34,7 @@ export class AuthForm extends GenericPopup<any> {
         return 'Not Found';
       }
     }, 'Login', 'login');
-    this.password = new InputWrapper(wrapperInputs.node, 'Password', async () => { return null }, 'Password', 'password');
+    this.password = new InputWrapper(wrapperInputs.node, 'Password', async () => { return null }, 'Password', 'password','password');
     const wrapperButtons = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_btns);
     this.loginButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Log in');
     this.cancelButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Cancel');

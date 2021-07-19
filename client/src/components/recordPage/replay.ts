@@ -67,7 +67,6 @@ export class Replay extends GenericPopup<string> {
     this.replaySrceen.node.innerHTML = '';
     if (this.params.gameType == 'CROSS') {
       this.view = new Cross(this.replaySrceen.node);
-      console.log(this.params.player1);
       this.view.playerOne.node.textContent = this.params.player1.login;
       this.view.playerTwo.node.textContent = this.params.player2.login;
       this.view.btnStart.destroy();
@@ -77,7 +76,6 @@ export class Replay extends GenericPopup<string> {
         setTimeout(() => {
           // const move = new Control( this.replaySrceen.node, 'div', );
           // move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
-          console.log(res);
           this.view.setHistoryMove(res)
           this.view.timer.node.innerHTML = `${res.time}`;
           const field: Array<Array<string>> = [ [], [], [] ];
@@ -88,7 +86,6 @@ export class Replay extends GenericPopup<string> {
     }
     if (this.params.gameType == 'CHESS') {
       const startTime = Date.now();
-      console.log(this.params);
       const players = [
         {
           login: this.params.player1.login,
@@ -99,7 +96,7 @@ export class Replay extends GenericPopup<string> {
           avatar: ''
         }
       ];
-      this.chessView = new ChessGame(this.replaySrceen.node, 'network');
+      this.chessView = new ChessGame(this.replaySrceen.node,this.params.gameMode);
       this.chessView.hideButtons();
       this.chessView.setHistoryFontColor();
       this.chessView.setPlayer({ player: this.params.player1.login, players: players });
@@ -122,10 +119,10 @@ export class Replay extends GenericPopup<string> {
         if (this.params.gameMode == 'bot') {
           let player = '';
           if (i % 2 !== 0) {
-            player = this.params.player1.login;
+            player = this.params.player2.login;
             move.history.time += 500;
           } else {
-            player = this.params.player2.login;
+            player = this.params.player1.login;
           }
           setTimeout(() => {
             const chessDataMove: IChessData = {
@@ -145,10 +142,10 @@ export class Replay extends GenericPopup<string> {
             
           }, move.history.time / this.speed);
         } else if (this.params.gameMode == 'oneScreen') {
-          let player: string = '';
+          let player: string = ''
           if (i % 2 !== 0) {
-            player = this.params.player1.login;
-          }
+            player = this.params.player2.login;
+          } 
           setTimeout(() => {
             const chessDataMove: IChessData = {
               coords: move.history.coords,
@@ -169,9 +166,9 @@ export class Replay extends GenericPopup<string> {
         } else if (this.params.gameMode == 'network') {
           let player: string = '';
           if (i % 2 !== 0) {
-            player = this.params.player1.login;
-          } else {
             player = this.params.player2.login;
+          } else {
+            player = this.params.player1.login;
           }
           setTimeout(() => {
             const chessDataMove: IChessData = {
@@ -197,14 +194,17 @@ export class Replay extends GenericPopup<string> {
         }
            if(this.params.winner.toLocaleLowerCase() =='draw' || this.params.winner.toLocaleLowerCase() =='stalemate'){
              setTimeout(()=>{
+                 this.chessView.clearData()
                  this.chessView.stopTimer();
                 const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
                 winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
                 clearInterval(this.speedTimer)
+                
                },delay/this.speed)
                
            } else {
             setTimeout(()=>{
+              this.chessView.clearData()
                 this.chessView.stopTimer();
                 const winnerAlert = new Control(this.replaySrceen.node,'div',recordStyles.record_winnerPop);
                 winnerAlert.node.textContent = `Winner is ${this.params.winner}`;

@@ -65,7 +65,10 @@ export class RegForm extends GenericPopup<any> {
         this.registerButton.buttonDisable();
         return 'Invalid password';
       }
-    }, 'Password', 'password');
+    }, 'Password', 'password','password');
+    const tooltip = new Control(wrapperInputs.node, 'div', popupStyles.tooltip);
+    tooltip.node.textContent = `Password should have minimum eight characters, at least one uppercase letter, one
+    lowercase letter and one number`
     const wrapperButtons = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_btns);
     this.registerButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Register');
     this.cancelButton = new ButtonDefault(wrapperButtons.node, popupStyles.settings_button, 'Cancel');

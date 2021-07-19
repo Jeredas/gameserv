@@ -173,7 +173,7 @@ class ChessGame extends Control {
     const player1 = params.players[0].login;
     this.playerOne.node.textContent = player1;
     this.players.push(player1);
-
+    console.log(params)
     if (this.chessMode !== chessModeConfig.network) {
       this.singleModePlayerIndex = 0;
       const player2 = params.players[1].login;
