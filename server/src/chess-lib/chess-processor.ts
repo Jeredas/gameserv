@@ -78,7 +78,11 @@ export class ChessProcessor implements IChessProcessor {
   isStaleMate(): boolean {
     return this.field.isStaleMate();
   }
-  getRecommendMove(): IMove | null {
-    return this.chessAI.getRecommendMove(this.field);
+  getRecommendMove(method?: string): IMove | null {
+    if (method) {
+      return this.chessAI.getRecommendMove(this.field, method);  
+    } else {
+      return this.chessAI.getRecommendMove(this.field);
+    }
   }
 }

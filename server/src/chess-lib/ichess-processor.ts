@@ -46,5 +46,5 @@ export interface IChessProcessor {
   getKingRivals(): Set<string>;
   isMate(): boolean;
   isStaleMate(): boolean;
-  getRecommendMove(): IMove | null;
+  getRecommendMove(method?: string): IMove | null;
 }

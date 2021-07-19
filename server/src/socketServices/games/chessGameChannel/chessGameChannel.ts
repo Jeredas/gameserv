@@ -304,7 +304,7 @@ export class ChessGameChannel extends ChatChannel {
 
           this.sendForAllClients(response);
           if (!bot && this.gameMode === 'bot' && moveAllowed && !isMate && !isStaleMate) {
-            const botMove = this.chessProcessor.getRecommendMove();
+            const botMove = this.chessProcessor.getRecommendMove('monte-carlo');
             if (botMove !== null) {
               const startBotCoord = botMove.startCell;
               const targetBotCoord = botMove.getTargetCell();
@@ -355,7 +355,7 @@ export class ChessGameChannel extends ChatChannel {
       ) {
         // const recommended = [ new Vector(4, 6), new Vector(4, 4) ];
         const recommended = new Array<Vector>();
-        const move = this.chessProcessor.getRecommendMove();
+        const move = this.chessProcessor.getRecommendMove('monte-carlo');
         console.log('MOVE RECOMMEND: ', move !== null ? move.toString() : 'none');
         if (move !== null) {
           const targetCell = move.getTargetCell();

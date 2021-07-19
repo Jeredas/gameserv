@@ -33,7 +33,7 @@ export class King extends Figure {
       }
       King.CASTLING_TYPES.forEach((castlingType) => {
         const castlingMove = new CastlingMove(castlingType)
-        if (castlingMove.isValid(field)) {
+        if (castlingMove.isValid(field, checkDanger)) {
           result.add(castlingMove);
         }
       })

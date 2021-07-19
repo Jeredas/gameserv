@@ -26,7 +26,7 @@ export class CastlingMove extends Move {
     } else return 'Illegal Move';
   }
   
-  isValid(field: IField): boolean {
+  isValid(field: IField, checkDanger = true): boolean {
     if ((field.castlingFlags & this.castlingData.flag) == 0) {
       return false;
     }
@@ -38,12 +38,12 @@ export class CastlingMove extends Move {
         return false;
       }
     }
-    if(field.isCheck()) {
+    if(checkDanger && field.isCheck()) {
       return false;
     }
     for (let notCheckSell of this.castlingData.notCheckCells) {
       const notCheckSellResult = new Move(this.castlingData.kingStart, notCheckSell).makeMove(field, false);
-      if (notCheckSellResult.isCheck()) {
+      if (checkDanger && notCheckSellResult.isCheck()) {
         return false;
       }
     }
