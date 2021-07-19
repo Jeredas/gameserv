@@ -17,6 +17,7 @@ class UnregisteredUser extends Control {
   buttonLogIn: ButtonDefault;
   
   public onLoginClick: () => void;
+  public onHeaderClick: () => void;
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', aboutStyles.about_welcome);
@@ -50,10 +51,47 @@ class AboutPage extends Control {
 
   private aboutFade: Control;
   private aboutView: Control = null;
+  unregistered: UnregisteredUser;
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', aboutStyles.about_wrapper);
     this.node.style.backgroundImage = `url(${aboutImage})`;
     this.aboutFade = new Control(this.node, 'div', aboutStyles.about_fade);
+    this.unregistered = new UnregisteredUser(this.aboutFade.node);
+    this.unregistered.onHeaderClick = () => {
+      this.logInHeader();
+    }
+  }
+
+  logInHeader() {
+    popupService.showPopup(RegisterCheck).then((res) => {
+      if (res === 'SignUp') {
+        popupService.showPopup(RegForm).then((res) => {
+          if (res === 'register') {
+            console.log('registered');
+            this.showAuthPopUp().then((res) => {
+              if (res.status === true) {
+                this.onAuth.emit(res.data);
+              } else {
+                this.onAuthFail.emit('fail');
+              }
+            });
+          } else {
+            this.onAuthFail.emit('fail');
+            console.log('registration failed');
+          }
+        });
+      } else if (res === 'SignIn') {
+        this.showAuthPopUp().then((res) => {
+          if (res.status === true) {
+            this.onAuth.emit(res.data);
+          } else {
+            this.onAuthFail.emit('fail');
+          }
+        });
+      } else if (res === 'Close') {
+        //this.onAuthFail.emit('fail')
+      }
+    });
   }
 
   hide(): void {
@@ -78,39 +116,9 @@ class AboutPage extends Control {
     if(userData != null) {
       this.aboutView = new RegisteredUser(this.aboutFade.node, userData)
     } else {
-      const unregistered = new UnregisteredUser(this.aboutFade.node);
-      this.aboutView = unregistered;
-      unregistered.onLoginClick = () => {
-          popupService.showPopup(RegisterCheck).then((res) => {
-        if (res === 'SignUp') {
-          popupService.showPopup(RegForm).then((res) => {
-            if (res === 'register') {
-              console.log('registered');
-              this.showAuthPopUp().then((res) => {
-                if (res.status === true) {
-                  this.onAuth.emit(res.data);
-                } else {
-                  this.onAuthFail.emit('fail');
-                }
-              });
-            } else {
-              this.onAuthFail.emit('fail');
-              console.log('registration failed');
-            }
-          });
-        } else if (res === 'SignIn') {
-          this.showAuthPopUp().then((res) => {
-            if (res.status === true) {
-              this.onAuth.emit(res.data);
-            } else {
-              this.onAuthFail.emit('fail');
-            }
-          });
-        } else if (res === 'Close') {
-          //this.onAuthFail.emit('fail')
-        }
-      });
-      }
+      //const unregistered = new UnregisteredUser(this.aboutFade.node);
+      this.aboutView = this.unregistered;
+      this.unregistered.onLoginClick = () => {this.logInHeader()}
     }
   }
 

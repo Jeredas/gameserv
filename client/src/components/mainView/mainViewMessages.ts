@@ -14,6 +14,7 @@ class MainViewMessages extends Control {
   addMessage(message: IUserChatMessage): void {
     const messageItem = new MainViewMessage(this.node, message);
     this.messages.push(messageItem);
+    this.node.scrollTop = this.node.scrollHeight;
   }
 }
 
