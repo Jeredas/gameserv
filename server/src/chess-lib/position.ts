@@ -19,7 +19,7 @@ export class Position implements IPosition {
     return this.position.has(coord.toString());
   }
   getAllFigures(): Figures {
-    return new Figures(this.position.values());
+    return Figures.from(this.position.values());
   }
   getFiguresCount(): number {
     return this.position.size;
