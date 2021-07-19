@@ -1,3 +1,4 @@
+import { adminService } from './httpServices/adminService';
 const http = require('http');
 /*const config = require('./serverConfig');
 const util = require('util');
@@ -17,6 +18,7 @@ import {router} from './httpServices/httpRouter';
 import { statService } from './httpServices/statService';
 authService.start(router);
 statService.start(router);
+adminService.start(router);
 function paramsParser(paramsString:string):any {
   let params = {};
   paramsString.split(/[&]+/).forEach((it) => {

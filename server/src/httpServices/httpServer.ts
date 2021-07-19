@@ -1,3 +1,4 @@
+import { adminService } from './adminService';
 import { statService } from './statService';
 import http from 'http';
 import { authService } from './authService';
@@ -54,6 +55,9 @@ class Server {
       if (isAuthStarted){
         statService.start(router).then(()=>{
           console.log('stat Service started')
+        })
+        adminService.start(router).then(()=>{
+          console.log('admin Service Started')
         })
         this.server = http.createServer((req, res)=>this.processRequest(req, res)).listen(port);
         return true;
