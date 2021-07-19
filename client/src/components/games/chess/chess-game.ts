@@ -74,7 +74,7 @@ class ChessGame extends Control {
   private chessControls: Control;
   private chessHead: Control;
 
-  constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
+  constructor(parentNode: HTMLElement, chessMode: string) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
     this.node.classList.add('game_action_size');
     this.chessMode = chessMode;

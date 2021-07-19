@@ -144,11 +144,8 @@ export class OnlyChatChannelModel extends ChatChannelModel {
     this.send('leaveUser', {});
   }
 
-  // CROSS MOVE
   async joinChannel() {
     const joinResponse = await this.sendAwaiting('joinUser', {});
-    console.log('status', joinResponse);
-
     return joinResponse.params.status == 'ok';
   }
 
@@ -171,7 +168,7 @@ export class OnlyChatChannelView extends MainView {
     this.mainViewMessages.node.style.backgroundImage = `url(${messageBlockImage})`;
     this.mainViewUsers = new MainViewUsers(this.node);
 
-    this.model.service.onMessage.add((params) => {
+    this.model.service.onMessage.add((params: IUserChatMessage) => {
       this.mainViewMessages.addMessage(params);
     });
 
@@ -181,11 +178,15 @@ export class OnlyChatChannelView extends MainView {
     };
 
     this.mainViewInput.onClick = (message) => {
-      this.model.sendMessage(message);
+      if(message) {
+        this.model.sendMessage(message);
+      }
     };
 
     this.mainViewInput.onEnter = (message) => {
-      this.model.sendMessage(message);
+      if(message) {
+        this.model.sendMessage(message);
+      }
     };
     
     this.model.service.onUserList.add(params => this.mainViewUsers.setUsers(params))

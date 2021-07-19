@@ -335,19 +335,16 @@ export class ChessGameChannelView extends MainView {
   onLeaveClick: () => void;
   chessGame: ChessGame = null;
 
-  constructor(parentNode: HTMLElement, model: channelModel, chessMode: string, parentHeight = 0) {
+  constructor(parentNode: HTMLElement, model: channelModel, chessMode: string, botComplexcity?: string) {
     super(parentNode);
     this.model = model as ChessGameChannelModel;
     this.mainViewPlayers = new MainViewPlayers(this.node);
     this.mainViewUsers = new MainViewUsers(this.node);
-    // const parentHeight = this.mainViewAction.node.getBoundingClientRect().height - 140;
-
-    this.chessGame = new ChessGame(this.mainViewAction.node, chessMode, parentHeight - 320);
+    this.chessGame = new ChessGame(this.mainViewAction.node, chessMode);
 
     this.model.getPlayers('');
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
-        console.log('Join', res);
         if (res) {
           this.model.getPlayers('');
         }
@@ -385,13 +382,10 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessMove.add((params) => {
       this.chessGame.onFigureMove(params);
       if (params.king.mate) {
-        console.log('KING MATE', params.king.mate);
         this.chessGame.showKingMate(params.king.check);
         this.model.chessMate('mate');
       }
       if (params.king.staleMate) {
-        console.log('!! StaleMate', params.king.staleMate);
-
         this.model.chessStaleMate('chessStaleMate');
       }
     });
@@ -446,8 +440,6 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessMate.add((params) => {
-      console.log('server on Mate');
-
       this.chessGame.createModalGameOver(params);
     });
 
