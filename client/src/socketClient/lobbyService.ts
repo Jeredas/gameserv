@@ -5,6 +5,7 @@ import { SocketClient } from './socketClient';
 import Signal from './signal';
 import { IChannelData } from '../components/utilities/interfaces';
 import appStorage from '../components/utilities/storage';
+import { chessBotComplexity } from '../components/utilities/config';
 
 
 export class LobbyService implements ISocketService{
@@ -162,6 +163,8 @@ export class LobbyModel{
         }
       }
       this.service.onCreated.add(listener);
+      console.log('model channel', newChannel.complexity);
+      
       this.service.send({
         
         sessionId: appStorage.getSession(),
@@ -172,7 +175,8 @@ export class LobbyModel{
           channelName: newChannel.channelName,
           channelType: newChannel.channelType,
           channelParams: {
-            gameMode: newChannel.gameMode
+            gameMode: newChannel.gameMode,
+            complexity: chessBotComplexity.get(newChannel.complexity)
           }
         }
       });

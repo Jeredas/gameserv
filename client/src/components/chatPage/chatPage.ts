@@ -9,7 +9,7 @@ import SettingsChannel from '../popups/create-channel-popup/create-channel-popup
 import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
-import { channelConfig, channelModel } from '../utilities/config';
+import { channelConfig, channelModel, chessBotComplexity } from '../utilities/config';
 import chatImage from '../../assets/chatBg.png';
 import { GameSelectPopup } from '../popups/game-select-popup/game-select-popup';
 import PaginatedContainer from './paginate-container';
@@ -116,6 +116,10 @@ class ChatPage extends Control {
           newChannel.channelType = channelType;
           if(newChannel.gameMode === 'bot') {
             popupService.showPopup<string>(ComplexityBotPopup).then((complexity) => {
+              console.log('complexity', complexity);
+              console.log(newChannel);
+              newChannel.complexity = complexity;
+              
               this.model.createNewChannel(newChannel).then((res: any) => {
                 if (res.status === 'ok') {
                   const channelIcon = channelConfig.get(newChannel.channelType).icon;
@@ -123,7 +127,7 @@ class ChatPage extends Control {
                     newChannel.channelName,
                     newChannel.channelType,
                     channelIcon,
-                    complexity
+                    chessBotComplexity.get(complexity)
                   );
                 }
               });

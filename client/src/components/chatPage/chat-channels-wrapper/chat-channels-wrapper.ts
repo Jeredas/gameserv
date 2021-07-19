@@ -35,13 +35,13 @@ class ChatChannels extends Control {
     };
   }
 
-  addChannel(channelName: string, channelType: string, channelIcon: string, complexityOfBot?: string): void {
+  addChannel(channelName: string, channelType: string, channelIcon: string, complexity?: string): void {
     const channel = new ChatChannel(
       this.channelContainer.node,
       channelName,
       channelType,
       channelIcon,
-      complexityOfBot,
+      complexity,
       ''
     );
     channel.onClick = (channelName) => {

@@ -39,6 +39,7 @@ export class ChessGameChannel extends ChatChannel {
     moves: Array<{ field: string; player: string; history: IChessHistory }>;
   };
   moves: Array<{ field: string; player: string; history: IChessHistory }>;
+  complexity: string;
 
   constructor(name: string, type: string, params: any) {
     super(name, type, params);
@@ -46,6 +47,9 @@ export class ChessGameChannel extends ChatChannel {
     this.players = new Array<IPlayerData>();
     this.gameMode = params.gameMode;
     this.moves = [];
+    this.complexity = params.complexity;
+    console.log(this.complexity);
+    
   }
 
   sendForAllClients(response: IChatResponse) {

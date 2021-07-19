@@ -333,12 +333,11 @@ export class ChessGameChannelView extends MainView {
   onLeaveClick: () => void;
   chessGame: ChessGame = null;
 
-  constructor(parentNode: HTMLElement, model: channelModel, chessMode: string) {
+  constructor(parentNode: HTMLElement, model: channelModel, chessMode: string, botComplexcity?: string) {
     super(parentNode);
     this.model = model as ChessGameChannelModel;
     this.mainViewPlayers = new MainViewPlayers(this.node);
     this.mainViewUsers = new MainViewUsers(this.node);
-    // const parentHeight = this.mainViewAction.node.getBoundingClientRect().height - 140;
 
     this.chessGame = new ChessGame(this.mainViewAction.node, chessMode);
 
