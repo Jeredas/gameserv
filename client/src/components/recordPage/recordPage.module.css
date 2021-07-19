@@ -220,3 +220,22 @@
 
 }
 
+.record_winnerPop {
+  position: absolute;
+  text-align: center;
+  color: #eee;
+  text-shadow: 1px 1px 3px #000;
+  width: 30%;
+  height: 30%;
+  border-radius: 5%;
+  background-color: rgba(56, 173, 148, 0.925);
+  box-shadow: 0 0 10px #000;
+  top: 50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
