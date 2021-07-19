@@ -1,4 +1,4 @@
-import { popupService } from '../popupService/popupService';
+import { popupService } from '../popups/popupService/popupService';
 import { Replay } from './replay';
 import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
@@ -23,8 +23,11 @@ class Record extends Control {
     const gamePlayers = new Control(this.node, 'div', recordStyles.record_players);
 
     const player1 = new Control(gamePlayers.node, 'div', recordStyles.record_player);
+    
     const player1Avatar = new Control(player1.node, 'div', recordStyles.record_player_avatar);
-    player1Avatar.node.style.backgroundImage = `url(${record.player1.avatar})`;
+    if(record.player1.avatar) {
+      player1Avatar.node.style.backgroundImage = `url(${record.player1.avatar})`;
+    }
     const player1Login = new Control(player1.node, 'div', recordStyles.record_player_login);
     player1Login.node.textContent = record.player1.login;
 
@@ -33,7 +36,9 @@ class Record extends Control {
 
     const player2 = new Control(gamePlayers.node, 'div', recordStyles.record_player);
     const player2Avatar = new Control(player2.node, 'div', recordStyles.record_player_avatar);
-    player2Avatar.node.style.backgroundImage = `url(${record.player2.avatar})`;
+    if(record.player2.avatar) {
+      player2Avatar.node.style.backgroundImage = `url(${record.player2.avatar})`;
+    }
     const player2Login = new Control(player2.node, 'div', recordStyles.record_player_login);
     player2Login.node.textContent = record.player2.login;
 
@@ -58,7 +63,6 @@ class Record extends Control {
         .showPopup(Replay, record)
         .then((res) => {
           if (res == 'close') {
-            console.log('resplay closed');
           }
         });
     };
@@ -79,7 +83,5 @@ function msToTime(duration: number) {
     let secondsS = (seconds < 10) ? "0" + seconds : seconds;
 
     return hoursS + ":" + minutesS + ":" + secondsS;
-  } else {
-    console.log('no history')
   }
 }

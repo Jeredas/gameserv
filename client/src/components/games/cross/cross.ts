@@ -5,9 +5,9 @@ import CrossButton from './button/cross-button';
 import crossStyles from './cross.module.css';
 import HistoryBlock from './history/history';
 import { ICrossStop, IJoinedPlayer, ICrossHistory } from '../../utilities/interfaces';
-import Timer from '../../timer/timer';
 import ModalDraw from './modal/modal-draw';
 import ModalGameOver from './modal/modalGameOver';
+import Timer from '../../timer/timer';
 
 const size = 3;
 
@@ -93,6 +93,9 @@ class Cross extends Control {
     this.btnLoss.onClick = () => {
       this.onLossClick();
     };
+    // window.onresize = () => {}
+    // window.onresize(null);
+    // this.model.onStopGame.add((data) => this.createModalDraw(data));
   }
 
   updateGameField(field: Array<Array<string>>): void {
@@ -102,12 +105,6 @@ class Cross extends Control {
         cell.clickedCell(field[y][x]);
       }
     });
-    // if (!this.isRotated) {
-    //   this.crossCells.node.classList.add('rotate');
-    // } else {
-    //   this.crossCells.node.classList.remove('rotate');
-    // }
-    // this.isRotated = !this.isRotated;
   }
 
   clearData() {

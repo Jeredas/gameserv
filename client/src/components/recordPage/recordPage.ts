@@ -1,17 +1,17 @@
-import { IChessHistory, ICrossHistory, IPublicUserInfo } from '../utilities/interfaces';
+import { IChessHistory, ICrossHistory, IUserData  } from '../utilities/interfaces';
 import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
 import Record from './record';
 import recordStyles from './recordPage.module.css';
 import RecordHeader from './recordHeader';
-import recordBg from '../../assets/records_bg.png';
+import recordBg from '../../assets/records.png';
 
 export interface IGameRecord {
   gameType: string;
   date: string;
-  player1: IPublicUserInfo;
-  player2: IPublicUserInfo;
+  player1: IUserData ;
+  player2: IUserData ;
   winner: string;
   time: string;
   history: Array<IChessHistory> | Array<ICrossHistory>;
