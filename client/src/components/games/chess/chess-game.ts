@@ -74,7 +74,7 @@ class ChessGame extends Control {
   private chessControls: Control;
   private chessHead: Control;
 
-  constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
+  constructor(parentNode: HTMLElement, chessMode: string) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
     this.node.classList.add('game_action_size');
     this.chessMode = chessMode;
@@ -105,13 +105,11 @@ class ChessGame extends Control {
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
       this.onDrawClick('draw');
-      // this.model.chessStopGame('draw');
     };
     this.btnLoss = new ChessButton(this.chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
       this.onLossClick('loss');
-      // this.model.chessStopGame('loss');
     };
 
     this.chessBoard.onFigureDrop = (posStart: Vector, posDrop: Vector) => {

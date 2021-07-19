@@ -7,7 +7,7 @@ class ChatChannel extends Control {
   private channelName: string;
   private channelType: string;
   private gameMode: string = '';
-  private complexityOfBot: string;
+  private complexity: string;
 
   constructor(
     parentNode: HTMLElement,
@@ -15,7 +15,7 @@ class ChatChannel extends Control {
     channelType: string,
     icon: string,
     gameMode = '',
-    complexityOfBot:string = ''
+    complexity:string = ''
   ) {
     super(parentNode, 'div', chatStyles.chat_channel);
     const channelText = new Control(this.node, 'div', chatStyles.chat_channel_text);
@@ -25,7 +25,7 @@ class ChatChannel extends Control {
     this.channelName = channelName;
     this.channelType = channelType;
     this.gameMode = gameMode;
-    this.complexityOfBot = complexityOfBot;
+    this.complexity = complexity;
 
     this.node.onclick = () => {
       this.onClick(this.channelName);
@@ -37,7 +37,7 @@ class ChatChannel extends Control {
       channelName: this.channelName,
       channelType: this.channelType,
       gameMode: this.gameMode,
-      complexity: this.complexityOfBot
+      complexity: this.complexity
     };
   }
 

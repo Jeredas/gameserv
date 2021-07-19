@@ -7,6 +7,7 @@ export interface IMove {
   readonly vector: IVector;
 
   getTargetCell(): ICellCoord;
+  getNotation(field: IField): string;
   toString(): string;
   isValid(field: IField): boolean;
   makeMove(field: IField, changePlayer?: boolean): IField;

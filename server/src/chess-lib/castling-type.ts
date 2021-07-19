@@ -1,0 +1,1 @@
+export type CastlingType = 'K' | 'Q' | 'k' | 'q';

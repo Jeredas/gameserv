@@ -13,6 +13,7 @@ export interface IField {
   readonly pawnTresspassing: CellCoord | null;
   readonly fiftyRuleCount: number;
   readonly moveNumber: number;
+  readonly cost: number;
 
   copy(): IField;
   getAllCellCoords(): CellCoords;

@@ -3,7 +3,7 @@ import {
   ICrossHistory,
   IPublicUserInfo,
   IChessData
-} from './../utilities/interfaces';
+} from '../utilities/interfaces';
 import Control from '../utilities/control';
 import GenericPopup from '../genericPopup/genericPopup';
 import ButtonDefault from '../buttonDefault/buttonDefault';
@@ -99,7 +99,7 @@ export class Replay extends GenericPopup<string> {
           avatar: ''
         }
       ];
-      this.chessView = new ChessGame(this.replaySrceen.node, 'network', 0);
+      this.chessView = new ChessGame(this.replaySrceen.node, 'network');
       this.chessView.hideButtons();
       this.chessView.setHistoryFontColor();
       this.chessView.setPlayer({ player: this.params.player1.login, players: players });
