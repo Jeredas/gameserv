@@ -17,12 +17,15 @@
 }
 
 .record_table_wrapper {
-  /* width: 100%; */
+  width: 100%;
+  width: 1200px;
   height: 100%;
   margin: 0 auto 20px;
   padding: 10px;
   overflow-y: scroll;
   position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(131, 190, 190) rgb(67, 92, 97) ;
 }
 
 
@@ -69,6 +72,7 @@
   width:100%;
   justify-content: flex-start;
   align-items: center;
+  overflow: hidden;
 }
 
 .record_winner {
@@ -104,8 +108,6 @@
   padding: 10px 5px;
 }
 
-
-
 .record_button {
   border-radius: 15px;
   border: none;
@@ -132,9 +134,12 @@
   display: none;
 }
 .record_player {
+  width: 235px;
+  min-width: 140px;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  overflow: hidden;
 }
 .record_player_avatar {
   flex-shrink: 0;
