@@ -63,7 +63,7 @@ export class Replay extends GenericPopup<string> {
       this.onSelect('close');
     };
   }
-  start() {
+  async start() {
     this.replaySrceen.node.innerHTML = '';
     if (this.params.gameType == 'CROSS') {
       this.view = new Cross(this.replaySrceen.node);
@@ -114,16 +114,12 @@ export class Replay extends GenericPopup<string> {
           time += 1
         }, 1000 / this.speed)
       }
-
-      this.params.moves.forEach((move, i) => {
-        if (this.params.gameMode == 'bot') {
-          this.botReplay(move, i);
-        } else if (this.params.gameMode == 'oneScreen') {
-          this.oneScreenReplay(move, i);
-        } else if (this.params.gameMode == 'network') {
-          this.networkReplay(move, i);
-        }
-      });
+      const moves = this.params.moves;
+      for (let i = 0; i < moves.length; i++) {
+        const move = moves[i];
+        const deltaTime = move.history.time - (i > 0 ? moves[i - 1].history.time : 0);
+        await this.replayMove(move, i, deltaTime);
+      };
       let delay = 500;
       if (this.params.moves.length) {
         delay = this.params.moves[this.params.moves.length - 1].history.time + 500;
@@ -151,18 +147,11 @@ export class Replay extends GenericPopup<string> {
     }
   }
 
-  private botReplay(move: { field: string; player: string; history: IChessHistory; }, i: number) {
-    let player = '';
-    if (i % 2 !== 0) {
-      player = this.params.player2.login;
-      move.history.time += 500;
-    } else {
-      player = this.params.player1.login;
-    }
-    setTimeout(() => {
+  private replayMove(move: { field: string; player: string; history: IChessHistory; }, i: number, deltaTime: number) {
+    return delay(deltaTime / this.speed).then(() => {
       const chessDataMove: IChessData = {
         coords: move.history.coords,
-        player: player,
+        player: move.player,
         field: move.field,
         winner: '',
         rotate: false,
@@ -174,57 +163,7 @@ export class Replay extends GenericPopup<string> {
         }
       };
       this.chessView.onFigureMove(chessDataMove);
-
-    }, move.history.time / this.speed);
-  }
-  
-  private oneScreenReplay(move: { field: string; player: string; history: IChessHistory; }, i: number) {
-    let player: string = ''
-    if (i % 2 !== 0) {
-      player = this.params.player2.login;
-    }
-    setTimeout(() => {
-      const chessDataMove: IChessData = {
-        coords: move.history.coords,
-        player: player,
-        field: move.field,
-        winner: '',
-        rotate: false,
-        history: move.history,
-        king: {
-          check: null,
-          mate: false,
-          staleMate: false
-        }
-      };
-
-      this.chessView.onFigureMove(chessDataMove);
-    }, move.history.time / this.speed);
-  }
-
-  private networkReplay(move: { field: string; player: string; history: IChessHistory; }, i: number) {
-    let player: string = '';
-    if (i % 2 !== 0) {
-      player = this.params.player2.login;
-    } else {
-      player = this.params.player1.login;
-    }
-    setTimeout(() => {
-      const chessDataMove: IChessData = {
-        coords: move.history.coords,
-        player: player,
-        field: move.field,
-        winner: '',
-        rotate: false,
-        history: move.history,
-        king: {
-          check: null,
-          mate: false,
-          staleMate: false
-        }
-      };
-      this.chessView.onFigureMove(chessDataMove);
-    }, move.history.time / this.speed);
+    });
   }
 }
 
@@ -234,4 +173,12 @@ function getTimeString(time: number): string {
   const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
   const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
   return `${minOutput}:${secOutput}`;
+}
+
+function delay(time: number): Promise<void> {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res(null)
+    }, time)
+  })
 }
