@@ -378,8 +378,6 @@ export class ChessGameChannel extends ChatChannel {
             }
           }
         } else {
-          console.log('STOP', params);
-          // if (currentPlayer === this.players[1].login) {
             let rivalPlayer = 'Player2';
             if (this.gameMode === 'bot') {
               rivalPlayer = this.players[1].login;
