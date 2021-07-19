@@ -14,7 +14,7 @@ class RegisterCheck extends GenericPopup<string> {
     this.popupWrapper.node.classList.add(popupStyles.register_check)
     const wrapperAuth = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_auth);
     const authTitle =  new Control(wrapperAuth.node, 'div', popupStyles.title_checked_auth, 'Welcome Back!');
-    const authSubtitle =  new Control(wrapperAuth.node, 'div', popupStyles.description_auth, 'To keep connected with us please log in with your personal info');
+    const authSubtitle =  new Control(wrapperAuth.node, 'div', popupStyles.description_auth, 'please log in to be connected');
     this.buttonSignIn = new ButtonDefault(wrapperAuth.node,popupStyles.settings_button, 'SIGN IN');
 
     const wrapperReg = new Control(this.popupWrapper.node, 'div', popupStyles.wrapper_reg);

@@ -7,7 +7,7 @@ import Control from '../../utilities/control';
 import { IAuthData } from '../../utilities/interfaces';
 import getFormattedImgDataLink from '../../utilities/imgToDatalink';
 import popupStyles from '../popupService/popupService.module.css';
-import { defaultAvatar } from '../../utilities/configPopup';
+import defaultAvatar from '../../../assets/select-game-popup/avat-def.png';
 
 export class RegForm extends GenericPopup<any> {
   login: InputWrapper;
