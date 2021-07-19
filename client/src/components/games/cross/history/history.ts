@@ -16,6 +16,7 @@ class HistoryBlock extends Control {
   setHistoryMove(params: ICrossHistory): void {
     const historyItem = new Control(this.historyWrapper.node, 'div', historyStyles.cross_history_item);
     historyItem.node.textContent = `${params.sign} ${params.move.x}-${params.move.y} ${params.time}`;
+    this.node.scrollTop = this.node.scrollHeight;
   }
 
   clearHistory(): void {
