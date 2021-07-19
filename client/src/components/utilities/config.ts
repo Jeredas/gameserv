@@ -39,7 +39,7 @@ export const channelConfig = new Map([
 export type channelModel = OnlyChatChannelModel | CrossGameChannelModel | ChessGameChannelModel;
 
 export const chessBotComplexity = new Map([
-  [ 'Random', 'random' ],
-  [ 'Min-Max', 'min-max' ],
-  [ 'Monte-Carlo', 'monte-carlo' ]
+  [ 'Easy', 'random' ],
+  [ 'Medium', 'monte-carlo' ],
+  [ 'Hard', 'min-max' ]
 ]);

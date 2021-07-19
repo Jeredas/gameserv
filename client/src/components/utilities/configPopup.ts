@@ -29,5 +29,4 @@ export const channelTypePopup = [ 'OnlyChatChannel', 'ChessGameChannel', 'CrossG
 
 export const defaultAvatar = '../../assets/select-game-popup/avat-def.png';
 
-export const chessBotPopupComplexity = [ 'Random', 'Min-Max', 'Monte-Carlo' ];
-
+export const chessBotPopupComplexity = [ 'Easy', 'Medium', 'Hard' ];
