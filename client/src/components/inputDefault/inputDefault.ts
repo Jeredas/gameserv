@@ -2,6 +2,8 @@ import Control from "../utilities/control";
 
 class Input extends Control {
   node!: HTMLInputElement;
+
+  public onKeyUp: (e: KeyboardEvent) => void = () => {}
   
   constructor(parentNode: HTMLElement, type: string, name: string, value = '', placeHolder = '') {
     super(parentNode, 'input');
@@ -9,6 +11,10 @@ class Input extends Control {
     this.node.name = name;
     this.node.placeholder = placeHolder;
     this.node.value = value;
+
+    this.node.onkeyup = (e: KeyboardEvent) => {
+      this.onKeyUp(e);
+    }
   }
 
   getCheckedStatus(): boolean {

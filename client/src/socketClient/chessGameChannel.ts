@@ -261,8 +261,6 @@ export class ChessGameChannelModel extends ChatChannelModel {
 
   async joinChannel() {
     const joinResponse = await this.sendAwaiting('joinUser', {});
-    console.log('status', joinResponse);
-
     return joinResponse.params.status == 'ok';
   }
 
@@ -474,7 +472,6 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessStaleMate.add((params) => {
-      console.log('server on StaleMate');
       const data = {
         method: params,
         player: ''

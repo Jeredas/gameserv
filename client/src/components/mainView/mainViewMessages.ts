@@ -9,6 +9,7 @@ class MainViewMessages extends Control {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewStyles.chat_messages);
+    this.node.classList.add(mainViewStyles.chat_scrollbar);
   }
 
   addMessage(message: IUserChatMessage): void {

@@ -1,24 +1,23 @@
-import { LobbyService } from '../../socketClient/lobbyService';
 import { IChannelInfo } from './../utilities/interfaces';
 import Control from '../utilities/control';
 import ChatChannels from '../chatPage/chat-channels-wrapper/chat-channels-wrapper';
 import chatStyles from './chatPage.module.css';
 import ChatUsers from '../chatPage/chat-users-wrapper/chat-users-wrapper';
-import { popupService } from '../popupService/popupService';
-import JoinChannelPopup from '../join-channel-popup/join-channel-popup';
-import SettingsChannel from '../create-channel-popup/create-channel-popup';
+import { popupService } from '../popups/popupService/popupService';
+import JoinChannelPopup from '../popups/join-channel-popup/join-channel-popup';
+import SettingsChannel from '../popups/create-channel-popup/create-channel-popup';
 import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
 import { channelConfig, channelModel, chessBotComplexity } from '../utilities/config';
-import chatImage from '../../assets/bg-chat.jpg';
-import { GameSelectPopup } from '../game-select-popup/game-select-popup';
-import OtherGamePopup from '../OtherGamePopup/OtherGamePopup';
+import chatImage from '../../assets/chatBg.png';
+import { GameSelectPopup } from '../popups/game-select-popup/game-select-popup';
 import PaginatedContainer from './paginate-container';
 import { OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
 import { CrossGameChannelView } from '../../socketClient/crossGameChannel';
 import { ChessGameChannelView } from '../../socketClient/chessGameChannel';
-import { ComplexityBotPopup } from '../complexity-bot-popup/complexity-bot-popup';
+import { ComplexityBotPopup } from '../popups/complexity-bot-popup/complexity-bot-popup';
+import GameModePopup from '../popups/gameModePopup/game-mode-popup';
 
 class ChatPage extends Control {
   channelBlock: ChatChannels;
@@ -99,7 +98,7 @@ class ChatPage extends Control {
   createChannel() {
     popupService.showPopup<string>(GameSelectPopup).then((channelType) => {
       if (channelType !== 'ChessGameChannel') {
-        popupService.showPopup<IChannelData>(OtherGamePopup).then((newChannel) => {
+        popupService.showPopup<IChannelData>(GameModePopup).then((newChannel) => {
           newChannel.channelType = channelType;
           this.model.createNewChannel(newChannel).then((res: any) => {
             if (res.status === 'ok') {

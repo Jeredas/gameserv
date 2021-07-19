@@ -1,4 +1,4 @@
-import { popupService } from '../popupService/popupService';
+import { popupService } from '../popups/popupService/popupService';
 import { Replay } from './replay';
 import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';

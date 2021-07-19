@@ -1,7 +1,7 @@
 import { AuthModel } from './../authModel/authModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
-import GenericPopup from '../genericPopup/genericPopup';
-import stylePopup from '../popupService/popupService.module.css';
+import GenericPopup from '../popups/genericPopup/genericPopup';
+import stylePopup from '../popups/popupService/popupService.module.css';
 import Control from '../utilities/control';
 
 class CheckSession extends GenericPopup<boolean> {

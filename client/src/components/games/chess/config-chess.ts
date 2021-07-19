@@ -1,15 +1,15 @@
-import blackRook from '../../../assets/chess-figures/blackRook.svg';
-import blackBishop from '../../../assets/chess-figures/blackBishop.svg';
-import blackKnight from '../../../assets/chess-figures/blackKnight.svg';
-import blackKing from '../../../assets/chess-figures/blackKing.svg';
-import blackQueen from '../../../assets/chess-figures/blackQueen.svg';
-import blackPawn from '../../../assets/chess-figures/blackPawn.svg';
-import whiteRook from '../../../assets/chess-figures/whiteRook.svg';
-import whiteBishop from '../../../assets/chess-figures/whiteBishop.svg';
-import whiteKnight from '../../../assets/chess-figures/whiteKnight.svg';
-import whiteKing from '../../../assets/chess-figures/whiteKing.svg';
-import whiteQueen from '../../../assets/chess-figures/whiteQueen.svg';
-import whitePawn from '../../../assets/chess-figures/whitePawn.svg';
+import blackRook from '../../../assets/figures/blackRook.svg';
+import blackBishop from '../../../assets/figures/blackBishop.svg';
+import blackKnight from '../../../assets/figures/blackKnight.svg';
+import blackKing from '../../../assets/figures/blackKing.svg';
+import blackQueen from '../../../assets/figures/blackQueen.svg';
+import blackPawn from '../../../assets/figures/blackPawn.svg';
+import whiteRook from '../../../assets/figures/whiteRook.svg';
+import whiteBishop from '../../../assets/figures/whiteBishop.svg';
+import whiteKnight from '../../../assets/figures/whiteKnight.svg';
+import whiteKing from '../../../assets/figures/whiteKing.svg';
+import whiteQueen from '../../../assets/figures/whiteQueen.svg';
+import whitePawn from '../../../assets/figures/whitePawn.svg';
 
 // export const configFigures = {
 //   r: blackRook,
