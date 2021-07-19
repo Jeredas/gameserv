@@ -1,7 +1,15 @@
 const aboutWelcome = [
-  'Welcome dear Guest!',
-  'You are about to start an adventure with a humble set of games on our site.',
-  `What you need is only to press the big button below to sign in and enter the game page to chat with friends, participate in a game of your choice or just enjoy with other players' matches.`
+  'Hi!',
+  'We are glad to see you here. Our warmest hugs to you!',
+  `Don't hesitate to press the nice button below which allows you to enter the Game Page spending some time relaxing and enjoying with small games on it.`,
+  `Good luck!`
+];
+
+export const aboutWelcomeBack = [
+  'Hi again!',
+  'We are so happy to see you back!',
+  `Choose whatever you want and enjoy.`,
+  `Have fun!`
 ];
 
 export default aboutWelcome;

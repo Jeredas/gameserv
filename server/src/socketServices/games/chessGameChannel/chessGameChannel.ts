@@ -402,7 +402,6 @@ export class ChessGameChannel extends ChatChannel {
             }
           }
         } else {
-          if (currentUser.login === this.players[1].login) {
             let rivalPlayer = 'Player2';
             if (this.gameMode === 'bot') {
               rivalPlayer = this.players[1].login;
@@ -417,7 +416,6 @@ export class ChessGameChannel extends ChatChannel {
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
-          }
         }
       }
     }

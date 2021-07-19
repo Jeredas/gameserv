@@ -8,7 +8,7 @@ import MainView from '../../components/mainView/mainView';
 import { IChatUser, IUserChatMessage } from '../../components/utilities/interfaces';
 import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
 import channelStyles from './onlyChatChannel.module.css';
-import messageBlockImage from '../../assets/message-inner.png';
+import messageBlockImage from '../../assets/onlyChatBg.png';
 import appStorage from '../../components/utilities/storage';
 
 export class OnlyChatChannelService implements ISocketService {
@@ -45,9 +45,7 @@ export class OnlyChatChannelService implements ISocketService {
         [
           'userList',
           (params) => {
-            this.onUserList.emit(
-              params.userList
-            );
+            this.onUserList.emit(params.userList);
           }
         ]
       ]).get(message.type);
@@ -165,6 +163,7 @@ export class OnlyChatChannelView extends MainView {
 
     this.mainViewAction.node.classList.add(channelStyles.chat_action);
     this.mainViewMessages.node.classList.add(channelStyles.chat_messages);
+    this.mainViewInput.node.classList.add(channelStyles.only_chat);
     this.mainViewMessages.node.style.backgroundImage = `url(${messageBlockImage})`;
     this.mainViewUsers = new MainViewUsers(this.node);
     this.mainViewInput.node.classList.add(channelStyles.only_chat);
@@ -189,13 +188,13 @@ export class OnlyChatChannelView extends MainView {
         this.model.sendMessage(message);
       }
     };
-    
-    this.model.service.onUserList.add(params => this.mainViewUsers.setUsers(params))
 
+    this.model.service.onUserList.add((params: Array<IChatUser>) =>
+      this.mainViewUsers.setUsers(params)
+    );
   }
 
-  resizeView() {
-  }
+  resizeView() {}
 
   destroy() {
     this.node.remove();

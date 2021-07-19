@@ -1,8 +1,8 @@
 import Control from '../../utilities/control';
 import MainViewPlayer from '../mainViewPlayer/mainViewPlayer';
 import mainViewUserss from '../mainView.module.css';
-import CrossButton from '../../games/cross/button/cross-button';
 import { IChatUser } from '../../utilities/interfaces';
+import Button from '../button/button';
 
 class MainViewUsers extends Control {
   private usersBlock: Control;
@@ -11,7 +11,7 @@ class MainViewUsers extends Control {
 
   private userHeader: any;
   private controlBlock: Control;
-  private btnLeave: CrossButton;
+  private btnLeave: Button;
   public onChannelLeave: () => void = () => {};
 
   constructor(parentNode: HTMLElement) {
@@ -25,7 +25,7 @@ class MainViewUsers extends Control {
     );
     this.userHeader.node.textContent = 'Online: ';
     
-    this.btnLeave = new CrossButton(this.controlBlock.node,'Leave the channel');
+    this.btnLeave = new Button(this.controlBlock.node,'Leave channel');
     this.btnLeave.onClick = () => {
       this.onChannelLeave();
     }
