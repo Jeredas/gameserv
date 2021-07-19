@@ -449,6 +449,21 @@ input[id="name"] {
   margin-bottom: 30px;
 }
 
+/*complexity bot*/
+
+.complexity_popup {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.title_complexity {
+  font-size: 23px;
+  margin-bottom: 30px;
+}
+
 .default_hidden {
   display: none;
 }

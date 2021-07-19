@@ -33,6 +33,7 @@ export interface IChannelData {
   channelName: string;
   channelType: string;
   gameMode: string;
+  complexity?: string
 }
 
 export interface IUserChatMessage {
