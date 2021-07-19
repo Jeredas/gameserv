@@ -372,52 +372,51 @@ export class ChessGameChannel extends ChatChannel {
     const currentClient = this.clients.find((it) => it.connection == connection);
     if (currentClient) {
       let currentUser = currentClient.userData;
-      if (currentUser.login) {
-        let currentPlayer = currentClient.userData.login;
+      let currentPlayer = currentClient.userData.login;
+      const checkPlayer = this.players.find((player) => player.login === currentPlayer);
+      if (checkPlayer) {
         if (this.gameMode === 'network') {
-          const checkPlayer = this.players.find((player) => player.login === currentPlayer);
-          if (checkPlayer) {
-            const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-            let rivalClient = this._getUserByLogin(rivalPlayer);
-            if (params.messageText === 'loss') {
-              currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-              rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
-              writeStatistic(this.getRecordData(currentPlayer));
-              this.chessProcessor.clearData();
-              this.players = [];
-              this.sendForAllClients(new ChessRenewResponse(this.name));
-            } else {
-              const responseDrawAgree = new ChessDrawAgreeResponse(
-                this.name,
-                params.messageText,
-                currentUser.login
-              );
-              const responseDraw = new ChessDrawResponse(
-                this.name,
-                params.messageText,
-                currentUser.login
-              );
-              rivalClient.send(responseDrawAgree);
-              currentClient.send(responseDraw);
-            }
-          }
-        } else {
-            let rivalPlayer = 'Player2';
-            if (this.gameMode === 'bot') {
-              rivalPlayer = this.players[1].login;
-            }
-            if (params.messageText === 'loss') {
-              currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
-              writeStatistic(this.getRecordData('AI'));
-            } else if (params.messageText === 'draw') {
-              currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
-              writeStatistic(this.getRecordData('draw'));
-            }
+          const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
+          let rivalClient = this._getUserByLogin(rivalPlayer);
+          if (params.messageText === 'loss') {
+            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+            rivalClient.send(new ChessRemoveResponse(this.name, 'won', currentPlayer));
+            writeStatistic(this.getRecordData(currentPlayer));
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
+          } else {
+            const responseDrawAgree = new ChessDrawAgreeResponse(
+              this.name,
+              params.messageText,
+              currentUser.login
+            );
+            const responseDraw = new ChessDrawResponse(
+              this.name,
+              params.messageText,
+              currentUser.login
+            );
+            rivalClient.send(responseDrawAgree);
+            currentClient.send(responseDraw);
+          }
+        } else {
+          let rivalPlayer = 'Player2';
+          if (this.gameMode === 'bot') {
+            rivalPlayer = this.players[1].login;
+          }
+          if (params.messageText === 'loss') {
+            currentClient.send(new ChessRemoveResponse(this.name, 'lost', rivalPlayer));
+            writeStatistic(this.getRecordData('AI'));
+          } else if (params.messageText === 'draw') {
+            currentClient.send(new ChessRemoveResponse(this.name, 'draw', rivalPlayer));
+            writeStatistic(this.getRecordData('draw'));
+          }
+          this.chessProcessor.clearData();
+          this.players = [];
+          this.sendForAllClients(new ChessRenewResponse(this.name));
         }
       }
+      // }
     }
   }
 
@@ -427,37 +426,46 @@ export class ChessGameChannel extends ChatChannel {
       let currentPlayer = currentClient.userData.login;
       if (currentPlayer) {
         if (this.players.length) {
+          const checkPlayer = this.players.find((player) => player.login === currentPlayer);
+          const playerCurrent = this.players.find(
+            (player) => player.color == this.chessProcessor.getPlayerColor()
+          );
+          console.log('current', playerCurrent.color, 'client', checkPlayer.color);
+
           if (this.gameMode === 'network') {
-            const rivalPlayer = this.players.find((player) => player.login !== currentPlayer).login;
-            let rivalClient = this._getUserByLogin(rivalPlayer);
-            currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-            rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
-            writeStatistic(this.getRecordData(currentPlayer));
-            this.chessProcessor.clearData();
-            this.players = [];
-            this.moves =[];
-            this.sendForAllClients(new ChessRenewResponse(this.name));
-          } else {
-            let rivalPlayer = 'Player2';
-            if (this.gameMode === 'bot') {
-              rivalPlayer = this.players[1].login;
-
-            }
-            const playerCurrent = this.chessProcessor.getPlayerColor();
-            if (playerCurrent === 1) {
+            if (checkPlayer && checkPlayer.color !== playerCurrent.color) {
+              console.log('current', playerCurrent.color, 'client', checkPlayer.color);
+              const rivalPlayer = this.players.find((player) => player.login !== currentPlayer)
+                .login;
+              let rivalClient = this._getUserByLogin(rivalPlayer);
               currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
-              writeStatistic(this.getRecordData(rivalPlayer));
-              console.log('winner is ',rivalPlayer)
-            } else {
-              currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
-              console.log('winner is ',currentPlayer)
+              rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
               writeStatistic(this.getRecordData(currentPlayer));
+              this.chessProcessor.clearData();
+              this.players = [];
+              this.moves = [];
+              this.sendForAllClients(new ChessRenewResponse(this.name));
             }
+          } else {
+            if (checkPlayer) {
+              let rivalPlayer = 'Player2';
+              if (this.gameMode === 'bot') {
+                rivalPlayer = this.players[1].login;
+              }
+              const playerCurrent = this.chessProcessor.getPlayerColor();
+              if (playerCurrent === 1) {
+                currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
+                writeStatistic(this.getRecordData(rivalPlayer));
+              } else {
+                currentClient.send(new ChessMateResponse(this.name, 'won', rivalPlayer));
+                writeStatistic(this.getRecordData(currentPlayer));
+              }
 
-            this.chessProcessor.clearData();
-            this.players = [];
-            this.moves =[];
-            this.sendForAllClients(new ChessRenewResponse(this.name));
+              this.chessProcessor.clearData();
+              this.players = [];
+              this.moves = [];
+              this.sendForAllClients(new ChessRenewResponse(this.name));
+            }
           }
         }
       }
@@ -479,14 +487,14 @@ export class ChessGameChannel extends ChatChannel {
             writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
-            this.moves =[];
+            this.moves = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           } else {
             currentClient.send(response);
             writeStatistic(this.getRecordData('StaleMate'));
             this.chessProcessor.clearData();
             this.players = [];
-            this.moves =[];
+            this.moves = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
           }
         }
@@ -528,10 +536,11 @@ export class ChessGameChannel extends ChatChannel {
   }
   getRecordData(winner: string) {
     let time = '00:00:00';
-    if(this.chessProcessor.getHistory().length >= 1){
-      time = `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1].time}`
+    if (this.chessProcessor.getHistory().length >= 1) {
+      time = `${this.chessProcessor.getHistory()[this.chessProcessor.getHistory().length - 1]
+        .time}`;
     }
-     
+
     return (this.recordData = {
       history: this.chessProcessor.getHistory(),
       player1: this.players[0],
@@ -541,10 +550,8 @@ export class ChessGameChannel extends ChatChannel {
       winner: winner,
       gameType: 'CHESS',
       gameMode: this.gameMode,
-      moves: this.moves? this.moves : []
+      moves: this.moves ? this.moves : []
     });
   }
-  clearAll(){
-    
-  }
+  clearAll() {}
 }
