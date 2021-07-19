@@ -10,8 +10,6 @@ class ChessCell extends Control {
   constructor(parentNode: HTMLElement, coords: Vector, cellColor: string, cellSize: number) {
     super(parentNode, 'div', chessStyles.chess_cell);
     this.node.classList.add(cellColor);
-    // this.node.style.width = `${cellSize}px`;
-    // this.node.style.height = `${cellSize}px`;
     this.coords = coords;
 
     this.node.onclick = () => {
@@ -22,11 +20,6 @@ class ChessCell extends Control {
   getCellCoord(): Vector {
     return this.coords;
   }
-
-  // clickedCell(sign: string): void {
-  //   this.node.classList.add('clicked');
-  //   this.node.textContent = sign;
-  // }
 
   clearCell(): void {
     this.node.classList.remove('clicked');

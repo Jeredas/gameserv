@@ -164,6 +164,7 @@ export class LobbyModel{
       }
       this.service.onCreated.add(listener);
       console.log('model channel', newChannel.complexity);
+      
       this.service.send({
         sessionId: appStorage.getSession(),
         service: this.serviceName,

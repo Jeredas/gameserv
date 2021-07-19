@@ -5,7 +5,7 @@ import {
   IChessData
 } from '../utilities/interfaces';
 import Control from '../utilities/control';
-import GenericPopup from '../genericPopup/genericPopup';
+import GenericPopup from '../popups/genericPopup/genericPopup';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import recordStyles from './recordPage.module.css';
 import InputWrapper from '../inputWrapper/inputWrapper';

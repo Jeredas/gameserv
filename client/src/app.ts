@@ -1,5 +1,5 @@
 import { UserDataState } from './components/userData.ts/userData';
-import { popupService } from './components/popupService/popupService';
+import { popupService } from './components/popups/popupService/popupService';
 import Control from './components/utilities/control';
 import CheckSession from './components/temporary/checkSession';
 import { Navigation } from './components/header/navigation';
@@ -8,13 +8,13 @@ import ChatPage from './components/chatPage/chatPage';
 import { IPageComponent, IUserAuth } from './components/utilities/interfaces';
 import { Router } from './components/router/router';
 import { Route } from './components/router/route';
-import { AuthForm } from './components/authForm/authForm';
+import { AuthForm } from './components/popups/authForm/authForm';
 import { SocketClient } from './socketClient/socketClient';
 import { LobbyModel } from './socketClient/lobbyService';
 import { AuthModel } from './components/authModel/authModel';
 import appStyles from './app.module.css';
 import RecordPage from './components/recordPage/recordPage';
-import ConnectToServer from './components/connectToServer/connectToServer';
+import ConnectToServer from './components/popups/connectToServer/connectToServer';
 import appStorage from './components/utilities/storage';
 import { socketURL } from './components/utilities/apiConfig';
 

@@ -14,14 +14,14 @@ class MainViewInput extends Control {
 
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', mainViewInputStyles.chat_input);
-    this.mainViewInput = new Input(this.node, 'text', 'chatInput', '', '');
+    this.mainViewInput = new Input(this.node, 'text', 'chatInput', '', 'Your message');
     this.mainViewInput.node.classList.add(mainViewInputStyles.chat_input_field);
     this.inputBtn = new ButtonDefault(this.node, '', 'Send');
     this.inputBtn.node.classList.add(mainViewInputStyles.chat_send_button);
 
-    this.mainViewInput.onKeyUp = (e) => {
-      if(this.mainViewInput.getValue()) {
-        if (e.key == 'Enter') {
+    this.mainViewInput.onKeyUp = (e: KeyboardEvent) => {
+      if (e.key == 'Enter') {
+        if (this.mainViewInput.getValue()) {
           this.onEnter(this.mainViewInput.getValue());
           this.clearInput();
         }
@@ -30,9 +30,9 @@ class MainViewInput extends Control {
     };
 
     this.inputBtn.onClick = () => {
-      if(this.mainViewInput.getValue()) {
-      this.onClick(this.mainViewInput.getValue());
-      this.clearInput();
+      if (this.mainViewInput.getValue()) {
+        this.onEnter(this.mainViewInput.getValue());
+        this.clearInput();
       }
     };
   }

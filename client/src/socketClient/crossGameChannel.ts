@@ -17,6 +17,7 @@ import Vector from '../components//utilities/vector';
 import MainViewPlayers from '../components/mainView/mainViewPlayers/mainViewPlayers';
 import MainViewUsers from '../components/mainView/mainViewUsers/mainViewUsers';
 import appStorage from '../components/utilities/storage';
+import crossBg from '../assets/crossBg.png';
 
 export class CrossGameChannelService implements ISocketService {
   private onSend: (message: Object) => void = null;
@@ -298,6 +299,7 @@ export class CrossGameChannelView extends MainView {
     this.model = model as CrossGameChannelModel;
     this.mainViewPlayers = new MainViewPlayers(this.node);
     this.mainViewUsers = new MainViewUsers(this.node);
+    this.mainViewAction.node.style.backgroundImage = `url(${crossBg})`;
 
     this.crossGame = new Cross(this.mainViewAction.node);
     this.model.getPlayers('');

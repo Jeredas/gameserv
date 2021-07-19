@@ -20,6 +20,7 @@ class ChatChannels extends Control {
 
   constructor(parentNode: HTMLElement, model: LobbyModel) {
     super(parentNode, 'div', chatStyles.chat_channels);
+    this.node.classList.add(chatStyles.channels_scrollbar);
     this.model = model;
     const chatChannelControl = new Control(this.node, 'div');
     const createChannel = new ButtonDefault(

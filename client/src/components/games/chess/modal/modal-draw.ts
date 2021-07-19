@@ -29,13 +29,12 @@ class ModalDraw extends Control {
     let messageDraw = 'Claim a draw. Nobody won, nobody lost';
     const player = players.find((player) => player !== host);
     let messageLoss = `Claim a loss. ${host} lost${player ? `, ${player} won` : ''}`;
-
-    this.messageHead = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
     this.messageBody = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
 
     if (method === 'drawSingle') {
       messageDraw = 'You have claimed a draw. Nobody won, nobody lost';
       this.btnOk = new ChessButton(this.modalMessage.node, 'OK');
+      this.btnOk.node.classList.add(modalStyles.btn_modal);
       this.btnOk.onClick = () => {
         this.onModalDrawClick('ok');
       };
@@ -46,8 +45,10 @@ class ModalDraw extends Control {
     }
 
     if (method === 'drawAgreeNetwork') {
+      this.messageHead = new Control(this.modalMessage.node, 'div', modalStyles.modal_text);
       messageDraw = 'Your rival has claimed a draw. Please make a choice';
       this.btnAgree = new ChessButton(this.modalMessage.node, 'Agree');
+      this.btnAgree.node.classList.add(modalStyles.btn_modal);
       this.btnAgree.onClick = () => {
         this.onModalDrawClick('agree');
       };
