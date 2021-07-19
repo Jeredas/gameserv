@@ -1,4 +1,4 @@
-import { IChessHistory, ICrossHistory, IUserData  } from './../utilities/interfaces';
+import { IChessHistory, ICrossHistory, IUserData  } from '../utilities/interfaces';
 import { RecordModel } from './recordModel';
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';

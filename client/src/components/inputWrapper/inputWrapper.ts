@@ -1,5 +1,5 @@
 import Control from '../utilities/control';
-import popupStyle from '../popupService/popupService.module.css';
+import popupStyle from '../popups/popupService/popupService.module.css';
 
 class InputWrapper extends Control {
   public node: HTMLInputElement;

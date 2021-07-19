@@ -1,22 +1,11 @@
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import { IJoinChannelPopupLangs, joinChannelPopupLangEn } from '../../utilities/configPopup';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import InputWrapper from '../inputWrapper/inputWrapper';
-import Control from '../utilities/control';
+import InputWrapper from '../../inputWrapper/inputWrapper';
+import Control from '../../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
 
-interface IJoinChannelPopupLangs{
-  searchFieldLabel: string,
-  searchFieldPlaceHolder: string,
-  joinButtonText: string,
-  cancelButtonText: string
-}
 
-const joinChannelPopupLangEn:IJoinChannelPopupLangs = {
-  searchFieldLabel: 'Enter the name of the channel you want to join',
-  searchFieldPlaceHolder: 'Name Channel',
-  joinButtonText: 'Join channel',
-  cancelButtonText: 'Cancel'
-}
 
 class JoinChannelPopup extends GenericPopup<any> {
   protected popupWrapper: Control;

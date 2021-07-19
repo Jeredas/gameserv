@@ -1,9 +1,9 @@
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import InputWrapper from '../inputWrapper/inputWrapper';
-import Control from '../utilities/control';
+import InputWrapper from '../../inputWrapper/inputWrapper';
+import Control from '../../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
-import { IChannelData } from '../utilities/interfaces';
+import { IChannelData } from '../../utilities/interfaces';
 
 interface IChannelPopupOtherLangs{
   titleNameChannel: string,
@@ -21,7 +21,7 @@ const joinChannelPopupLangEn:IChannelPopupOtherLangs = {
   noteText: 'Note: *the created channel will be intended for interaction via the Internet',
 }
 
-class OtherGamePopup extends GenericPopup<IChannelData> {
+class GameModePopup extends GenericPopup<IChannelData> {
   protected popupWrapper: Control;
 
   private channelName: InputWrapper;
@@ -65,4 +65,4 @@ class OtherGamePopup extends GenericPopup<IChannelData> {
   }
 }
 
-export default OtherGamePopup;
+export default GameModePopup;

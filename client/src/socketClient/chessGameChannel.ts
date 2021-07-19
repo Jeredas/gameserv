@@ -261,8 +261,6 @@ export class ChessGameChannelModel extends ChatChannelModel {
 
   async joinChannel() {
     const joinResponse = await this.sendAwaiting('joinUser', {});
-    console.log('status', joinResponse);
-
     return joinResponse.params.status == 'ok';
   }
 
@@ -347,7 +345,6 @@ export class ChessGameChannelView extends MainView {
     this.model.getPlayers('');
     this.mainViewPlayers.onGameEnter = () => {
       this.model.joinPlayer().then((res) => {
-        console.log('Join', res);
         if (res) {
           this.model.getPlayers('');
         }
@@ -385,13 +382,10 @@ export class ChessGameChannelView extends MainView {
     this.model.service.onChessMove.add((params) => {
       this.chessGame.onFigureMove(params);
       if (params.king.mate) {
-        console.log('KING MATE', params.king.mate);
         this.chessGame.showKingMate(params.king.check);
         this.model.chessMate('mate');
       }
       if (params.king.staleMate) {
-        console.log('!! StaleMate', params.king.staleMate);
-
         this.model.chessStaleMate('chessStaleMate');
       }
     });
@@ -446,8 +440,6 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessMate.add((params) => {
-      console.log('server on Mate');
-
       this.chessGame.createModalGameOver(params);
     });
 
@@ -482,7 +474,6 @@ export class ChessGameChannelView extends MainView {
     });
 
     this.model.service.onChessStaleMate.add((params) => {
-      console.log('server on StaleMate');
       const data = {
         method: params,
         player: ''

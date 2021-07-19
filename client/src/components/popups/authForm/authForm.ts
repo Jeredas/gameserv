@@ -1,11 +1,9 @@
-import { AuthModel } from './../authModel/authModel';
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import { AuthModel } from '../../authModel/authModel';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import InputWrapper from '../inputWrapper/inputWrapper';
-import Control from '../utilities/control';
-import { IAuthData, IUserAuth } from '../utilities/interfaces';
-import { ConcatenationScope } from 'webpack';
-import Signal from '../../socketClient/signal';
+import InputWrapper from '../../inputWrapper/inputWrapper';
+import Control from '../../utilities/control';
+import { IAuthData, IUserAuth } from '../../utilities/interfaces';
 import popupStyles from '../popupService/popupService.module.css';
 
 export class AuthForm extends GenericPopup<any> {

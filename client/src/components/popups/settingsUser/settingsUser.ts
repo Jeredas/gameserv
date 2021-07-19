@@ -1,12 +1,11 @@
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import InputWrapper from '../inputWrapper/inputWrapper';
-import Control from '../utilities/control';
+import InputWrapper from '../../inputWrapper/inputWrapper';
+import Control from '../../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
-import inputDefault from '../inputDefault/inputDefault';
-import defaultAvatar from '../../assets/select-game-popup/avat-def.png';
-import appStorage from '../utilities/storage';
-
+import inputDefault from '../../inputDefault/inputDefault';
+import appStorage from '../../utilities/storage';
+import { defaultAvatar } from '../../utilities/configPopup';
 
 class SettingsUser extends GenericPopup<any> {
   changeAvatar: Control;
@@ -34,11 +33,9 @@ class SettingsUser extends GenericPopup<any> {
     this.cancelButton = new ButtonDefault(wrapperButtons.node,  popupStyles.settings_button, 'Cancel');
 
     this.saveButton.onClick = () =>{
-      //TODO:Обработать данные из инпута , отправить на сервер и записать изменения в бд.Вернуть новые имя и аву наружу.
       this.onSelect('save');
     }
     this.cancelButton.onClick = () =>{
-      //TODO:Очистить поля инпутов
       this.onSelect('cancel')
     }
     this.logOutButton.onClick = () =>{

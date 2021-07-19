@@ -1,8 +1,8 @@
-import { SocketClient } from '../../socketClient/socketClient';
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import { SocketClient } from '../../../socketClient/socketClient';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
 import popupStyles from '../popupService/popupService.module.css';
-import Control from '../utilities/control';
+import Control from '../../utilities/control';
 
 class ConnectToServer extends GenericPopup<boolean>{
   onClick: () => void

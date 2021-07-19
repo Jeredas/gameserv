@@ -1,19 +1,8 @@
-import chessIcon from '../../assets/select-game-popup/chess.png';
-import crossIcon from '../../assets/select-game-popup/cross.png';
-import chatIcon from '../../assets/select-game-popup/chat.png';
 import popupStyles from '../popupService/popupService.module.css'
 import GenericPopup from '../genericPopup/genericPopup';
-import ButtonDefault from '../buttonDefault/buttonDefault';
-import Control from '../utilities/control';
-
-
-export const gameSetPopup = [ 'OnlyChatChannel', 'ChessGameChannel', 'CrossGameChannel' ];
-
-export const gameIcons = new Map<string, string>([
-  ['ChessGameChannel', chessIcon],
-  ['CrossGameChannel', crossIcon],
-  ['OnlyChatChannel', chatIcon]
-]);
+import ButtonDefault from '../../buttonDefault/buttonDefault';
+import Control from '../../utilities/control';
+import { gameIcons, gameSetPopup } from '../../utilities/configPopup';
 
 export class GameSelectPopup extends GenericPopup<string> {
   buttonChess: ButtonDefault;

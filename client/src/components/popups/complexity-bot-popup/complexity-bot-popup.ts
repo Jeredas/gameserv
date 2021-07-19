@@ -1,7 +1,7 @@
-import ButtonDefault from "../buttonDefault/buttonDefault";
+import ButtonDefault from "../../buttonDefault/buttonDefault";
 import GenericPopup from "../genericPopup/genericPopup";
-import Input from "../inputDefault/inputDefault";
-import Control from "../utilities/control";
+import Input from "../../inputDefault/inputDefault";
+import Control from "../../utilities/control";
 import popupStyles from '../popupService/popupService.module.css';
 
 const complexityOfBot = [ 'Easy', 'Medium', 'Hard' ];

@@ -1,11 +1,10 @@
 import ButtonDefault from '../buttonDefault/buttonDefault';
 import Control from '../utilities/control';
-import stylePopup from '../popupService/popupService.module.css';
 import headerStyles from '../header/header.module.css';
-import { popupService } from '../popupService/popupService';
-import RegisterCheck from '../registerCheck/registerCheck';
-import { AuthForm } from '../authForm/authForm';
-import { RegForm } from '../regForm/regForm';
+import { popupService } from '../popups/popupService/popupService';
+import RegisterCheck from '../popups/registerCheck/registerCheck';
+import { AuthForm } from '../popups/authForm/authForm';
+import { RegForm } from '../popups/regForm/regForm';
 import Signal from '../../socketClient/signal';
 import { IUserAuth } from '../utilities/interfaces';
 import aboutImage from '../../assets/aboutBg.png';

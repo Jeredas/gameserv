@@ -1,4 +1,4 @@
-import Control from '../utilities/control';
+import Control from '../../utilities/control';
 import popupStyle from './popupService.module.css';
 
 class PopupService extends Control {

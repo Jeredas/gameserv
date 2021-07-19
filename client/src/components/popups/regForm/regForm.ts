@@ -1,13 +1,14 @@
-import { IInputState, IUserData } from './../utilities/interfaces';
-import { AuthModel } from './../authModel/authModel';
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import { IInputState, IUserData } from '../../utilities/interfaces';
+import { AuthModel } from '../../authModel/authModel';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import InputWrapper from '../inputWrapper/inputWrapper';
-import Control from '../utilities/control';
-import { IAuthData } from '../utilities/interfaces';
-import getFormattedImgDataLink from '../utilities/imgToDatalink';
+import InputWrapper from '../../inputWrapper/inputWrapper';
+import Control from '../../utilities/control';
+import { IAuthData } from '../../utilities/interfaces';
+import getFormattedImgDataLink from '../../utilities/imgToDatalink';
 import popupStyles from '../popupService/popupService.module.css';
-import defaultAvatar from '../../assets/select-game-popup/avat-def.png';
+import { defaultAvatar } from '../../utilities/configPopup';
+
 export class RegForm extends GenericPopup<any> {
   login: InputWrapper;
   password: InputWrapper;

@@ -123,7 +123,7 @@
 
 .close_button {
   position: absolute;
-  background-image: url("../../assets//select-game-popup/close.png");
+  background-image: url("../../../assets/select-game-popup/close.png");
   width: 40px;
   height: 40px;
   background-size: contain;

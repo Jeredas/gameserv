@@ -1,6 +1,6 @@
-import ButtonDefault from '../buttonDefault/buttonDefault';
+import ButtonDefault from '../../buttonDefault/buttonDefault';
 import GenericPopup from '../genericPopup/genericPopup';
-import Control from '../utilities/control';
+import Control from '../../utilities/control';
 import popupStyles from '../popupService/popupService.module.css';
 
 class RegisterCheck extends GenericPopup<string> {
