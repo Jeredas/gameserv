@@ -1,4 +1,4 @@
 
 
 
-export const chessBotPopupComplexity = [ 'Random', 'Min-Max', 'Monte-Carlo' ];
+export const chessBotPopupComplexity = [ 'Easy', 'Medium', 'Hard' ];
