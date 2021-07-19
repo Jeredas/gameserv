@@ -433,14 +433,14 @@ export class ChessGameChannel extends ChatChannel {
           console.log('current', playerCurrent.color, 'client', checkPlayer.color);
 
           if (this.gameMode === 'network') {
-            if (checkPlayer && checkPlayer.color !== playerCurrent.color) {
+            if (checkPlayer && checkPlayer.color === playerCurrent.color) {
               console.log('current', playerCurrent.color, 'client', checkPlayer.color);
               const rivalPlayer = this.players.find((player) => player.login !== currentPlayer)
                 .login;
               let rivalClient = this._getUserByLogin(rivalPlayer);
               currentClient.send(new ChessMateResponse(this.name, 'lost', rivalPlayer));
               rivalClient.send(new ChessMateResponse(this.name, 'won', currentPlayer));
-              writeStatistic(this.getRecordData(currentPlayer));
+              writeStatistic(this.getRecordData(rivalPlayer));
               this.chessProcessor.clearData();
               this.players = [];
               this.moves = [];
