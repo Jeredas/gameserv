@@ -11,7 +11,7 @@ import { LobbyModel } from '../../socketClient/lobbyService';
 import { SocketClient } from '../../socketClient/socketClient';
 import { IChannelData } from '../utilities/interfaces';
 import { channelConfig, channelModel } from '../utilities/config';
-import chatImage from '../../assets/bg-chat.jpg';
+import chatImage from '../../assets/chatBg.png';
 import { GameSelectPopup } from '../game-select-popup/game-select-popup';
 import OtherGamePopup from '../OtherGamePopup/OtherGamePopup';
 import PaginatedContainer from './paginate-container';
@@ -77,7 +77,7 @@ class ChatPage extends Control {
       const channelModel = new channelOfChoice.model(this.socket, params.channelName);
       channelModel.joinChannel().then((res) => {
         if (res) {
-          let channel = new channelOfChoice.view(null, channelModel, params.gameMode, this.node.clientHeight);
+          let channel = new channelOfChoice.view(null, channelModel, params.gameMode);
           this.chatMain.add(params.channelName, channel);
           channel.onLeaveClick = () => {
             this.chatMain.remove(params.channelName);

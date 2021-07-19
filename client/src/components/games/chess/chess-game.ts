@@ -67,26 +67,23 @@ class ChessGame extends Control {
   private modalPopup: ModalDraw;
   private modalGameOver: ModalGameOver;
   public onGameOverClick: () => void = () => {};
-  field: string;
+  private field: string;
   private singleModePlayerIndex: number;
-
-  private boardSize: number = 0;
   private chessControls: Control;
   private chessHead: Control;
 
-  constructor(parentNode: HTMLElement, chessMode: string, parentHeight: number) {
+  constructor(parentNode: HTMLElement, chessMode: string) {
     super(parentNode, 'div', chessStyles.chess_wrapper);
-    this.node.classList.add('game_action_size');
     this.chessMode = chessMode;
     this.chessControls = new Control(this.node, 'div', chessStyles.chess_controls);
-    this.chessHead = new Control(this.node, 'div', chessStyles.chess_head);
-    this.playerOne = new Control(this.chessHead.node, 'div', chessStyles.chess_player, 'Player1');
+    const chessHead = new Control(this.node, 'div', chessStyles.chess_head);
+    this.playerOne = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player1');
     this.playerOne.node.classList.add(chessStyles.player_left_active);
     this.field = fen;
 
-    this.timer = new Timer(this.chessHead.node);
+    this.timer = new Timer(chessHead.node);
 
-    this.playerTwo = new Control(this.chessHead.node, 'div', chessStyles.chess_player, 'Player2');
+    this.playerTwo = new Control(chessHead.node, 'div', chessStyles.chess_player, 'Player2');
     this.chessBody = new Control(this.node, 'div', chessStyles.chess_body);
     const nodeHeight = this.node.getBoundingClientRect().height;
 
@@ -105,13 +102,11 @@ class ChessGame extends Control {
     this.btnDraw.buttonDisable();
     this.btnDraw.onClick = () => {
       this.onDrawClick('draw');
-      // this.model.chessStopGame('draw');
     };
     this.btnLoss = new ChessButton(this.chessControls.node, 'Loss');
     this.btnLoss.buttonDisable();
     this.btnLoss.onClick = () => {
       this.onLossClick('loss');
-      // this.model.chessStopGame('loss');
     };
 
     this.chessBoard.onFigureDrop = (posStart: Vector, posDrop: Vector) => {
@@ -122,7 +117,6 @@ class ChessGame extends Control {
       this.onFigureGrab(pos);
     };
 
-    // this.resizeView();
     window.onresize = () => {
       this.resizeView();
     };
@@ -130,7 +124,6 @@ class ChessGame extends Control {
 
   resizeView() {
     const nodeHeight = this.node.getBoundingClientRect().height;
-
     this.chessBody.node.style.width = `${nodeHeight}px`;
     this.chessBody.node.style.height = `${nodeHeight - 140}px`;
     this.chessBoard.node.style.height = `${nodeHeight - 140}px`;
@@ -139,7 +132,6 @@ class ChessGame extends Control {
   }
 
   updateGameField(rotate: boolean): void {
-    
     if (this.chessMode === chessModeConfig.oneScreen) {
       if (rotate) {
         if (!this.isRotated) {
@@ -158,7 +150,6 @@ class ChessGame extends Control {
     this.playerTwo.node.textContent = 'Player2';
     this.playerOne.node.classList.add(chessStyles.player_left_active);
     this.playerTwo.node.classList.remove(chessStyles.player_right_active);
-    // this.chessMode = '';
     this.timer.clear();
     this.history.clearHistory();
     this.removeAllowedMoves();
@@ -168,6 +159,9 @@ class ChessGame extends Control {
     this.chessBoard.clearData(fromFen(fen));
     this.singleModePlayerIndex = 0;
     this.chessBoard.setDragable(false);
+    this.btnStart.buttonDisable();
+    this.btnDraw.buttonDisable();
+    this.btnLoss.buttonDisable();
     this.isRotated = false;
   }
 
@@ -261,6 +255,7 @@ class ChessGame extends Control {
         this.singleModePlayerIndex = this.singleModePlayerIndex === 1 ? 0 : 1;
       }
       this.field = data.field;
+      this.updateGameField(true);
     }
 
     const newField = fromFen(data.field);
@@ -273,8 +268,7 @@ class ChessGame extends Control {
     this.setFigurePosition(oldFigPos, newFigPos);
     this.chessBoard.clearData(newField);
 
-    // this.updateGameField(data.rotate);
-    this.updateGameField(true);
+    
     this.removeAllowedMoves();
     this.removeRivalMoves();
     this.chessBoard.removeKingCheck();

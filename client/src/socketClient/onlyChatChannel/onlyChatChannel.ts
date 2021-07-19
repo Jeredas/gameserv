@@ -8,7 +8,7 @@ import MainView from '../../components/mainView/mainView';
 import { IChatUser, IUserChatMessage } from '../../components/utilities/interfaces';
 import MainViewUsers from '../../components/mainView/mainViewUsers/mainViewUsers';
 import channelStyles from './onlyChatChannel.module.css';
-import messageBlockImage from '../../assets/message-inner.png';
+import messageBlockImage from '../../assets/onlyChatBg.png';
 import appStorage from '../../components/utilities/storage';
 
 export class OnlyChatChannelService implements ISocketService {
@@ -45,9 +45,7 @@ export class OnlyChatChannelService implements ISocketService {
         [
           'userList',
           (params) => {
-            this.onUserList.emit(
-              params.userList
-            );
+            this.onUserList.emit(params.userList);
           }
         ]
       ]).get(message.type);
@@ -144,7 +142,6 @@ export class OnlyChatChannelModel extends ChatChannelModel {
     this.send('leaveUser', {});
   }
 
-  // CROSS MOVE
   async joinChannel() {
     const joinResponse = await this.sendAwaiting('joinUser', {});
     console.log('status', joinResponse);
@@ -171,7 +168,7 @@ export class OnlyChatChannelView extends MainView {
     this.mainViewMessages.node.style.backgroundImage = `url(${messageBlockImage})`;
     this.mainViewUsers = new MainViewUsers(this.node);
 
-    this.model.service.onMessage.add((params) => {
+    this.model.service.onMessage.add((params: IUserChatMessage) => {
       this.mainViewMessages.addMessage(params);
     });
 
@@ -181,19 +178,23 @@ export class OnlyChatChannelView extends MainView {
     };
 
     this.mainViewInput.onClick = (message) => {
-      this.model.sendMessage(message);
+      if(message) {
+        this.model.sendMessage(message);
+      }
     };
 
     this.mainViewInput.onEnter = (message) => {
-      this.model.sendMessage(message);
+      if(message) {
+        this.model.sendMessage(message);
+      }
     };
-    
-    this.model.service.onUserList.add(params => this.mainViewUsers.setUsers(params))
 
+    this.model.service.onUserList.add((params: Array<IChatUser>) =>
+      this.mainViewUsers.setUsers(params)
+    );
   }
 
-  resizeView() {
-  }
+  resizeView() {}
 
   destroy() {
     this.node.remove();

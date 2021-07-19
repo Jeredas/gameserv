@@ -1,7 +1,7 @@
 .record_wrapper {
   display: flex;
   flex-direction: column;
-  color: #bbb;
+  color: #ccc;
   height: 100%;
   width: 100%;
   background-position: center center;
@@ -17,10 +17,10 @@
 }
 
 .record_table_wrapper {
-  width: 100%;
+  /* width: 100%; */
   height: 100%;
+  margin: 0 auto 20px;
   padding: 10px;
-  /* background-color: #555; */
   overflow-y: scroll;
   position: relative;
 }
@@ -35,14 +35,14 @@
 }
 
 .record_table_header {
-  background: linear-gradient(308deg, rgba(243, 213, 116, 0.4) 0%, rgba(226, 18, 35, 0.4) 50%, rgba(243, 83, 158, 0.4) 100%);
+  background: linear-gradient(308deg, rgba(167, 250, 253, 0.5) 0%, rgba(25, 189, 80, 0.5) 50%, rgba(253, 237, 147, 0.5) 100%);
   padding: 10px 5px;
   font-size: 18px;
   display: flex;
   align-items: center;
   text-align: center;
   min-width: 1020px;
-  color: #ccc;
+  color: #eee;
 }
 
 .record_game_name,
@@ -65,8 +65,9 @@
 
 .record_players {
   display: flex;
+  max-width: 600px;
   width:100%;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -87,7 +88,7 @@
 }
 
 .odd_record {
-  background-color: rgba(94, 84, 107, 0.521);
+  background-color: rgba(88, 126, 107, 0.644);
 }
 
 .even_record {
@@ -110,19 +111,21 @@
   border: none;
   width: 100px;
   align-self: center;
-  background: linear-gradient(308deg, rgba(243, 213, 116, 0.6) 0%, rgba(226, 18, 35, 0.6) 50%, rgba(243, 83, 158, 0.6) 100%);
+  background: linear-gradient(308deg, rgba(167, 250, 253, 0.863) 0%, rgba(25, 189, 80, 0.788) 50%, rgba(253, 237, 147, 0.801) 100%);
+  box-shadow: 1px 1px 5px #000;
+  color: #fafafa;
   padding:10px;
   font-size: 16px;
   position: relative;
   transition: .2s all ease;
-  color: #ccc;
+  color: #fff;
 }
 
 .record_button:hover {
-  background: linear-gradient(308deg, rgba(243, 213, 116, 0.863)  0%, rgba(226, 18, 35, 0.781) 60%, rgba(243, 83, 158, 0.808) 100%);
+  background: linear-gradient(308deg, rgba(167, 250, 253, 0.863) 0%, rgba(25, 138, 63, 0.788) 50%, rgba(252, 240, 80, 0.801) 100%);
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 3px 5px rgba(0, 0, 0, .5);
-  color: #fafafa;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, .5);
+  color: #fff;
 }
 
 .default_hidden {
@@ -132,7 +135,6 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  overflow: hidden;
 }
 .record_player_avatar {
   flex-shrink: 0;
@@ -150,6 +152,7 @@
   margin: 0 5px;
   min-width: 100px;
   text-align: start;
+  max-width: 200px;
   overflow: hidden;
 }
 
@@ -184,17 +187,7 @@
 
 .replay_wrapper {
   width: 700px;
-}
-.record_winnerPop {
-  position: absolute;
-  text-align: center;
-  width: 30%;
-  height: 30%;
-  border-radius: 5%;
-  background-color: #ccc;
-  top: 50%;
-  left:50%;
-  transform:translate(-50%,-50%)
+  padding: 5px;
 }
 
 @media screen and (max-height: 700px) {

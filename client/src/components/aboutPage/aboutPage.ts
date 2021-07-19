@@ -8,8 +8,8 @@ import { AuthForm } from '../authForm/authForm';
 import { RegForm } from '../regForm/regForm';
 import Signal from '../../socketClient/signal';
 import { IUserAuth } from '../utilities/interfaces';
-import aboutImage from '../../assets/bg-about.jpg';
-import aboutWelcome from './config_about';
+import aboutImage from '../../assets/aboutBg.png';
+import aboutWelcome, { aboutWelcomeBack } from './config_about';
 import aboutStyles from './about.module.css';
 
 
@@ -35,7 +35,7 @@ class UnregisteredUser extends Control {
 class RegisteredUser extends Control {
   constructor(parentNode: HTMLElement, userData: IUserAuth) {
     super(parentNode, 'div', aboutStyles.about_welcome);
-    aboutWelcome.forEach((text) => {
+    aboutWelcomeBack.forEach((text) => {
       const textItem = new Control(this.node, 'div', aboutStyles.about_welcome);
       textItem.node.textContent = text;
     });

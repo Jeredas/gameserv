@@ -7,7 +7,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  /* width: 600px; */
   margin: 0 auto;
 }
 
@@ -34,17 +33,17 @@
 }
 
 .chess_board_cell {
-  /* width: calc(100% / 8);
-  height: calc(100% / 8); */
   color: #333;
 }
 
 .cell_light {
-  background-color: #eee;
+  /* background-color: #eee; */
+  background-color: #e3f1f1;
 }
 
 .cell_dark {
-  background-color: #666;
+  /* background-color: #666; */
+  background-color: #677b7c;
 }
 
 .chess_field {
@@ -66,8 +65,6 @@
 .chess_cell {
   width: calc(100% / 8);
   height: calc(100% / 8);
-  /* width: 100%;
-  height: 100%; */
   cursor: pointer;
   font-size: 50px;
   color: #e4e4e4;
@@ -84,8 +81,6 @@
 }
 
 .drag_item {
-  /* width:60px;
-  height:60px; */
   position: absolute;
   cursor: grab;
   display: flex;
@@ -118,6 +113,7 @@
 
 .chess_player {
   padding: 5px;
+  color: #ccc;
 }
 
 .chess_timer {
@@ -134,7 +130,6 @@
   align-items: flex-start;
   border-radius: 5px;
   margin: 0 auto;
-  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .chess_history {
@@ -147,6 +142,8 @@
   color: #ccc;
   background-color: rgba(255, 255, 255, 0.2);
   height: 430px;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(131, 190, 190) rgb(67, 92, 97) ;
 }
 
 .chess_history_item {
@@ -177,22 +174,38 @@
 }
 
 .chess_button {
-  background-color: #555;
+  background-color: #6ecac3;
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   padding: 5px 5px;
-  margin: 0 10px 5px;
+  margin: 0 10px;
   border-radius: 5px;
   width: 100%;
+  letter-spacing: 1px;
   cursor: pointer;
-  transition-property: background-color, color;
+  text-shadow: 1px 1px 3px #333;
+  transition-property: background-color;
   transition-duration: .2s;
   transition-timing-function: ease;
 }
 
-.chess_button.disabled {
-  background-color: #3a3a3a;
+.chess_button:hover {
+  background-color: #6eca8a;
+}
+
+.disabled {
+  background-color: #547979;
   color: #a5a5a5;
+}
+
+.hide {
+  display: none;
+}
+
+@media screen and (max-width: 380px) {
+  .cross_button {
+    font-size: 14px;
+  }
 }
 
 .modal_wrapper {
@@ -229,7 +242,7 @@
   box-shadow: inset 0 0 40px #6af187d2;
 }
 
-.figure_rotate {
+.figure-rotate {
   transform: rotate(180deg);
 }
 
@@ -266,7 +279,7 @@
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url('../../../assets/chess-figures/whiteBishop.svg');
+  background-image: url('../../../assets/figures/whiteBishop.svg');
 }
 
 .player_right_active::before {
@@ -279,7 +292,7 @@
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url('../../../assets/chess-figures/whiteBishop.svg');
+  background-image: url('../../../assets/figures/whiteBishop.svg');
 }
 
 .history_dark {
@@ -302,11 +315,11 @@
 
 @media screen and (max-height: 700px) {
   .chess_body {
-    height: 350px;
-    width: 460px;
+    height: 280px;
+    width: 390px;
   }
   .chess_history {
-    height: 350px;
+    height: 280px;
   }
 
   .chess_button {
@@ -314,15 +327,15 @@
   }
 }
 
-@media screen and (max-width: 870px) {
+@media screen and (max-width: 870px) and (max-height: 1000px) {
   .chess_wrapper {
-    max-width: 500px;
+    width: 500px;
   }
   .chess_body {
-    height: 350px;
-    width: 460px;
+    height: 280px;
+    width: 390px;
   }
   .chess_history {
-    height: 350px;
+    height: 280px;
   }
 }

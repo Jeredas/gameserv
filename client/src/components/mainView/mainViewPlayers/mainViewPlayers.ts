@@ -1,8 +1,8 @@
 import Control from '../../utilities/control';
 import MainViewPlayer from '../mainViewPlayer/mainViewPlayer';
 import mainViewPlayers from '../mainView.module.css';
-import CrossButton from '../../games/cross/button/cross-button';
 import { IChannelPlayer } from '../../utilities/interfaces';
+import Button from '../button/button';
 
 class MainViewPlayers extends Control {
   private playersBlock: Control;
@@ -11,11 +11,11 @@ class MainViewPlayers extends Control {
 
   private playerHeader: any;
   private controlBlock: Control;
-  private btnEnter: CrossButton;
-  private btnLeave: CrossButton;
+  private btnEnter: Button;
+  private btnLeave: Button;
   public onGameEnter: () => void = () => {};
   public onChannelLeave: () => void = () => {};
-  private btnRecommend: CrossButton;
+  private btnRecommend: Button;
   public onMoveRecommended: () => void = () => {};
 
   constructor(parentNode: HTMLElement) {
@@ -23,8 +23,8 @@ class MainViewPlayers extends Control {
     this.controlBlock = new Control(this.node, 'div', mainViewPlayers.chat_category);
     this.playersBlock = new Control(this.node, 'div', mainViewPlayers.chat_category);
 
-    this.btnEnter = new CrossButton(this.controlBlock.node, 'Enter the game');
-    this.btnRecommend = new CrossButton(this.controlBlock.node, 'Recommend moves');
+    this.btnEnter = new Button(this.controlBlock.node, 'Enter the game');
+    this.btnRecommend = new Button(this.controlBlock.node, 'Recommend moves');
     this.hideRecommend();
     this.btnEnter.onClick = () => {
       this.onGameEnter();
