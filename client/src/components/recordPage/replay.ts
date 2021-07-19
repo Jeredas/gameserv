@@ -24,7 +24,6 @@ export class Replay extends GenericPopup<string> {
   speedSelection: InputWrapper;
   view: Cross;
   chessView: ChessGame;
-  speedTimer: NodeJS.Timeout;
 
   constructor(parentNode: HTMLElement, params: IGameRecord) {
     super(parentNode);
@@ -56,8 +55,6 @@ export class Replay extends GenericPopup<string> {
       'div',
       recordStyles.record_replayScreen
     );
-    // this.replaySrceen.node.style.width = '500px';
-    // this.replaySrceen.node.style.height = '500px';
     this.closeBtn = new ButtonDefault(this.popupWrapper.node, recordStyles.record_closeButton, '');
     this.closeBtn.onClick = () => {
       this.onSelect('close');
@@ -66,23 +63,29 @@ export class Replay extends GenericPopup<string> {
   async start() {
     this.replaySrceen.node.innerHTML = '';
     if (this.params.gameType == 'CROSS') {
+      const startTime = Date.now();
       this.view = new Cross(this.replaySrceen.node);
       this.view.playerOne.node.textContent = this.params.player1.login;
       this.view.playerTwo.node.textContent = this.params.player2.login;
       this.view.btnStart.destroy();
       this.view.btnDraw.destroy();
       this.view.btnLoss.destroy();
-      (this.params.history as Array<ICrossHistory>).forEach((res: ICrossHistory, i: number) => {
-        setTimeout(() => {
-          // const move = new Control( this.replaySrceen.node, 'div', );
-          // move.node.textContent = `${res.sign}-${res.move.x}-${res.move.y}-${res.time}`;
-          this.view.setHistoryMove(res)
+      //this.view.startGame(startTime);
+      const history : Array<ICrossHistory> = this.params.history as Array<ICrossHistory>
+      for ( let i = 0;i < history.length;i++) {
+        const move = history[i];
+        //const deltaTime = move.time - (i > 0 ? moves[i - 1].history.time : 0);
+        const res : ICrossHistory = history[i]
+        await delay(1000/this.speed).then(()=>{
+          this.view.timer.setSpeed(this.speed);
+          this.view.setHistoryMove(res);
           this.view.timer.node.innerHTML = `${res.time}`;
           const field: Array<Array<string>> = [[], [], []];
           field[res.move.y][res.move.x] = res.sign;
           this.view.updateGameField(field);
-        }, 1000 / this.speed * ++i);
-      });
+        })      
+      }
+      this.view.timer.stop();
     }
     if (this.params.gameType == 'CHESS') {
       const startTime = Date.now();
@@ -106,15 +109,6 @@ export class Replay extends GenericPopup<string> {
         time: startTime
       });
       this.chessView.setSpeed(this.speed);
-      // if (this.speed > 1) {
-      //   this.chessView.stopTimer();
-      //   this.chessView.timerReplace();
-      //   let time = 1;
-      //   this.speedTimer = setInterval(() => {
-      //     this.chessView.timer.node.textContent = `${getTimeString(time)}`;
-      //     time += 1
-      //   }, 1000 / this.speed)
-      // }
       const moves = this.params.moves;
       for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
@@ -122,7 +116,7 @@ export class Replay extends GenericPopup<string> {
         await this.replayMove(move, i, deltaTime);
       };
       let delayWinner = 500;
-      delay(delayWinner / this.speed).then(() => {
+      await delay(delayWinner / this.speed).then(() => {
         if (this.params.winner.toLocaleLowerCase() == 'draw' || this.params.winner.toLocaleLowerCase() == 'stalemate') {
           const winnerAlert = new Control(this.replaySrceen.node, 'div', recordStyles.record_winnerPop);
           winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
@@ -132,7 +126,6 @@ export class Replay extends GenericPopup<string> {
         }
         this.chessView.clearData()
         this.chessView.stopTimer();
-        clearInterval(this.speedTimer);
       })
     }
   }
@@ -155,14 +148,6 @@ export class Replay extends GenericPopup<string> {
       this.chessView.onFigureMove(chessDataMove);
     });
   }
-}
-
-function getTimeString(time: number): string {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  const minOutput = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  const secOutput = seconds < 10 ? `0${seconds}` : `${seconds}`;
-  return `${minOutput}:${secOutput}`;
 }
 
 function delay(time: number): Promise<void> {
