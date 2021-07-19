@@ -349,6 +349,7 @@ export class ChessGameChannel extends ChatChannel {
     if (currentClient) {
       let currentPlayer = currentClient.userData.login;
       if (currentPlayer && this.players.find((player) => player.login === currentPlayer)) {
+        
         if (this.gameMode === 'network') {
           const checkPlayer = this.players.find((player) => player.login === currentPlayer);
           if (checkPlayer) {
@@ -377,7 +378,8 @@ export class ChessGameChannel extends ChatChannel {
             }
           }
         } else {
-          if (currentPlayer === this.players[1].login) {
+          console.log('STOP', params);
+          // if (currentPlayer === this.players[1].login) {
             let rivalPlayer = 'Player2';
             if (this.gameMode === 'bot') {
               rivalPlayer = this.players[1].login;
@@ -392,7 +394,7 @@ export class ChessGameChannel extends ChatChannel {
             this.chessProcessor.clearData();
             this.players = [];
             this.sendForAllClients(new ChessRenewResponse(this.name));
-          }
+          // }
         }
       }
     }
