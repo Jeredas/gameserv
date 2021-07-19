@@ -1,10 +1,12 @@
 
 .cross_history {
+  width: 100px;
   height: 270px;
   padding: 5px;
+  padding-right: 10px;
   overflow-y: scroll;
+  color: #ccc;
   margin-right: 10px;
-  width: 110px;
 }
 
 .cross_history_item {
@@ -16,8 +18,8 @@
   margin-bottom: 5px;
 }
 
-@media screen and (max-width: 370px) {
+@media screen and (max-height: 800px) {
   .cross_history {
-    padding: 0;
+    height: 240px;
   }
 }

@@ -12,7 +12,12 @@ class PaginatedContainer extends Control {
   constructor(parentNode: HTMLElement, style: string) {
     super(parentNode, 'div', style);
     const wrapperCommon = new Control(this.node, 'div', paginateStyles.wrapper_common_pag);
-    this.title = new Control(wrapperCommon.node, 'div', paginateStyles.title_paginate, 'Your active channels: ');
+    this.title = new Control(
+      wrapperCommon.node,
+      'div',
+      paginateStyles.title_paginate,
+      'Active channels: '
+    );
     this.title.node.classList.add(paginateStyles.default_hidden);
     this.pagination = new Control(wrapperCommon.node, 'div', paginateStyles.paginate_wrapper);
     this.main = new Control(this.node, 'div', style);
@@ -32,6 +37,10 @@ class PaginatedContainer extends Control {
     this.title.node.classList.remove(paginateStyles.default_hidden);
     this.main.node.appendChild(page.node);
     let button = new ButtonDefault(this.pagination.node, paginateStyles.paginate_button, name);
+    this.pages.forEach((page) => {
+      (page.button as ButtonDefault).buttonNonActive(paginateStyles.paginate_button_joined);
+    });
+    button.buttonActive(paginateStyles.paginate_button_joined);
     this.pages.push({
       name,
       page,
@@ -39,6 +48,10 @@ class PaginatedContainer extends Control {
     });
 
     button.onClick = () => {
+      this.pages.forEach((page) => {
+        (page.button as ButtonDefault).buttonNonActive(paginateStyles.paginate_button_joined);
+      });
+      button.buttonActive(paginateStyles.paginate_button_joined);
       this.select(name);
     };
     this.select(name);
@@ -47,21 +60,21 @@ class PaginatedContainer extends Control {
   remove(name: string) {
     const pageIndex = this.pages.findIndex((item) => item.name === name);
     if (pageIndex !== -1) {
-      const page = this.pages[pageIndex]
+      const page = this.pages[pageIndex];
       this.pages = this.pages.filter((elem) => elem !== page);
       page.button.destroy();
       this.main.node.removeChild(page.page.node);
-      if(this.pages.length) {
-        if(this.pages[pageIndex]) {
-          this.selectByIndex(pageIndex)
+      if (this.pages.length) {
+        if (this.pages[pageIndex]) {
+          this.selectByIndex(pageIndex);
         } else {
-          this.selectByIndex(pageIndex - 1)
+          this.selectByIndex(pageIndex - 1);
         }
       } else {
         this.onLastPageClose?.();
       }
     } else {
-      throw new Error ('Page not found');
+      throw new Error('Page not found');
     }
   }
 

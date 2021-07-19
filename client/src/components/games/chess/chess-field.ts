@@ -35,10 +35,7 @@ class ChessField extends Control {
 
   constructor(parentNode: HTMLElement, configFigures: Map<string, string>, parentHeight: number) {
     super(parentNode, 'div', chessStyles.chess_board);
-    // this.node.style.width = `${parentHeight}px`;
-    // this.node.style.height = `${parentHeight}px`;
-
-    // this.node.style.setProperty('--size', `${parentHeight}px`);
+    
     this.configFigures = configFigures;
 
     const boardView = new Control(this.node, 'div', chessStyles.chess_board_view);
@@ -174,6 +171,7 @@ class ChessField extends Control {
   onFigureDropOnCell(e: MouseEvent) {
     e.preventDefault();
     const fieldBox = this.dragableField.node.getBoundingClientRect();
+    console.log(this.node.scrollTop);
 
     const ratio = Math.floor(fieldBox.width / 8);
     if (window.getComputedStyle(this.node).transform !== 'none' && e.buttons == 1) {

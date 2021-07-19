@@ -7,6 +7,7 @@
   background-color: #000;
   color: #ccc;
   font-family: helvetica, arial, sans-serif;
+  height: 50px;
 }
 
 .header_logo {
@@ -19,7 +20,7 @@
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
-  background-image: url("../../assets/logo.png");
+  background-image: url("../../assets/appLogo.png");
 }
 
 .header_nav {
@@ -53,7 +54,7 @@
 
 .nav_link__active {
   background-color: #fff6;
-  background: linear-gradient(308deg, rgba(243, 213, 116, 0.5) 0%, rgba(226, 18, 35, 0.45) 50%, rgba(243, 83, 158, 0.5) 100%);
+  background: linear-gradient(308deg, rgba(167, 250, 253, 0.65) 0%, rgba(25, 189, 80, 0.45) 50%, rgba(253, 237, 147, 0.65) 100%);
 }
 
 .header_auth {

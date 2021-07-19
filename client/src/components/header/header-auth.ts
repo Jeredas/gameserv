@@ -1,7 +1,7 @@
-import { popupService } from '../popupService/popupService';
+import { popupService } from '../popups/popupService/popupService';
 import Control from '../utilities/control';
 import headerStyles from './header.module.css';
-import SettingsUser from '../settingsUser/settingsUser';
+import SettingsUser from '../popups/settingsUser/settingsUser';
 import Signal from '../../socketClient/signal';
 import defaultAvatar from '../../assets/default-avatar.png';
 

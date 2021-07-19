@@ -1,9 +1,13 @@
 import { ChessGameChannelModel, ChessGameChannelView } from '../../socketClient/chessGameChannel';
 import { CrossGameChannelModel, CrossGameChannelView } from '../../socketClient/crossGameChannel';
 import { OnlyChatChannelModel, OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
-import crossIcon from '../../assets/cross-icon.png';
-import chessIcon from '../../assets/chess-icon.jpg';
-import chatIcon from '../../assets/chat-icon.png';
+// import crossIcon from '../../assets/cross-icon.png';
+// import chessIcon from '../../assets/chess-icon.jpg';
+// import chatIcon from '../../assets/chat-icon.png';
+
+import crossIcon from '../../assets/channel-cross.png';
+import chessIcon from '../../assets/channel-chess.png';
+import chatIcon from '../../assets/channel-chat.png';
 
 export const channelConfig = new Map([
   [

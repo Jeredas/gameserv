@@ -1,5 +1,5 @@
 .cross_button {
-  background-color: #555;
+  background-color: #6ecac3;
   color: #fff;
   font-size: 16px;
   padding: 5px 5px;
@@ -8,10 +8,18 @@
   width: 100%;
   letter-spacing: 1px;
   cursor: pointer;
+  text-shadow: 1px 1px 3px #333;
+  transition-property: background-color;
+  transition-duration: .2s;
+  transition-timing-function: ease;
+}
+
+.cross_button:hover {
+  background-color: #6eca8a;
 }
 
 .disabled {
-  background-color: #3a3a3a;
+  background-color: #547979;
   color: #a5a5a5;
 }
 
