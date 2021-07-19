@@ -105,45 +105,35 @@ export class Replay extends GenericPopup<string> {
         field: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR',
         time: startTime
       });
-      if (this.speed > 1) {
-        this.chessView.stopTimer();
-        this.chessView.timerReplace();
-        let time = 1;
-        this.speedTimer = setInterval(() => {
-          this.chessView.timer.node.textContent = `${getTimeString(time)}`;
-          time += 1
-        }, 1000 / this.speed)
-      }
+      this.chessView.setSpeed(this.speed);
+      // if (this.speed > 1) {
+      //   this.chessView.stopTimer();
+      //   this.chessView.timerReplace();
+      //   let time = 1;
+      //   this.speedTimer = setInterval(() => {
+      //     this.chessView.timer.node.textContent = `${getTimeString(time)}`;
+      //     time += 1
+      //   }, 1000 / this.speed)
+      // }
       const moves = this.params.moves;
       for (let i = 0; i < moves.length; i++) {
         const move = moves[i];
         const deltaTime = move.history.time - (i > 0 ? moves[i - 1].history.time : 0);
         await this.replayMove(move, i, deltaTime);
       };
-      let delay = 500;
-      if (this.params.moves.length) {
-        delay = this.params.moves[this.params.moves.length - 1].history.time + 500;
-      }
-      if (this.params.winner.toLocaleLowerCase() == 'draw' || this.params.winner.toLocaleLowerCase() == 'stalemate') {
-        setTimeout(() => {
-          this.chessView.clearData()
-          this.chessView.stopTimer();
+      let delayWinner = 500;
+      delay(delayWinner / this.speed).then(() => {
+        if (this.params.winner.toLocaleLowerCase() == 'draw' || this.params.winner.toLocaleLowerCase() == 'stalemate') {
           const winnerAlert = new Control(this.replaySrceen.node, 'div', recordStyles.record_winnerPop);
           winnerAlert.node.textContent = this.params.winner.toLocaleUpperCase();
-          clearInterval(this.speedTimer)
-
-        }, delay / this.speed)
-
-      } else {
-        setTimeout(() => {
-          this.chessView.clearData()
-          this.chessView.stopTimer();
+        } else {
           const winnerAlert = new Control(this.replaySrceen.node, 'div', recordStyles.record_winnerPop);
           winnerAlert.node.textContent = `Winner is ${this.params.winner}`;
-          clearInterval(this.speedTimer)
-        }, delay / this.speed)
-
-      }
+        }
+        this.chessView.clearData()
+        this.chessView.stopTimer();
+        clearInterval(this.speedTimer);
+      })
     }
   }
 

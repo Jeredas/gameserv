@@ -334,13 +334,16 @@ class ChessGame extends Control {
     this.history.setHistoryFontColor();
   }
 
-  timerReplace(): void {
-    (this.timer as Control).node.textContent = '';
+  // timerReplace(): void {
+  //   (this.timer as Control).node.textContent = '';
+  // }
+  setSpeed(speed:number){
+    this.timer.setSpeed(speed)
   }
 
-  timerShowReplay(time: string) {
-    (this.timer as Control).node.textContent = time;
-  }
+  // timerShowReplay(time: string) {
+  //   (this.timer as Control).node.textContent = time;
+  // }
 }
 
 export default ChessGame;
