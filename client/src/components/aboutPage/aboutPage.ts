@@ -51,15 +51,15 @@ class AboutPage extends Control {
 
   private aboutFade: Control;
   private aboutView: Control = null;
-  unregistered: UnregisteredUser;
+  //unregistered: UnregisteredUser;
   constructor(parentNode: HTMLElement) {
     super(parentNode, 'div', aboutStyles.about_wrapper);
     this.node.style.backgroundImage = `url(${aboutImage})`;
     this.aboutFade = new Control(this.node, 'div', aboutStyles.about_fade);
-    this.unregistered = new UnregisteredUser(this.aboutFade.node);
-    this.unregistered.onHeaderClick = () => {
-      this.logInHeader();
-    }
+    //this.unregistered = new UnregisteredUser(this.aboutFade.node);
+    //this.unregistered.onHeaderClick = () => {
+    //  this.logInHeader();
+    //}
   }
 
   logInHeader() {
@@ -116,9 +116,9 @@ class AboutPage extends Control {
     if(userData != null) {
       this.aboutView = new RegisteredUser(this.aboutFade.node, userData)
     } else {
-      //const unregistered = new UnregisteredUser(this.aboutFade.node);
-      this.aboutView = this.unregistered;
-      this.unregistered.onLoginClick = () => {this.logInHeader()}
+      const unregistered = new UnregisteredUser(this.aboutFade.node);
+      this.aboutView = unregistered;
+      unregistered.onLoginClick = () => {this.logInHeader()}
     }
   }
 
