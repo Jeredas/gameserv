@@ -1,6 +1,9 @@
 import { ChessGameChannelModel, ChessGameChannelView } from '../../socketClient/chessGameChannel';
 import { CrossGameChannelModel, CrossGameChannelView } from '../../socketClient/crossGameChannel';
-import { OnlyChatChannelModel, OnlyChatChannelView } from '../../socketClient/onlyChatChannel/onlyChatChannel';
+import {
+  OnlyChatChannelModel,
+  OnlyChatChannelView
+} from '../../socketClient/onlyChatChannel/onlyChatChannel';
 import crossIcon from '../../assets/cross-icon.png';
 import chessIcon from '../../assets/chess-icon.jpg';
 import chatIcon from '../../assets/chat-icon.png';
@@ -35,7 +38,7 @@ export const channelConfig = new Map([
 export type channelModel = OnlyChatChannelModel | CrossGameChannelModel | ChessGameChannelModel;
 
 export const chessBotComplexity = new Map([
-  [ 'Random', 'random' ],
-  [ 'Min-Max', 'min-max' ],
-  [ 'Monte-Carlo', 'monte-carlo' ]
+  [ 'Easy', 'random' ],
+  [ 'Medium', 'monte-carlo' ],
+  [ 'Hard', 'min-max' ]
 ]);
