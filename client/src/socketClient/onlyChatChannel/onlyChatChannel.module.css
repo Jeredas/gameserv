@@ -8,6 +8,7 @@
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
+  display: flex;
 }
 
 ::-webkit-scrollbar {
@@ -24,4 +25,8 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #777;
+}
+
+.only_chat {
+  display: flex;
 }
