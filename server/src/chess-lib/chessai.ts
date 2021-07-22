@@ -7,7 +7,7 @@ export class ChessAI implements IChessAI {
   static DEFAULT_METHOD = 'random';
   static MONTE_CARLO_DEPTH = 10;
   static MONTE_CARLO_ATTEMPTS = 20;
-  static MIN_MAX_DEPTH = 10;
+  static MIN_MAX_DEPTH = 2;
   getRecommendMove(field: IField, method?: string): IMove | null {
     if(!method) {
       method = 'random';
@@ -98,18 +98,20 @@ export class ChessAI implements IChessAI {
     } else {
       let weightMoves = new Array<{cost: number, move: IMove}>();
       moves.forEach(move => {
-        const moveCost = move.makeMove(field).cost;
+        // const moveCost = move.makeMove(field).cost;
+        const moveCost = this.minMaxHelper(move.makeMove(field), depth - 1);
         weightMoves.push({cost: moveCost, move: move})
       });
       moves = [];
       let weights = weightMoves.map(wMove => wMove.cost);
       const weight = field.playerColor == ChessColor.white ? Math.max(...weights) : Math.min(...weights);
-      weights = [];
-      weightMoves = weightMoves.filter(move => move.cost == weight);
-      const index = Math.floor(Math.random() * weightMoves.length);
-      const resultMove = weightMoves[index].move;
-      weightMoves = [];
-      return this.minMaxHelper(resultMove.makeMove(field), depth - 1);
+      // weights = [];
+      // weightMoves = weightMoves.filter(move => move.cost == weight);
+      // const index = Math.floor(Math.random() * weightMoves.length);
+      // const resultMove = weightMoves[index].move;
+      // weightMoves = [];
+      // return this.minMaxHelper(resultMove.makeMove(field), depth - 1);
+      return weight;
     }
   }
 }
