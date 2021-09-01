@@ -9,5 +9,5 @@
     "allowJs": true,
   },
   "lib": ["es2015"],
-  "files": ["server.ts"],
+  "files": ["./src/server.ts"],
 }

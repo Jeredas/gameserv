@@ -1,0 +1,31 @@
+.chat_input {
+  display: flex;
+  /* padding: 5px 10px; */
+  background-color: #555;
+}
+
+.chat_input_field {
+  width: 100%;
+  background-color: #777;
+  border: none;
+  padding: 5px 10px;
+  color: #fff;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+.chat_send_button {
+  width: 100px;
+  background-color: #444;
+  border: none;
+  padding: 10px;
+  color: #fff;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+@media screen and (max-height: 700px) {
+  .chat_input {
+    display: none;
+  }
+}

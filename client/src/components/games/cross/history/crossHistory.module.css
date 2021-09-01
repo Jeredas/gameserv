@@ -1,0 +1,23 @@
+
+.cross_history {
+  height: 270px;
+  padding: 5px;
+  overflow-y: scroll;
+  margin-right: 10px;
+  width: 110px;
+}
+
+.cross_history_item {
+  margin-bottom: 5px;
+}
+
+.cross_history_header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+@media screen and (max-width: 370px) {
+  .cross_history {
+    padding: 0;
+  }
+}

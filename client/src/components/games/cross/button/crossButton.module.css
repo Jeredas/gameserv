@@ -1,0 +1,26 @@
+.cross_button {
+  background-color: #555;
+  color: #fff;
+  font-size: 16px;
+  padding: 5px 5px;
+  margin: 0 10px;
+  border-radius: 5px;
+  width: 100%;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.disabled {
+  background-color: #3a3a3a;
+  color: #a5a5a5;
+}
+
+.hide {
+  display: none;
+}
+
+@media screen and (max-width: 380px) {
+  .cross_button {
+    font-size: 14px;
+  }
+}
