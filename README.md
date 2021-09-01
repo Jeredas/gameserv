@@ -15,7 +15,7 @@ Features:
 -statistics recording;
 -replays;  
 ---  
-Techonologies used in the project:  
+Technologies used in the project:  
 -TypeScript;  
 -Webpack;
 -HTTP server;  
@@ -29,4 +29,5 @@ My contributions:
 -Building architecture and application flow(particulary);  
 -Some features in channels;
 -Admin services for cleaning DB and reboot/reload server;
--Design(particukary);
+-Design(particukary);  
+
